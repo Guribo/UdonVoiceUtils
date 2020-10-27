@@ -52,7 +52,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
             // TODO your init behaviour here
             // ...
 
-            // whenever the test is ready to be started call _betterAudioTestController.TestInitialized,
+            // whenever the test is ready to be started call betterAudioTestController.TestInitialized,
             // can be later in update or whenever but MUST be called at some point
             betterAudioTestController.TestInitialized(true);
         }
@@ -62,7 +62,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
             // TODO your test behaviour here
             // ...
 
-            // whenever the test is completed call _betterAudioTestController.TestCompleted,
+            // whenever the test is completed call betterAudioTestController.TestCompleted,
             // can be later in update or whenever but MUST be called at some point
             betterAudioTestController.TestCompleted(true);
         }
@@ -72,7 +72,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
             // TODO your clean up behaviour here
             // ...
 
-            // whenever the test is cleaned up call _betterAudioTestController.TestCleanedUp,
+            // whenever the test is cleaned up call betterAudioTestController.TestCleanedUp,
             // can be later in update or whenever but MUST be called at some point
             betterAudioTestController.TestCleanedUp(true);
         }
