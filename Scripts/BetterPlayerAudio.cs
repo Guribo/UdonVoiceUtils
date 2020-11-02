@@ -7,26 +7,28 @@ namespace Guribo.UdonBetterAudio.Scripts
 {
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
-        [SerializeField] public LayerMask occlusionMask = 1 << 11;
-        [NonSerialized] public float OcclusionFactor = 0.66f;
-        [NonSerialized] public float ListenerDirectionality = 0.66f;
-        [NonSerialized] public float PlayerDirectionality = 0.66f;
+        [Header("General Settings")]
+        public LayerMask occlusionMask = 1 << 11; // Environment layer
+        public float OcclusionFactor = 0.25f;
+        public float ListenerDirectionality = 0.75f;
+        public float PlayerDirectionality = 0.5f;
 
-        [NonSerialized] public bool EnableVoiceLowpass;
+        [Header("Voice Settings")]
+        public bool EnableVoiceLowpass = true;
 
-        [NonSerialized] public float TargetVoiceDistanceNear;
-        [NonSerialized] public float TargetVoiceDistanceFar;
-        [NonSerialized] public float TargetVoiceGain;
-        [NonSerialized] public float TargetVoiceVolumetricRadius;
+        public float TargetVoiceDistanceNear = 1f;
+        public float TargetVoiceDistanceFar = 250f;
+        public float TargetVoiceGain = 0f;
+        public float TargetVoiceVolumetricRadius = 0f;
 
-        [NonSerialized] public bool ForceAvatarSpatialAudio = true;
-        [NonSerialized] public bool AllowAvatarCustomAudioCurves = true;
+        [Header("Avatar Settings")]
+        public bool ForceAvatarSpatialAudio = false;
+        public bool AllowAvatarCustomAudioCurves = false;
 
-        [NonSerialized] public float TargetAvatarNearRadius;
-        [NonSerialized] public float TargetAvatarFarRadius;
-        [NonSerialized] public float TargetAvatarGain;
-        [NonSerialized] public float TargetAvatarVolumetricRadius;
-
+        public float TargetAvatarNearRadius = 1f;
+        public float TargetAvatarFarRadius = 250f;
+        public float TargetAvatarGain = 0f;
+        public float TargetAvatarVolumetricRadius = 0f;
 
         private int _playerIndex = 0;
         private int _playerCount;
