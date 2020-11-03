@@ -55,6 +55,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                 Debug.LogError("Invalid betterPlayerAudio");
             }
 
+            // make sure the betterPlayerAudio component is initialized, to prevent accidentally setting everything to 0
+            betterPlayerAudio.Initialize();
             ResetAll();
         }
 

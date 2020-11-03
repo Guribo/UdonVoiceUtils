@@ -61,34 +61,17 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         #endregion
 
+        private bool _initialized;
         private int _playerIndex = 0;
         private int _playerCount;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
         private readonly RaycastHit[] _rayHits = new RaycastHit[1];
 
         #region Unity Lifecycle
-
-        private void Reset()
-        {
-            OcclusionFactor = defaultOcclusionFactor;
-            ListenerDirectionality = defaultListenerDirectionality;
-            PlayerDirectionality = defaultPlayerDirectionality;
-            EnableVoiceLowpass = defaultEnableVoiceLowpass;
-            TargetVoiceDistanceNear = defaultVoiceDistanceNear;
-            TargetVoiceDistanceFar = defaultVoiceDistanceFar;
-            TargetVoiceGain = defaultVoiceGain;
-            TargetVoiceVolumetricRadius = defaultVoiceVolumetricRadius;
-            ForceAvatarSpatialAudio = defaultForceAvatarSpatialAudio;
-            AllowAvatarCustomAudioCurves = defaultAllowAvatarCustomAudioCurves;
-            TargetAvatarNearRadius = defaultAvatarNearRadius;
-            TargetAvatarFarRadius = defaultAvatarFarRadius;
-            TargetAvatarGain = defaultAvatarGain;
-            TargetAvatarVolumetricRadius = defaultAvatarVolumetricRadius;
-        }
-
+        
         private void Start()
         {
-            Reset();
+            Initialize();
         }
 
         private void LateUpdate()
@@ -125,6 +108,38 @@ namespace Guribo.UdonBetterAudio.Scripts
         }
 
         #endregion
+
+        /// <summary>
+        /// initializes all runtime variables using the default values.
+        /// Has no effect if called again or if start() was already received.
+        /// To reset values use ResetToDefault() instead.
+        /// </summary>
+        public void Initialize()
+        {
+            if (!_initialized)
+            {
+                _initialized = true;
+                ResetToDefault();
+            }
+        }
+        
+        public void ResetToDefault()
+        {
+            OcclusionFactor = defaultOcclusionFactor;
+            ListenerDirectionality = defaultListenerDirectionality;
+            PlayerDirectionality = defaultPlayerDirectionality;
+            EnableVoiceLowpass = defaultEnableVoiceLowpass;
+            TargetVoiceDistanceNear = defaultVoiceDistanceNear;
+            TargetVoiceDistanceFar = defaultVoiceDistanceFar;
+            TargetVoiceGain = defaultVoiceGain;
+            TargetVoiceVolumetricRadius = defaultVoiceVolumetricRadius;
+            ForceAvatarSpatialAudio = defaultForceAvatarSpatialAudio;
+            AllowAvatarCustomAudioCurves = defaultAllowAvatarCustomAudioCurves;
+            TargetAvatarNearRadius = defaultAvatarNearRadius;
+            TargetAvatarFarRadius = defaultAvatarFarRadius;
+            TargetAvatarGain = defaultAvatarGain;
+            TargetAvatarVolumetricRadius = defaultAvatarVolumetricRadius;
+        }
 
         private float CalculateRangeReduction(float distance, float distanceReduction, float maxAudibleRange)
         {
