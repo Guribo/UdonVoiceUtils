@@ -236,7 +236,7 @@ MonoBehaviour:
       Data: 15|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: A value of 1.0 reduces the ranges by up to 50% when the listener is facing
+      Data: A value of 1.0 reduces the ranges by up to 100% when the listener is facing
         away from a voice/avatar and thus making them more quiet.
     - Name: 
       Entry: 8
@@ -303,7 +303,7 @@ MonoBehaviour:
       Data: 19|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: A value of 1.0 reduces the ranges by up to 50% when someone is speaking/playing
+      Data: A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing
         avatar sounds but is facing away from the listener.
     - Name: 
       Entry: 8

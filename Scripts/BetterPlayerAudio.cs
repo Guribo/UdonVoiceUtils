@@ -16,12 +16,12 @@ namespace Guribo.UdonBetterAudio.Scripts
         public float defaultOcclusionFactor = 0.5f;
 
         [Tooltip(
-            "A value of 1.0 reduces the ranges by up to 50% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
-        public float defaultListenerDirectionality = 0.75f;
+            "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
+        public float defaultListenerDirectionality = 0.25f;
 
         [Tooltip(
-            "A value of 1.0 reduces the ranges by up to 50% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
-        public float defaultPlayerDirectionality = 0.75f;
+            "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
+        public float defaultPlayerDirectionality = 0.50f;
 
         [Header("Voice Settings")] public bool defaultEnableVoiceLowpass = true;
 
@@ -170,10 +170,8 @@ namespace Guribo.UdonBetterAudio.Scripts
             var dotListener = 0.5f * (Vector3.Dot(listenerForward, directionToPlayer) + 1f);
             var dotSource = 0.5f * (Vector3.Dot(playerBackward, directionToPlayer) + 1f);
 
-            var result = Mathf.Clamp01(dotListener + (1 - ListenerDirectionality)) +
+            return Mathf.Clamp01(dotListener + (1 - ListenerDirectionality)) *
                          Mathf.Clamp01(dotSource + (1 - PlayerDirectionality));
-
-            return 0.5f * result;
         }
 
         private float CalculateOcclusion(Vector3 listenerHead, Vector3 direction, float distance, float occlusionFactor)
