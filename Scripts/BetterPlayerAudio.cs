@@ -68,7 +68,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         private readonly RaycastHit[] _rayHits = new RaycastHit[1];
 
         #region Unity Lifecycle
-        
+
         private void Start()
         {
             Initialize();
@@ -87,23 +87,22 @@ namespace Guribo.UdonBetterAudio.Scripts
             var localPlayer = Networking.LocalPlayer;
             if (localPlayer == null || vrcPlayerApi.playerId == localPlayer.playerId) return;
 
-            var listenerHead = localPlayer.GetBonePosition(HumanBodyBones.Head);
-            var otherPlayerHead = vrcPlayerApi.GetBonePosition(HumanBodyBones.Head);
+            var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
+            var otherPlayerHead = vrcPlayerApi.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
-            var listenerToPlayer = (otherPlayerHead - listenerHead);
+            var listenerToPlayer = (otherPlayerHead.position - listenerHead.position);
             var direction = listenerToPlayer.normalized;
             var distance = listenerToPlayer.magnitude;
 
-            var occlusionFactor = CalculateOcclusion(listenerHead, direction, distance, OcclusionFactor);
-            var directionality = CalculateDirectionality(localPlayer, vrcPlayerApi, direction);
+            var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance, OcclusionFactor);
+            var directionality = CalculateDirectionality(listenerHead.rotation, otherPlayerHead.rotation, direction);
 
-            var rawDistanceReductionFactor = directionality * occlusionFactor;
+            var distanceReduction = directionality * occlusionFactor;
             var voiceDistanceFactor =
-                CalculateRangeReduction(distance, rawDistanceReductionFactor, TargetVoiceDistanceFar);
+                CalculateRangeReduction(distance, distanceReduction, TargetVoiceDistanceFar);
             UpdateVoiceAudio(vrcPlayerApi, voiceDistanceFactor);
 
-            var avatarDistanceFactor =
-                CalculateRangeReduction(distance, rawDistanceReductionFactor, TargetAvatarFarRadius);
+            var avatarDistanceFactor = CalculateRangeReduction(distance, distanceReduction, TargetAvatarFarRadius);
             UpdateAvatarAudio(vrcPlayerApi, avatarDistanceFactor);
         }
 
@@ -122,7 +121,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 ResetToDefault();
             }
         }
-        
+
         public void ResetToDefault()
         {
             OcclusionFactor = defaultOcclusionFactor;
@@ -161,11 +160,11 @@ namespace Guribo.UdonBetterAudio.Scripts
             return occlusion;
         }
 
-        private float CalculateDirectionality(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer,
+        private float CalculateDirectionality(Quaternion listenerHeadRotation, Quaternion playerHeadRotation,
             Vector3 directionToPlayer)
         {
-            var listenerForward = localPlayer.GetBoneRotation(HumanBodyBones.Head) * Vector3.forward;
-            var playerBackward = otherPlayer.GetBoneRotation(HumanBodyBones.Head) * Vector3.back;
+            var listenerForward = listenerHeadRotation * Vector3.forward;
+            var playerBackward = playerHeadRotation * Vector3.back;
 
 
             var dotListener = 0.5f * (Vector3.Dot(listenerForward, directionToPlayer) + 1f);
