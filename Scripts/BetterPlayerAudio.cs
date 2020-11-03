@@ -7,33 +7,89 @@ namespace Guribo.UdonBetterAudio.Scripts
 {
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
-        [Header("General Settings")]
-        public LayerMask occlusionMask = 1 << 11; // Environment layer
-        public float OcclusionFactor = 0.25f;
-        public float ListenerDirectionality = 0.75f;
-        public float PlayerDirectionality = 0.5f;
+        [Header("General Settings")] public LayerMask occlusionMask = 1 << 11; // Environment layer
 
-        [Header("Voice Settings")]
-        public bool EnableVoiceLowpass = true;
+        #region default values for resetting
 
-        public float TargetVoiceDistanceNear = 1f;
-        public float TargetVoiceDistanceFar = 250f;
-        public float TargetVoiceGain = 0f;
-        public float TargetVoiceVolumetricRadius = 0f;
+        [Tooltip(
+            "A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
+        public float defaultOcclusionFactor = 0.5f;
 
-        [Header("Avatar Settings")]
-        public bool ForceAvatarSpatialAudio = false;
-        public bool AllowAvatarCustomAudioCurves = false;
+        [Tooltip(
+            "A value of 1.0 reduces the ranges by up to 50% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
+        public float defaultListenerDirectionality = 0.75f;
 
-        public float TargetAvatarNearRadius = 1f;
-        public float TargetAvatarFarRadius = 250f;
-        public float TargetAvatarGain = 0f;
-        public float TargetAvatarVolumetricRadius = 0f;
+        [Tooltip(
+            "A value of 1.0 reduces the ranges by up to 50% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
+        public float defaultPlayerDirectionality = 0.75f;
+
+        [Header("Voice Settings")] public bool defaultEnableVoiceLowpass = true;
+
+        public float defaultVoiceDistanceNear = 0f;
+        public float defaultVoiceDistanceFar = 100f;
+        public float defaultVoiceGain = 0f;
+        public float defaultVoiceVolumetricRadius = 0f;
+
+        [Header("Avatar Settings")] public bool defaultForceAvatarSpatialAudio = false;
+        public bool defaultAllowAvatarCustomAudioCurves = false;
+
+        public float defaultAvatarNearRadius = 0f;
+        public float defaultAvatarFarRadius = 100f;
+        public float defaultAvatarGain = 0f;
+        public float defaultAvatarVolumetricRadius = 0f;
+
+        #endregion
+
+        #region currently used values
+
+        [NonSerialized] public float OcclusionFactor;
+        [NonSerialized] public float ListenerDirectionality;
+        [NonSerialized] public float PlayerDirectionality;
+
+        [NonSerialized] public bool EnableVoiceLowpass;
+        [NonSerialized] public float TargetVoiceDistanceNear;
+        [NonSerialized] public float TargetVoiceDistanceFar;
+        [NonSerialized] public float TargetVoiceGain;
+        [NonSerialized] public float TargetVoiceVolumetricRadius;
+
+        [NonSerialized] public bool ForceAvatarSpatialAudio;
+        [NonSerialized] public bool AllowAvatarCustomAudioCurves;
+        [NonSerialized] public float TargetAvatarNearRadius;
+        [NonSerialized] public float TargetAvatarFarRadius;
+        [NonSerialized] public float TargetAvatarGain;
+        [NonSerialized] public float TargetAvatarVolumetricRadius;
+
+        #endregion
 
         private int _playerIndex = 0;
         private int _playerCount;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
         private readonly RaycastHit[] _rayHits = new RaycastHit[1];
+
+        #region Unity Lifecycle
+
+        private void Reset()
+        {
+            OcclusionFactor = defaultOcclusionFactor;
+            ListenerDirectionality = defaultListenerDirectionality;
+            PlayerDirectionality = defaultPlayerDirectionality;
+            EnableVoiceLowpass = defaultEnableVoiceLowpass;
+            TargetVoiceDistanceNear = defaultVoiceDistanceNear;
+            TargetVoiceDistanceFar = defaultVoiceDistanceFar;
+            TargetVoiceGain = defaultVoiceGain;
+            TargetVoiceVolumetricRadius = defaultVoiceVolumetricRadius;
+            ForceAvatarSpatialAudio = defaultForceAvatarSpatialAudio;
+            AllowAvatarCustomAudioCurves = defaultAllowAvatarCustomAudioCurves;
+            TargetAvatarNearRadius = defaultAvatarNearRadius;
+            TargetAvatarFarRadius = defaultAvatarFarRadius;
+            TargetAvatarGain = defaultAvatarGain;
+            TargetAvatarVolumetricRadius = defaultAvatarVolumetricRadius;
+        }
+
+        private void Start()
+        {
+            Reset();
+        }
 
         private void LateUpdate()
         {
@@ -50,12 +106,12 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             var listenerHead = localPlayer.GetBonePosition(HumanBodyBones.Head);
             var otherPlayerHead = vrcPlayerApi.GetBonePosition(HumanBodyBones.Head);
-            var listenerToPlayer = (otherPlayerHead - listenerHead);
 
+            var listenerToPlayer = (otherPlayerHead - listenerHead);
             var direction = listenerToPlayer.normalized;
             var distance = listenerToPlayer.magnitude;
 
-            var occlusionFactor = CalculateOcclusion(listenerHead, direction, distance);
+            var occlusionFactor = CalculateOcclusion(listenerHead, direction, distance, OcclusionFactor);
             var directionality = CalculateDirectionality(localPlayer, vrcPlayerApi, direction);
 
             var rawDistanceReductionFactor = directionality * occlusionFactor;
@@ -68,9 +124,11 @@ namespace Guribo.UdonBetterAudio.Scripts
             UpdateAvatarAudio(vrcPlayerApi, avatarDistanceFactor);
         }
 
-        private float CalculateRangeReduction(float distance, float occlusionFactor, float maxAudibleRange)
+        #endregion
+
+        private float CalculateRangeReduction(float distance, float distanceReduction, float maxAudibleRange)
         {
-            if (maxAudibleRange <= 0f || Mathf.Abs(occlusionFactor - 1f) < 0.01f)
+            if (maxAudibleRange <= 0f || Mathf.Abs(distanceReduction - 1f) < 0.01f)
             {
                 return 1f;
             }
@@ -81,7 +139,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             var occlusion = 1f;
             if (playerCouldBeAudible)
             {
-                var postOcclusionFarDistance = remainingDistanceToFarRadius * occlusionFactor + distance;
+                var postOcclusionFarDistance = remainingDistanceToFarRadius * distanceReduction + distance;
                 occlusion = postOcclusionFarDistance / maxAudibleRange;
             }
 
@@ -104,20 +162,21 @@ namespace Guribo.UdonBetterAudio.Scripts
             return 0.5f * result;
         }
 
-        private float CalculateOcclusion(Vector3 listenerHead, Vector3 direction, float distance)
+        private float CalculateOcclusion(Vector3 listenerHead, Vector3 direction, float distance, float occlusionFactor)
         {
+            if (Mathf.Abs(occlusionFactor - 1f) < 0.01f)
+            {
+                // don't waste time ray casting when it doesn't have any effect
+                return 1f;
+            }
+
             var hits = Physics.RaycastNonAlloc(listenerHead,
                 direction,
                 _rayHits,
                 distance,
                 occlusionMask);
 
-            if (hits > 0)
-            {
-                return OcclusionFactor;
-            }
-
-            return 1f;
+            return hits > 0 ? OcclusionFactor : 1f;
         }
 
         private void UpdateVoiceAudio(VRCPlayerApi vrcPlayerApi, float distanceFactor)

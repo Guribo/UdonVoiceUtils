@@ -58,16 +58,6 @@ namespace Guribo.UdonBetterAudio.Scripts
             ResetAll();
         }
 
-        public void OnEnable()
-        {
-            ResetAll();
-        }
-
-        public void OnDisable()
-        {
-            ResetAll();
-        }
-
         public void OnSettingsChanged()
         {
             betterPlayerAudio.OcclusionFactor = sliderOcclusionFactor.value;
@@ -104,24 +94,27 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void ResetAll()
         {
-            sliderOcclusionFactor.value = 0.5f;
-            sliderListenerDirectionality.value = 0.5f;
-            sliderPlayerDirectionality.value = 0.75f;
+            // Resetting the sliders/toggles will cause the betterPlayerAudio script to be reset automatically
+            // due to the change events being triggered, so there is no need to call betterPlayerAudio.Reset()
 
-            sliderVoiceDistanceNear.value = 1f;
-            sliderVoiceDistanceFar.value = 250f;
-            sliderVoiceGain.value = 0f;
-            sliderVoiceVolumetricRadius.value = 0f;
+            sliderOcclusionFactor.value = betterPlayerAudio.defaultOcclusionFactor;
+            sliderListenerDirectionality.value = betterPlayerAudio.defaultListenerDirectionality;
+            sliderPlayerDirectionality.value = betterPlayerAudio.defaultPlayerDirectionality;
 
-            toggleVoiceLowpass.isOn = true;
+            sliderVoiceDistanceNear.value = betterPlayerAudio.defaultVoiceDistanceNear;
+            sliderVoiceDistanceFar.value = betterPlayerAudio.defaultVoiceDistanceFar;
+            sliderVoiceGain.value = betterPlayerAudio.defaultVoiceGain;
+            sliderVoiceVolumetricRadius.value = betterPlayerAudio.defaultVoiceVolumetricRadius;
 
-            sliderAvatarDistanceNear.value = 0f;
-            sliderAvatarDistanceFar.value = 25f;
-            sliderAvatarGain.value = 10f;
-            sliderAvatarVolumetricRadius.value = 0f;
+            toggleVoiceLowpass.isOn = betterPlayerAudio.defaultEnableVoiceLowpass;
 
-            toggleAvatarSpatialize.isOn = true;
-            toggleAvatarCustomCurve.isOn = false;
+            sliderAvatarDistanceNear.value = betterPlayerAudio.defaultAvatarNearRadius;
+            sliderAvatarDistanceFar.value = betterPlayerAudio.defaultAvatarFarRadius;
+            sliderAvatarGain.value = betterPlayerAudio.defaultAvatarGain;
+            sliderAvatarVolumetricRadius.value = betterPlayerAudio.defaultAvatarVolumetricRadius;
+
+            toggleAvatarSpatialize.isOn = betterPlayerAudio.defaultForceAvatarSpatialAudio;
+            toggleAvatarCustomCurve.isOn = betterPlayerAudio.defaultAllowAvatarCustomAudioCurves;
         }
     }
 }
