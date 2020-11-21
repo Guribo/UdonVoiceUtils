@@ -2,17 +2,36 @@
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
+using VRC.Udon;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
+        [Header("General Settings")] [SerializeField]
+        private UdonBehaviour uiController;
+
+        /// <summary>
+        /// The name of the function in the UI controller script that should be called when the master control
+        /// is enabled and the master changed any value
+        /// </summary>
+        [Tooltip(
+            "The name of the function in the UI controller script that should be called when the master control is enabled and the master changed any value")]
+        [SerializeField]
+        private string updateUiEventName = "UpdateUi";
+
         /// <summary>
         /// Default layer: 11 (Environment)
         /// </summary>
-        [Header("General Settings")] public LayerMask occlusionMask = 1 << 11;
+        public LayerMask occlusionMask = 1 << 11;
 
         #region default values for resetting
+
+        /// <summary>
+        /// When enabled the master can change the settings of all players
+        /// </summary>
+        [Tooltip("When enabled the master can change the settings of all players")]
+        public bool defaultAllowMasterControl = false;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -42,7 +61,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
-        public float defaultPlayerDirectionality = 0.75f;
+        public float defaultPlayerDirectionality = 0.5f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
@@ -104,6 +123,11 @@ namespace Guribo.UdonBetterAudio.Scripts
         #endregion
 
         #region currently used values
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAllowMasterControl"/>
+        /// </summary>
+        private bool _allowMasterControl;
 
         /// <summary>
         /// <inheritdoc cref="defaultOcclusionFactor"/>
@@ -174,6 +198,80 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <inheritdoc cref="defaultAvatarVolumetricRadius"/>
         /// </summary>
         [NonSerialized] public float TargetAvatarVolumetricRadius;
+
+        #endregion
+
+        #region Synched values
+
+        /// <summary>
+        /// <inheritdoc cref="defaultOcclusionFactor"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterOcclusionFactor;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultListenerDirectionality"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterListenerDirectionality;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultPlayerDirectionality"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterPlayerDirectionality;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultEnableVoiceLowpass"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public bool masterEnableVoiceLowpass;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceDistanceNear"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetVoiceDistanceNear;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceDistanceFar"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetVoiceDistanceFar;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceGain"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetVoiceGain;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceVolumetricRadius"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetVoiceVolumetricRadius;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultForceAvatarSpatialAudio"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public bool masterForceAvatarSpatialAudio;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAllowAvatarCustomAudioCurves"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public bool masterAllowAvatarCustomAudioCurves;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarNearRadius"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetAvatarNearRadius;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarFarRadius"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetAvatarFarRadius;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarGain"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetAvatarGain;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarVolumetricRadius"/>
+        /// </summary>
+        [UdonSynced][HideInInspector]  public float masterTargetAvatarVolumetricRadius;
 
         #endregion
 
@@ -337,6 +435,83 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
 
             VRCPlayerApi.GetPlayers(_players);
+        }
+
+        public bool IsOwner()
+        {
+            var localPlayer = Networking.LocalPlayer;
+            if (localPlayer != null)
+            {
+                return localPlayer.isMaster;
+            }
+
+            return true;
+        }
+
+        public override void OnDeserialization()
+        {
+            UseMasterValues();
+        }
+
+        public override void OnPreSerialization()
+        {
+            if (IsOwner()){
+                masterOcclusionFactor = OcclusionFactor;
+                masterListenerDirectionality = ListenerDirectionality;
+                masterPlayerDirectionality = PlayerDirectionality;
+                masterEnableVoiceLowpass = EnableVoiceLowpass;
+                masterTargetVoiceDistanceNear = TargetVoiceDistanceNear;
+                masterTargetVoiceDistanceFar = TargetVoiceDistanceFar;
+                masterTargetVoiceGain = TargetVoiceGain;
+                masterTargetVoiceVolumetricRadius = TargetVoiceVolumetricRadius;
+                masterForceAvatarSpatialAudio = ForceAvatarSpatialAudio;
+                masterAllowAvatarCustomAudioCurves = AllowAvatarCustomAudioCurves;
+                masterTargetAvatarNearRadius = TargetAvatarNearRadius;
+                masterTargetAvatarFarRadius = TargetAvatarFarRadius;
+                masterTargetAvatarGain = TargetAvatarGain;
+                masterTargetAvatarVolumetricRadius = TargetAvatarVolumetricRadius;
+            }
+        }
+
+        public void SetUseMasterControls(bool use)
+        {
+            if (use && !_allowMasterControl)
+            {
+                _allowMasterControl = true;
+                UseMasterValues();
+            }
+            else
+            {
+                _allowMasterControl = use;
+            }
+        }
+
+        public bool AllowMasterTakeControl()
+        {
+            return _allowMasterControl;
+        }
+
+        private void UseMasterValues()
+        {
+            if (_allowMasterControl && uiController)
+            {
+                OcclusionFactor = masterOcclusionFactor;
+                ListenerDirectionality = masterListenerDirectionality;
+                PlayerDirectionality = masterPlayerDirectionality;
+                EnableVoiceLowpass = masterEnableVoiceLowpass;
+                TargetVoiceDistanceNear = masterTargetVoiceDistanceNear;
+                TargetVoiceDistanceFar = masterTargetVoiceDistanceFar;
+                TargetVoiceGain = masterTargetVoiceGain;
+                TargetVoiceVolumetricRadius = masterTargetVoiceVolumetricRadius;
+                ForceAvatarSpatialAudio = masterForceAvatarSpatialAudio;
+                AllowAvatarCustomAudioCurves = masterAllowAvatarCustomAudioCurves;
+                TargetAvatarNearRadius = masterTargetAvatarNearRadius;
+                TargetAvatarFarRadius = masterTargetAvatarFarRadius;
+                TargetAvatarGain = masterTargetAvatarGain;
+                TargetAvatarVolumetricRadius = masterTargetAvatarVolumetricRadius;
+
+                uiController.SendCustomEvent(updateUiEventName);
+            }
         }
     }
 }
