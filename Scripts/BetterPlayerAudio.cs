@@ -7,56 +7,172 @@ namespace Guribo.UdonBetterAudio.Scripts
 {
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
-        [Header("General Settings")] public LayerMask occlusionMask = 1 << 11; // Environment layer
+        /// <summary>
+        /// Default layer: 11 (Environment)
+        /// </summary>
+        [Header("General Settings")] public LayerMask occlusionMask = 1 << 11;
 
         #region default values for resetting
 
+        /// <summary>
+        /// Range 0.0 to 1.0.
+        /// A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the
+        /// voice/player to the current distance and make him/her/them in-audible
+        /// </summary>
+        [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
         public float defaultOcclusionFactor = 0.5f;
 
+        /// <summary>
+        /// Range 0.0 to 1.0.
+        /// A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar
+        /// and thus making them more quiet.
+        /// </summary>
+        [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
-        public float defaultListenerDirectionality = 0.25f;
+        public float defaultListenerDirectionality = 0.5f;
 
+        /// <summary>
+        /// Range 0.0 to 1.0.
+        /// A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is
+        /// facing away from the listener.
+        /// </summary>
+        [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
-        public float defaultPlayerDirectionality = 0.50f;
+        public float defaultPlayerDirectionality = 0.75f;
 
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
+        /// </summary>
         [Header("Voice Settings")] public bool defaultEnableVoiceLowpass = true;
 
-        public float defaultVoiceDistanceNear = 0f;
-        public float defaultVoiceDistanceFar = 100f;
-        public float defaultVoiceGain = 0f;
-        public float defaultVoiceVolumetricRadius = 0f;
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-distance-near</remarks>
+        /// </summary>
+        [Range(0, 1000000)] public float defaultVoiceDistanceNear = 0f;
 
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-distance-far</remarks>
+        /// </summary>
+        [Range(0, 1000000)] public float defaultVoiceDistanceFar = 100f;
+
+        /// <summary>
+        /// Default is 15. In my experience this may lead to clipping when being close to someone with a loud microphone.
+        /// My recommendation is to use 0 instead.
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-gain</remarks>
+        /// </summary>
+        [Range(0, 24)] public float defaultVoiceGain = 15f;
+
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-volumetric-radius</remarks>
+        /// </summary>
+        [Range(0, 1000)] public float defaultVoiceVolumetricRadius = 0f;
+
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudioforcespatial</remarks>
+        /// </summary>
         [Header("Avatar Settings")] public bool defaultForceAvatarSpatialAudio = false;
-        public bool defaultAllowAvatarCustomAudioCurves = false;
 
-        public float defaultAvatarNearRadius = 0f;
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiocustomcurve</remarks>
+        /// </summary>
+        public bool defaultAllowAvatarCustomAudioCurves = true;
+
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudionearradius</remarks>
+        /// </summary>
+        public float defaultAvatarNearRadius = 1f;
+
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiofarradius</remarks>
+        /// </summary>
         public float defaultAvatarFarRadius = 100f;
-        public float defaultAvatarGain = 0f;
+
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiogain</remarks>
+        /// </summary>
+        [Range(0, 10)] public float defaultAvatarGain = 10f;
+
+        /// <summary>
+        /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiovolumetricradius</remarks>
+        /// </summary>
         public float defaultAvatarVolumetricRadius = 0f;
 
         #endregion
 
         #region currently used values
 
+        /// <summary>
+        /// <inheritdoc cref="defaultOcclusionFactor"/>
+        /// </summary>
         [NonSerialized] public float OcclusionFactor;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultListenerDirectionality"/>
+        /// </summary>
         [NonSerialized] public float ListenerDirectionality;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultPlayerDirectionality"/>
+        /// </summary>
         [NonSerialized] public float PlayerDirectionality;
 
+        /// <summary>
+        /// <inheritdoc cref="defaultEnableVoiceLowpass"/>
+        /// </summary>
         [NonSerialized] public bool EnableVoiceLowpass;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceDistanceNear"/>
+        /// </summary>
         [NonSerialized] public float TargetVoiceDistanceNear;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceDistanceFar"/>
+        /// </summary>
         [NonSerialized] public float TargetVoiceDistanceFar;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceGain"/>
+        /// </summary>
         [NonSerialized] public float TargetVoiceGain;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultVoiceVolumetricRadius"/>
+        /// </summary>
         [NonSerialized] public float TargetVoiceVolumetricRadius;
 
+        /// <summary>
+        /// <inheritdoc cref="defaultForceAvatarSpatialAudio"/>
+        /// </summary>
         [NonSerialized] public bool ForceAvatarSpatialAudio;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAllowAvatarCustomAudioCurves"/>
+        /// </summary>
         [NonSerialized] public bool AllowAvatarCustomAudioCurves;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarNearRadius"/>
+        /// </summary>
         [NonSerialized] public float TargetAvatarNearRadius;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarFarRadius"/>
+        /// </summary>
         [NonSerialized] public float TargetAvatarFarRadius;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarGain"/>
+        /// </summary>
         [NonSerialized] public float TargetAvatarGain;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultAvatarVolumetricRadius"/>
+        /// </summary>
         [NonSerialized] public float TargetAvatarVolumetricRadius;
 
         #endregion
@@ -171,7 +287,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             var dotSource = 0.5f * (Vector3.Dot(playerBackward, directionToPlayer) + 1f);
 
             return Mathf.Clamp01(dotListener + (1 - ListenerDirectionality)) *
-                         Mathf.Clamp01(dotSource + (1 - PlayerDirectionality));
+                   Mathf.Clamp01(dotSource + (1 - PlayerDirectionality));
         }
 
         private float CalculateOcclusion(Vector3 listenerHead, Vector3 direction, float distance, float occlusionFactor)
