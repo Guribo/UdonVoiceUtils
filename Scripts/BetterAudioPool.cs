@@ -11,10 +11,10 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public Transform GetAudioSourceInstance(BetterAudioSource betterAudioSource)
         {
-            Debug.Log("BetterAudioPool.GetAudioSourceInstance");
+            Debug.Log("[<color=#008000>BetterAudio</color>] BetterAudioPool.GetAudioSourceInstance");
             if (!betterAudioSource)
             {
-                Debug.LogError("BetterAudioPool.GetAudioSourceInstance: received an invalid BetterAudioSource");
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioPool.GetAudioSourceInstance: received an invalid BetterAudioSource");
                 return null;
             }
 
@@ -26,7 +26,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (!audioSourceInstance)
             {
-                Debug.LogError("BetterAudioPool.GetAudioSourceInstance: " +
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioPool.GetAudioSourceInstance: " +
                                "failed to get or create audioSourceInstance");
                 return null;
             }
@@ -36,7 +36,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (audioSourceInstance.gameObject.activeSelf)
             {
-                Debug.LogError("BetterAudioPool.GetAudioSourceInstance: " +
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioPool.GetAudioSourceInstance: " +
                                "GetAudioSourceInstance expected the audioSourceInstance to be inactive");
                 return null;
             }
@@ -49,7 +49,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void ReturnToPool(GameObject audioSourceInstance)
         {
-            Debug.Log("ReturnToPool");
+            Debug.Log("[<color=#008000>BetterAudio</color>] ReturnToPool");
 
             if (audioSourceInstance)
             {
@@ -70,7 +70,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private GameObject GetPooledAudioSourceInstance()
         {
-            Debug.Log("GetPooledAudioSourceInstance");
+            Debug.Log("[<color=#008000>BetterAudio</color>] GetPooledAudioSourceInstance");
             if (transform.childCount > 0)
             {
                 var child = transform.GetChild(0);

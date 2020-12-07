@@ -9,10 +9,10 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public GameObject CreateAudioSourceInstance()
         {
-            Debug.Log("BetterAudioFactory.CreateAudioSourceInstance");
+            Debug.Log("[<color=#008000>BetterAudio</color>] BetterAudioFactory.CreateAudioSourceInstance");
             if (audioSourcePrefab.activeSelf)
             {
-                Debug.LogError("BetterAudioFactory.CreateAudioSourceInstance: audioSourcePrefab prefab must be inactive");
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioFactory.CreateAudioSourceInstance: audioSourcePrefab prefab must be inactive");
                 return null;
             }
             

@@ -36,7 +36,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             if (audioSource.playOnAwake)
             {
                 audioSource.playOnAwake = false;
-                Debug.LogError("Please set PlayOnEnable in the udon behaviour instead", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] Please set PlayOnEnable in the udon behaviour instead", this);
             }
 
             if (audioSource.outputAudioMixerGroup)
@@ -49,7 +49,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (audioSource.bypassEffects)
             {
-                Debug.LogError("bypassEffects not yet supported by Udon, set it globally in the pool prefab instead",
+                Debug.LogError("[<color=#008000>BetterAudio</color>] bypassEffects not yet supported by Udon, set it globally in the pool prefab instead",
                     this);
                 audioSource.bypassEffects = false;
             }
@@ -64,7 +64,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (audioSource.mute)
             {
-                Debug.LogWarning("audio source is muted", this);
+                Debug.LogWarning("[<color=#008000>BetterAudio</color>] audio source is muted", this);
             }
 
             var udonBehaviour = GetComponent<UdonBehaviour>();
@@ -98,7 +98,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             if (!udonBehaviour.isActiveAndEnabled)
             {
-                Debug.LogWarning("Can not generate noise preview on disabled udon behaviours/game objects", this);
+                Debug.LogWarning("[<color=#008000>BetterAudio</color>] Can not generate noise preview on disabled udon behaviours/game objects", this);
                 return;
             }
 

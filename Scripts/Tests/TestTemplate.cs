@@ -13,10 +13,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
         {
             if (!betterAudioTestController)
             {
-                Debug.LogError("Test.Initialize: invalid test controller", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Initialize: invalid test controller", this);
                 return;
             }
-            Debug.Log("Test.Initialize", this);
+            Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Initialize", this);
             InitializeTest();
         }
 
@@ -24,11 +24,11 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
         {
             if (!betterAudioTestController)
             {
-                Debug.LogError("Test.Run: invalid test controller", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Run: invalid test controller", this);
                 return;
             }
 
-            Debug.Log("Test.Run", this);
+            Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Run", this);
             RunTest();
         }
 
@@ -36,10 +36,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
         {
             if (!betterAudioTestController)
             {
-                Debug.LogError("Test.CleanUp: invalid test controller", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.CleanUp: invalid test controller", this);
                 return;
             }
-            Debug.Log("Test.CleanUp", this);
+            Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.CleanUp", this);
             CleanUpTest();
         }
 

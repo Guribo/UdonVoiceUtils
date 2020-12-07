@@ -51,7 +51,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
                 return;
             }
 
-            Debug.Log("BetterAudioTestController.StartTestRun", this);
+            Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.StartTestRun", this);
 
             _isTesting = true;
             _testIndex = 0;
@@ -65,14 +65,14 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
                 var udonSharpBehaviour = tests[_testIndex];
                 if (!udonSharpBehaviour)
                 {
-                    Debug.LogError("BetterAudioTestController.ContinueTesting: tests contains invalid behaviour", this);
+                    Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.ContinueTesting: tests contains invalid behaviour", this);
                     return;
                 }
 
                 var context = udonSharpBehaviour.gameObject;
                 if (!_testInitialized)
                 {
-                    Debug.Log($"BetterAudioTestController.ContinueTesting: Initializing test {context}", context);
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.ContinueTesting: Initializing test {context}", context);
                     udonSharpBehaviour.SetProgramVariable("betterAudioTestController", this);
                     udonSharpBehaviour.SendCustomEvent("Initialize");
                     return;
@@ -80,14 +80,14 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
                 if (!_testCompleted)
                 {
-                    Debug.Log($"BetterAudioTestController.ContinueTesting: Running test {context}", context);
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.ContinueTesting: Running test {context}", context);
                     udonSharpBehaviour.SendCustomEvent("Run");
                     return;
                 }
 
                 if (!_testCleanedUp)
                 {
-                    Debug.Log($"BetterAudioTestController.ContinueTesting: Cleaning up test {context}", context);
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.ContinueTesting: Cleaning up test {context}", context);
                     udonSharpBehaviour.SendCustomEvent("CleanUp");
                     return;
                 }
@@ -103,12 +103,12 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
                 if (!_isTesting)
                 {
-                    Debug.Log("BetterAudioTestController.ContinueTesting: All test completed");
+                    Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.ContinueTesting: All test completed");
                 }
             }
             else
             {
-                Debug.LogError("Nothing to test");
+                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Nothing to test");
                 _testIndex = 0;
                 _isTesting = false;
                 _testInitialized = false;
@@ -120,7 +120,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
         public void TestInitialized(bool success)
         {
-            Debug.Log($"BetterAudioTestController.TestInitialized: Initialized test successfully: {success}",this);
+            Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.TestInitialized: Initialized test successfully: {success}",this);
             _testInitialized = true;
             if (!success)
             {
@@ -131,14 +131,14 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
         public void TestCompleted(bool success)
         {
-            Debug.Log($"BetterAudioTestController.TestCompleted: Test ran successfully {success}",this);
+            Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.TestCompleted: Test ran successfully {success}",this);
             _testCompleted = true;
             _pendingNextStep = true;
         }
 
         public void TestCleanedUp(bool success)
         {
-            Debug.Log($"BetterAudioTestController.TestCleanedUp: Cleaned up test successfully: {success}", this);
+            Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] BetterAudioTestController.TestCleanedUp: Cleaned up test successfully: {success}", this);
             _testCleanedUp = true;
             _pendingNextStep = true;
         }

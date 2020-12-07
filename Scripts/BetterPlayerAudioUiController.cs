@@ -20,6 +20,10 @@ namespace Guribo.UdonBetterAudio.Scripts
         [SerializeField] private Text textPlayerDirectionality;
         [SerializeField] private Text textOcclusionFactor;
 
+        [SerializeField] private Text textAllowMasterControl;
+        [SerializeField] private Toggle toggleAllowMasterControl;
+
+        
         [Header("Voice Settings")] [SerializeField]
         private Slider sliderVoiceDistanceNear;
 
@@ -49,29 +53,29 @@ namespace Guribo.UdonBetterAudio.Scripts
         [SerializeField] private Toggle toggleAvatarSpatialize;
         [SerializeField] private Toggle toggleAvatarCustomCurve;
 
-        [SerializeField] private Text textAllowMasterControl;
-        [SerializeField] private Toggle toggleAllowMasterControl;
+        [Header("Setting Tabs")]
+        
+        [SerializeField] private RectTransform voiceSettings;
+        [SerializeField] private RectTransform avatarSettings;
+        [SerializeField] private RectTransform generalSettings;
 
+        private RectTransform[] _tabs;
 
         void Start()
         {
+            _tabs = new RectTransform[3];
+            _tabs[0] = voiceSettings;
+            _tabs[1] = avatarSettings;
+            _tabs[2] = generalSettings;
+
             if (!betterPlayerAudio)
             {
-                Debug.LogError("Invalid betterPlayerAudio");
+                Debug.LogError("[<color=#008000>BetterAudio</color>] Invalid betterPlayerAudio");
             }
 
             // make sure the betterPlayerAudio component is initialized, to prevent accidentally setting everything to 0
             betterPlayerAudio.Initialize();
             ResetAll();
-        }
-
-        public void Update()
-        {
-            var owner = Networking.GetOwner(betterPlayerAudio.gameObject);
-            if (owner != null)
-            {
-                textAllowMasterControl.text = $"Let {owner.displayName} (owner) control everything";
-            }
         }
 
 
@@ -109,7 +113,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             texAvatarDistanceFar.text = sliderAvatarDistanceFar.value.ToString("F1");
             texAvatarGain.text = sliderAvatarGain.value.ToString("F1");
             texAvatarVolumetricRadius.text = sliderAvatarVolumetricRadius.value.ToString("F1");
-            
+
             var locallyControlled = !betterPlayerAudio.AllowMasterTakeControl() || betterPlayerAudio.IsOwner();
 
             sliderOcclusionFactor.interactable = locallyControlled;
@@ -154,7 +158,6 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             toggleAvatarSpatialize.isOn = betterPlayerAudio.defaultForceAvatarSpatialAudio;
             toggleAvatarCustomCurve.isOn = betterPlayerAudio.defaultAllowAvatarCustomAudioCurves;
-            
         }
 
         /// <summary>
@@ -162,6 +165,12 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// </summary>
         public void UpdateUi()
         {
+            var owner = Networking.GetOwner(betterPlayerAudio.gameObject);
+            if (owner != null)
+            {
+                textAllowMasterControl.text = $"Let {owner.displayName} (owner) control everything";
+            }
+            
             sliderOcclusionFactor.value = betterPlayerAudio.OcclusionFactor;
             sliderListenerDirectionality.value = betterPlayerAudio.ListenerDirectionality;
             sliderPlayerDirectionality.value = betterPlayerAudio.PlayerDirectionality;
@@ -182,6 +191,36 @@ namespace Guribo.UdonBetterAudio.Scripts
             toggleAvatarCustomCurve.isOn = betterPlayerAudio.AllowAvatarCustomAudioCurves;
 
             toggleAllowMasterControl.isOn = betterPlayerAudio.AllowMasterTakeControl();
+        }
+
+        public void ShowVoiceSettings()
+        {
+            HideAllTabs();
+            if (voiceSettings) voiceSettings.gameObject.SetActive(true);
+        }
+
+        public void ShowAvatarSettings()
+        {
+            HideAllTabs();
+            if (avatarSettings) avatarSettings.gameObject.SetActive(true);
+        }
+
+        public void ShowGeneralSettings()
+        {
+            HideAllTabs();
+            if (generalSettings) generalSettings.gameObject.SetActive(true);
+        }
+
+
+        private void HideAllTabs()
+        {
+            foreach (var rectTransform in _tabs)
+            {
+                if (rectTransform)
+                {
+                    rectTransform.gameObject.SetActive(false);
+                }
+            }
         }
     }
 }

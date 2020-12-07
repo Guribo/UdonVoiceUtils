@@ -223,7 +223,7 @@ MonoBehaviour:
   interactTextGO: {fileID: 0}
   proximity: 2
   SynchronizePosition: 0
-  AllowCollisionOwnershipTransfer: 1
+  AllowCollisionOwnershipTransfer: 0
   serializedProgramAsset: {fileID: 11400000, guid: 9479243df379a9d4194270fcb80fef97,
     type: 2}
   programSource: {fileID: 11400000, guid: 8b8f9cb0539b5f1478338a32a48ca71c, type: 2}
@@ -241,11 +241,11 @@ AudioSource:
   m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: bb0992340660d489884820e0f3ab734d, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 93e9fbbf995042943b0b675564d843f8, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 1
   SpatializePostEffects: 1
@@ -9610,7 +9610,7 @@ MonoBehaviour:
   interactTextGO: {fileID: 0}
   proximity: 2
   SynchronizePosition: 0
-  AllowCollisionOwnershipTransfer: 1
+  AllowCollisionOwnershipTransfer: 0
   serializedProgramAsset: {fileID: 11400000, guid: b14a6982ffb8e6f428e4017c3b06d269,
     type: 2}
   programSource: {fileID: 11400000, guid: eb2697c151fd06f4f8094cd89f2218e7, type: 2}
@@ -9812,7 +9812,7 @@ MonoBehaviour:
   interactTextGO: {fileID: 0}
   proximity: 2
   SynchronizePosition: 0
-  AllowCollisionOwnershipTransfer: 1
+  AllowCollisionOwnershipTransfer: 0
   serializedProgramAsset: {fileID: 11400000, guid: 9479243df379a9d4194270fcb80fef97,
     type: 2}
   programSource: {fileID: 11400000, guid: 8b8f9cb0539b5f1478338a32a48ca71c, type: 2}
@@ -9830,7 +9830,7 @@ AudioSource:
   m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: bb0992340660d489884820e0f3ab734d, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 93e9fbbf995042943b0b675564d843f8, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1

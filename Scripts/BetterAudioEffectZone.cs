@@ -21,19 +21,19 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             if (!boxCollider)
             {
-                Debug.LogError("BetterAudioZone.Start: boxCollider is not set", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioZone.Start: boxCollider is not set", this);
                 return;
             }
 
             if (!boxCollider.isTrigger)
             {
                 boxCollider.isTrigger = true;
-                Debug.LogWarning("BetterAudioZone.Start: boxCollider needed to be changed to trigger", this);
+                Debug.LogWarning("[<color=#008000>BetterAudio</color>] BetterAudioZone.Start: boxCollider needed to be changed to trigger", this);
             }
 
             if (!audioReverbFilter)
             {
-                Debug.LogError("BetterAudioZone.Start: audioReverbFilter is not set", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioZone.Start: audioReverbFilter is not set", this);
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             if (autoUpdate && gameObject.isStatic)
             {
                 autoUpdate = false;
-                Debug.LogWarning("BetterAudioZone.Start: autoUpdate is disabled as the gameobject is static", this);
+                Debug.LogWarning("[<color=#008000>BetterAudio</color>] BetterAudioZone.Start: autoUpdate is disabled as the gameobject is static", this);
             }
 
             // TODO disable just the UdonBehaviour if autoupdate is false and check whether trigger events still trigger
@@ -69,17 +69,17 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"OnTriggerEnter {other}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerEnter {other}");
         }
 
         // private void OnTriggerStay(Collider other)
         // {
-        // Debug.Log($"OnTriggerStay {other}");
+        // Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerStay {other}");
         // }
 
         private void OnTriggerExit(Collider other)
         {
-            Debug.Log($"OnTriggerExit {other}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerExit {other}");
         }
 
         #endregion
@@ -115,12 +115,12 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
         {
-            Debug.Log($"OnPlayerTriggerEnter {player}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerEnter {player}");
         }
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
         {
-            Debug.Log($"OnPlayerTriggerExit {player}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerExit {player}");
         }
 
         #endregion

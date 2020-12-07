@@ -51,7 +51,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
-        public float defaultListenerDirectionality = 0.5f;
+        public float defaultListenerDirectionality = 0.75f;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -83,7 +83,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// My recommendation is to use 0 instead.
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-gain</remarks>
         /// </summary>
-        [Range(0, 24)] public float defaultVoiceGain = 15f;
+        [Range(0, 24)] public float defaultVoiceGain = 0f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-volumetric-radius</remarks>
@@ -113,7 +113,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiogain</remarks>
         /// </summary>
-        [Range(0, 10)] public float defaultAvatarGain = 10f;
+        [Range(0, 10)] public float defaultAvatarGain = 0f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiovolumetricradius</remarks>
@@ -206,76 +206,77 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <summary>
         /// <inheritdoc cref="defaultOcclusionFactor"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterOcclusionFactor;
+        [UdonSynced] [HideInInspector] public float masterOcclusionFactor;
 
         /// <summary>
         /// <inheritdoc cref="defaultListenerDirectionality"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterListenerDirectionality;
+        [UdonSynced] [HideInInspector] public float masterListenerDirectionality;
 
         /// <summary>
         /// <inheritdoc cref="defaultPlayerDirectionality"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterPlayerDirectionality;
+        [UdonSynced] [HideInInspector] public float masterPlayerDirectionality;
 
         /// <summary>
         /// <inheritdoc cref="defaultEnableVoiceLowpass"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public bool masterEnableVoiceLowpass;
+        [UdonSynced] [HideInInspector] public bool masterEnableVoiceLowpass;
 
         /// <summary>
         /// <inheritdoc cref="defaultVoiceDistanceNear"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetVoiceDistanceNear;
+        [UdonSynced] [HideInInspector] public float masterTargetVoiceDistanceNear;
 
         /// <summary>
         /// <inheritdoc cref="defaultVoiceDistanceFar"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetVoiceDistanceFar;
+        [UdonSynced] [HideInInspector] public float masterTargetVoiceDistanceFar;
 
         /// <summary>
         /// <inheritdoc cref="defaultVoiceGain"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetVoiceGain;
+        [UdonSynced] [HideInInspector] public float masterTargetVoiceGain;
 
         /// <summary>
         /// <inheritdoc cref="defaultVoiceVolumetricRadius"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetVoiceVolumetricRadius;
+        [UdonSynced] [HideInInspector] public float masterTargetVoiceVolumetricRadius;
 
         /// <summary>
         /// <inheritdoc cref="defaultForceAvatarSpatialAudio"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public bool masterForceAvatarSpatialAudio;
+        [UdonSynced] [HideInInspector] public bool masterForceAvatarSpatialAudio;
 
         /// <summary>
         /// <inheritdoc cref="defaultAllowAvatarCustomAudioCurves"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public bool masterAllowAvatarCustomAudioCurves;
+        [UdonSynced] [HideInInspector] public bool masterAllowAvatarCustomAudioCurves;
 
         /// <summary>
         /// <inheritdoc cref="defaultAvatarNearRadius"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetAvatarNearRadius;
+        [UdonSynced] [HideInInspector] public float masterTargetAvatarNearRadius;
 
         /// <summary>
         /// <inheritdoc cref="defaultAvatarFarRadius"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetAvatarFarRadius;
+        [UdonSynced] [HideInInspector] public float masterTargetAvatarFarRadius;
 
         /// <summary>
         /// <inheritdoc cref="defaultAvatarGain"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetAvatarGain;
+        [UdonSynced] [HideInInspector] public float masterTargetAvatarGain;
 
         /// <summary>
         /// <inheritdoc cref="defaultAvatarVolumetricRadius"/>
         /// </summary>
-        [UdonSynced][HideInInspector]  public float masterTargetAvatarVolumetricRadius;
+        [UdonSynced] [HideInInspector] public float masterTargetAvatarVolumetricRadius;
 
         #endregion
 
         private bool _initialized;
+        private bool _isReallyOwner;
         private int _playerIndex = 0;
         private int _playerCount;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
@@ -439,23 +440,25 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public bool IsOwner()
         {
-            var localPlayer = Networking.LocalPlayer;
-            if (localPlayer != null)
-            {
-                return localPlayer.isMaster;
-            }
-
-            return true;
+            return _isReallyOwner;
         }
-
+        
         public override void OnDeserialization()
         {
+            if (_isReallyOwner)
+            {
+                Debug.Log("[<color=#008000>BetterAudio</color>] Taking real ownership away as data is received");
+            }
+            _isReallyOwner = false;
             UseMasterValues();
         }
 
         public override void OnPreSerialization()
         {
-            if (IsOwner()){
+            if (Networking.IsOwner(gameObject))
+            {
+                _isReallyOwner = true;
+
                 masterOcclusionFactor = OcclusionFactor;
                 masterListenerDirectionality = ListenerDirectionality;
                 masterPlayerDirectionality = PlayerDirectionality;
@@ -471,7 +474,27 @@ namespace Guribo.UdonBetterAudio.Scripts
                 masterTargetAvatarGain = TargetAvatarGain;
                 masterTargetAvatarVolumetricRadius = TargetAvatarVolumetricRadius;
             }
+            else
+            {
+                Debug.LogWarning("[<color=#008000>BetterAudio</color>] Is not really owner but tries to serialize data");
+            }
         }
+
+        public override void OnOwnershipTransferred()
+        {
+            _allowMasterControl = false;
+            uiController.SendCustomEvent(updateUiEventName);
+        }
+
+        public override void OnPlayerLeft(VRCPlayerApi player)
+        {
+            if(Networking.IsOwner(gameObject))
+            {
+                _allowMasterControl = false;
+            }
+            uiController.SendCustomEvent(updateUiEventName);
+        }
+
 
         public void SetUseMasterControls(bool use)
         {

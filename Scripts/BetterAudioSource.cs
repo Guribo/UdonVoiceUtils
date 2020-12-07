@@ -186,22 +186,22 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             if (!betterAudioPool)
             {
-                Debug.LogError("betterAudioPool invalid", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] betterAudioPool invalid", this);
             }
 
             if (occlusionLayers == 0)
             {
-                Debug.LogWarning("No occlusion collision layer set, audio occlusion won't work", this);
+                Debug.LogWarning("[<color=#008000>BetterAudio</color>] No occlusion collision layer set, audio occlusion won't work", this);
             }
 
             if (useSonicBoom && !sonicBoom)
             {
-                Debug.LogError("Use Sonic boom is ticked but no better audio source is set", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] Use Sonic boom is ticked but no better audio source is set", this);
             }
 
             if (useSonicBoom && !followTarget)
             {
-                Debug.LogError("In order for sonic booms to be triggered a follow target must be set as well", this);
+                Debug.LogError("[<color=#008000>BetterAudio</color>] In order for sonic booms to be triggered a follow target must be set as well", this);
             }
 
             minOcclusionCheckDistance = Mathf.Max(minOcclusionCheckDistance, 0f);
@@ -209,14 +209,14 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void OnEnable()
         {
-            Debug.Log("OnEnable");
+            Debug.Log("[<color=#008000>BetterAudio</color>] OnEnable");
             if (_enabled)
             {
                 return;
             }
 
             _enabled = true;
-            Debug.Log("BetterSoundSource.OnEnable");
+            Debug.Log("[<color=#008000>BetterAudio</color>] BetterSoundSource.OnEnable");
 
             if (!_proxyAudioSource)
             {
@@ -227,7 +227,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (!betterAudioPool && _listener != null)
             {
-                Debug.LogError("BetterAudioSource has no BetterAudioPool assigned");
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource has no BetterAudioPool assigned");
                 gameObject.SetActive(false);
                 return;
             }
@@ -251,7 +251,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                     && isNotPaused
                     && isNotPendingSonicBoom)
                 {
-                    Debug.Log($"BetterAudioSource.FixedUpdate: nothing to do");
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] BetterAudioSource.FixedUpdate: nothing to do");
                     Stop();
                     return;
                 }
@@ -369,7 +369,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 }
 
 
-                // Debug.Log($"{_isPendingPlay} {_lifeTime} {_playStartTime} {unclampedAudioDelay}");
+                // Debug.Log($"[<color=#008000>BetterAudio</color>] {_isPendingPlay} {_lifeTime} {_playStartTime} {unclampedAudioDelay}");
 
 
                 float audibleSoundDistance;
@@ -597,14 +597,14 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void OnDisable()
         {
-            Debug.Log("OnDisable");
+            Debug.Log("[<color=#008000>BetterAudio</color>] OnDisable");
             if (!_enabled)
             {
                 return;
             }
 
             _enabled = false;
-            Debug.Log("BetterSoundSource.OnDisable");
+            Debug.Log("[<color=#008000>BetterAudio</color>] BetterSoundSource.OnDisable");
 
             if (IsPlaying())
             {
@@ -625,14 +625,14 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void OnDestroy()
         {
-            Debug.Log("OnDestroy");
+            Debug.Log("[<color=#008000>BetterAudio</color>] OnDestroy");
             if (_isDestroyed)
             {
                 return;
             }
 
             _isDestroyed = true;
-            Debug.Log("BetterSoundSource.OnDestroy");
+            Debug.Log("[<color=#008000>BetterAudio</color>] BetterSoundSource.OnDestroy");
 
             OnDisable();
         }
@@ -641,12 +641,12 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void Play(bool delayUsingSpeedOfSound)
         {
-            Debug.Log("BetterSoundSource.Play");
+            Debug.Log("[<color=#008000>BetterAudio</color>] BetterSoundSource.Play");
             if (!betterAudioPool)
             {
                 if (_listener != null)
                 {
-                    Debug.LogError("BetterAudioSource has no BetterAudioPool assigned");
+                    Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource has no BetterAudioPool assigned");
                     gameObject.SetActive(false);
                 }
 
@@ -658,7 +658,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 var audioSourceInstance = betterAudioPool.GetAudioSourceInstance(this);
                 if (!audioSourceInstance)
                 {
-                    Debug.LogError("BetterAudioSource.Play: received invalid audio source instance");
+                    Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource.Play: received invalid audio source instance");
                     return;
                 }
 
@@ -667,7 +667,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _actualAudioSource = go.GetComponent<AudioSource>();
                 if (!_actualAudioSource)
                 {
-                    Debug.LogError("BetterAudioSource.Play: received audio source instance is missing an AudioSource");
+                    Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource.Play: received audio source instance is missing an AudioSource");
                     return;
                 }
 
@@ -726,7 +726,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void Pause()
         {
-            Debug.Log("Pause");
+            Debug.Log("[<color=#008000>BetterAudio</color>] Pause");
             if (_actualAudioSource)
             {
                 _actualAudioSource.Pause();
@@ -739,7 +739,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void Stop()
         {
-            Debug.Log("BetterSoundSource.Stop");
+            Debug.Log("[<color=#008000>BetterAudio</color>] BetterSoundSource.Stop");
             if (_actualAudioSource)
             {
                 _actualAudioSource.Stop();
@@ -753,7 +753,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public AudioClip GetAudioClip()
         {
-            Debug.Log("GetAudioClip");
+            Debug.Log("[<color=#008000>BetterAudio</color>] GetAudioClip");
             if (_actualAudioSource)
             {
                 return _actualAudioSource.clip;
@@ -923,32 +923,32 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
         {
-            Debug.Log($"OnPlayerTriggerEnter {player}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerEnter {player}");
         }
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
         {
-            Debug.Log($"OnPlayerTriggerExit {player}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerExit {player}");
         }
 
         public override void OnPlayerTriggerStay(VRCPlayerApi player)
         {
-            Debug.Log($"OnPlayerTriggerStay {player}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerStay {player}");
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"OnTriggerEnter {other}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerEnter {other}");
         }
 
         private void OnTriggerExit(Collider other)
         {
-            Debug.Log($"OnTriggerExit {other}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerExit {other}");
         }
 
         private void OnTriggerStay(Collider other)
         {
-            // Debug.Log($"OnTriggerStay {other}");
+            // Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerStay {other}");
             if (!other) return;
             if (!_actualAudioSource) return;
             if (!_proxyAudioSource) return;
@@ -956,7 +956,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             if (!_audioReverbFilter) return;
 
             var penetration = CalculateReverbZonePenetration(other);
-            // Debug.Log($"Penetration = {penetration}");
+            // Debug.Log($"[<color=#008000>BetterAudio</color>] Penetration = {penetration}");
 
             var audioReverbFilterProxy = other.gameObject.GetComponent<AudioReverbFilter>();
             if (audioReverbFilterProxy)
