@@ -12,6 +12,17 @@ namespace Guribo.UdonBetterAudio.Scripts
         private UdonBehaviour uiController;
 
         /// <summary>
+        /// How many player updates should be performed every second (framerate independent). Example: with 60 players
+        /// in the world and playerUpdateRate = 20 it will take 60/20 = 3 seconds until every player got updated.
+        /// If set to -1 it will update ALL PLAYERS EVERY FRAME (don't use this option in worlds with up to
+        /// 80 people as this can potentially have a serious performance impact!)
+        /// </summary>
+        [Tooltip(
+            "How many player updates should be performed every second (framerate independent). Example: with 60 players in the world and playerUpdateRate = 20 it will take 60/20 = 3 seconds until every player got updated.")]
+        [SerializeField]
+        protected int playerUpdateRate = 60;
+
+        /// <summary>
         /// The name of the function in the UI controller script that should be called when the master control
         /// is enabled and the master changed any value
         /// </summary>
@@ -21,9 +32,13 @@ namespace Guribo.UdonBetterAudio.Scripts
         private string updateUiEventName = "UpdateUi";
 
         /// <summary>
-        /// Default layer: 11 (Environment)
+        /// Layers which can reduce voice and avatar sound effects when they are in between the local player (listener)
+        /// and the player/avatar producing the sound
+        /// Default layers: 11 and 5 (Environment and UI which includes the capsule colliders of other players)
         /// </summary>
-        public LayerMask occlusionMask = 1 << 11;
+        [Tooltip(
+            "Objects on these layers reduce the voice/avatar sound volume when they are in-between the local player and the player/avatar that produces the sound")]
+        public LayerMask occlusionMask = 1 << 11 | 1 << 5;
 
         #region default values for resetting
 
@@ -280,7 +295,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         private int _playerIndex = 0;
         private int _playerCount;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
-        private readonly RaycastHit[] _rayHits = new RaycastHit[1];
+        private readonly RaycastHit[] _rayHits = new RaycastHit[2];
 
         #region Unity Lifecycle
 
@@ -291,34 +306,59 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private void LateUpdate()
         {
-            UpdatePlayerList();
-            if (_playerCount < 2) return;
-            _playerIndex = (_playerIndex + 1) % _playerCount;
-
-            var vrcPlayerApi = _players[_playerIndex];
-            if (vrcPlayerApi == null) return;
-
             // skip local player
             var localPlayer = Networking.LocalPlayer;
-            if (localPlayer == null || vrcPlayerApi.playerId == localPlayer.playerId) return;
+            if (localPlayer == null) return;
 
-            var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-            var otherPlayerHead = vrcPlayerApi.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
+            UpdatePlayerList();
+            if (_playerCount < 2) return;
 
-            var listenerToPlayer = (otherPlayerHead.position - listenerHead.position);
-            var direction = listenerToPlayer.normalized;
-            var distance = listenerToPlayer.magnitude;
+            var pendingPlayerUpdates = GetPendingPlayerUpdates();
+            for (int playerUpdate = 0; playerUpdate < pendingPlayerUpdates; ++playerUpdate)
+            {
+                _playerIndex = (_playerIndex + 1) % _playerCount;
 
-            var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance, OcclusionFactor);
-            var directionality = CalculateDirectionality(listenerHead.rotation, otherPlayerHead.rotation, direction);
+                var vrcPlayerApi = _players[_playerIndex];
+                if (vrcPlayerApi == null || vrcPlayerApi.playerId == localPlayer.playerId)
+                {
+                    continue;
+                }
 
-            var distanceReduction = directionality * occlusionFactor;
-            var voiceDistanceFactor =
-                CalculateRangeReduction(distance, distanceReduction, TargetVoiceDistanceFar);
-            UpdateVoiceAudio(vrcPlayerApi, voiceDistanceFactor);
+                var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
+                var otherPlayerHead = vrcPlayerApi.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
-            var avatarDistanceFactor = CalculateRangeReduction(distance, distanceReduction, TargetAvatarFarRadius);
-            UpdateAvatarAudio(vrcPlayerApi, avatarDistanceFactor);
+                var listenerToPlayer = (otherPlayerHead.position - listenerHead.position);
+                var direction = listenerToPlayer.normalized;
+                var distance = listenerToPlayer.magnitude;
+
+                var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance, OcclusionFactor);
+                var directionality =
+                    CalculateDirectionality(listenerHead.rotation, otherPlayerHead.rotation, direction);
+
+                var distanceReduction = directionality * occlusionFactor;
+                var voiceDistanceFactor =
+                    CalculateRangeReduction(distance, distanceReduction, TargetVoiceDistanceFar);
+                UpdateVoiceAudio(vrcPlayerApi, voiceDistanceFactor);
+
+                var avatarDistanceFactor = CalculateRangeReduction(distance, distanceReduction, TargetAvatarFarRadius);
+                UpdateAvatarAudio(vrcPlayerApi, avatarDistanceFactor);
+            }
+        }
+
+        private int GetPendingPlayerUpdates()
+        {
+            if (playerUpdateRate == -1)
+            {
+                // this will update all players every update
+                return _playerCount;
+            }
+
+            // calculate how many players need to be updated during this update to perform the requested updates
+            // every second
+            var pendingUpdates = Mathf.FloorToInt(playerUpdateRate * Time.deltaTime);
+
+            // make sure at least one player gets updated and no player gets updated twice
+            return Mathf.Clamp(pendingUpdates, 1, _playerCount);
         }
 
         #endregion
@@ -403,7 +443,9 @@ namespace Guribo.UdonBetterAudio.Scripts
                 distance,
                 occlusionMask);
 
-            return hits > 0 ? OcclusionFactor : 1f;
+            // it is always supposed to hit the other player so at least 1 hit is expected, more then 1 hit indicates
+            // the ray hit another player first or hit the environment (when using the default occlusionMask)
+            return hits > 1 ? OcclusionFactor : 1f;
         }
 
         private void UpdateVoiceAudio(VRCPlayerApi vrcPlayerApi, float distanceFactor)
@@ -442,13 +484,14 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             return _isReallyOwner;
         }
-        
+
         public override void OnDeserialization()
         {
             if (_isReallyOwner)
             {
                 Debug.Log("[<color=#008000>BetterAudio</color>] Taking real ownership away as data is received");
             }
+
             _isReallyOwner = false;
             UseMasterValues();
         }
@@ -476,7 +519,8 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
             else
             {
-                Debug.LogWarning("[<color=#008000>BetterAudio</color>] Is not really owner but tries to serialize data");
+                Debug.LogWarning(
+                    "[<color=#008000>BetterAudio</color>] Is not really owner but tries to serialize data");
             }
         }
 
@@ -488,10 +532,11 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public override void OnPlayerLeft(VRCPlayerApi player)
         {
-            if(Networking.IsOwner(gameObject))
+            if (Networking.IsOwner(gameObject))
             {
                 _allowMasterControl = false;
             }
+
             uiController.SendCustomEvent(updateUiEventName);
         }
 
