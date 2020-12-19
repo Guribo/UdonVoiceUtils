@@ -8,6 +8,13 @@ namespace Guribo.UdonBetterAudio.Scripts
 {
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
+        #region Constants
+
+        private const int EnvironmentLayerMask = 1 << 11;
+        private const int UILayerMask = 1 << 5;
+
+        #endregion
+
         [Header("General Settings")] [SerializeField]
         private UdonBehaviour uiController;
 
@@ -38,7 +45,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// </summary>
         [Tooltip(
             "Objects on these layers reduce the voice/avatar sound volume when they are in-between the local player and the player/avatar that produces the sound")]
-        public LayerMask occlusionMask = 1 << 11 | 1 << 5;
+        public LayerMask occlusionMask = EnvironmentLayerMask | UILayerMask;
 
         #region default values for resetting
 
@@ -295,6 +302,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         private int _playerIndex = 0;
         private int _playerCount;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
+        private int[] _playersToIgnore = null;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
 
         #region Unity Lifecycle
@@ -319,10 +327,13 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _playerIndex = (_playerIndex + 1) % _playerCount;
 
                 var vrcPlayerApi = _players[_playerIndex];
-                if (vrcPlayerApi == null || vrcPlayerApi.playerId == localPlayer.playerId)
+                if (vrcPlayerApi == null
+                    || vrcPlayerApi.playerId == localPlayer.playerId
+                    || PlayerIsIgnored(vrcPlayerApi))
                 {
                     continue;
                 }
+
 
                 var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
                 var otherPlayerHead = vrcPlayerApi.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
@@ -343,6 +354,20 @@ namespace Guribo.UdonBetterAudio.Scripts
                 var avatarDistanceFactor = CalculateRangeReduction(distance, distanceReduction, TargetAvatarFarRadius);
                 UpdateAvatarAudio(vrcPlayerApi, avatarDistanceFactor);
             }
+        }
+
+        private bool PlayerIsIgnored(VRCPlayerApi vrcPlayerApi)
+        {
+            if (_playersToIgnore == null) return false;
+            // TODO do binary search here
+            // I assume not more then a handful of players are ignored at once so a regular search might be faster for
+            // now until Array.BinarySearch is whitelisted
+            foreach (var i in _playersToIgnore)
+            {
+                if (i == vrcPlayerApi.playerId) return true;
+            }
+
+            return false;
         }
 
         private int GetPendingPlayerUpdates()
@@ -443,9 +468,16 @@ namespace Guribo.UdonBetterAudio.Scripts
                 distance,
                 occlusionMask);
 
-            // it is always supposed to hit the other player so at least 1 hit is expected, more then 1 hit indicates
-            // the ray hit another player first or hit the environment (when using the default occlusionMask)
-            return hits > 1 ? OcclusionFactor : 1f;
+            // if the UI layer is used for occlusion (UI layer contains the player capsules) allow at least one hit
+            var uiLayerInUse = (occlusionMask | UILayerMask) > 0;
+            if (uiLayerInUse)
+            {
+                // it is always supposed to hit the other player so at least 1 hit is expected, more then 1 hit indicates
+                // the ray hit another player first or hit the environment (when using the default occlusionMask)
+                return hits > 1 ? OcclusionFactor : 1f;
+            }
+
+            return hits > 0 ? OcclusionFactor : 1f;
         }
 
         private void UpdateVoiceAudio(VRCPlayerApi vrcPlayerApi, float distanceFactor)
@@ -579,6 +611,155 @@ namespace Guribo.UdonBetterAudio.Scripts
                 TargetAvatarVolumetricRadius = masterTargetAvatarVolumetricRadius;
 
                 uiController.SendCustomEvent(updateUiEventName);
+            }
+        }
+
+        /// <summary>
+        /// Add a player that shall not be affected by any effect of this script. Upon adding the player
+        /// all values of the player will be set to the currently defined values on this script.
+        /// Occlusion and directionality effects are reverted if the player was affected.
+        /// Multiple calls have no further effect.
+        /// Providing an invalid player has no effect.
+        /// The ignored players are internally kept in a sorted array (ascending by player id) which is cleaned up every
+        /// time a player is successfully added or removed.
+        /// This function is local only.
+        /// </summary>
+        /// <param name="playerToIgnore"></param>
+        public void IgnorePlayer(VRCPlayerApi playerToIgnore)
+        {
+            // validate the player
+            if (playerToIgnore == null)
+            {
+                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterPlayerAudio.IgnorePlayer: invalid argument");
+                return;
+            }
+
+            var vrcPlayerApi = VRCPlayerApi.GetPlayerById(playerToIgnore.playerId);
+            if (vrcPlayerApi == null)
+            {
+                Debug.LogError(
+                    $"[<color=#008000>BetterAudio</color>] BetterPlayerAudio.IgnorePlayer: player {playerToIgnore} doesn't exist");
+                return;
+            }
+
+            var noPlayerIgnoredYet = _playersToIgnore == null || _playersToIgnore.Length < 1;
+            if (noPlayerIgnoredYet)
+            {
+                // simply add the player and return
+                _playersToIgnore = new[] {vrcPlayerApi.playerId};
+                return;
+            }
+
+            // make sure all contained players are still alive, otherwise remove them
+            var validPlayers = 0;
+            var stillValidIgnoredPlayers = new int[_playersToIgnore.Length];
+            var playerAdded = false;
+
+            foreach (var playerId in _playersToIgnore)
+            {
+                if (VRCPlayerApi.GetPlayerById(playerId) == null)
+                {
+                    continue;
+                }
+
+                // keep all valid players
+                stillValidIgnoredPlayers[validPlayers] = playerId;
+                ++validPlayers;
+
+                // keep track if the player is already in the array while validating all players in the array
+                var playerIsAlreadyIgnored = playerId == vrcPlayerApi.playerId;
+                if (playerIsAlreadyIgnored)
+                {
+                    playerAdded = true;
+                    continue;
+                }
+
+                // insert the new player at the current position if the insert position is found
+                var insertPositionFound = playerId < vrcPlayerApi.playerId && !playerAdded;
+                if (!insertPositionFound)
+                {
+                    continue;
+                }
+
+                var longerStillValidIgnoredPlayers = new int[stillValidIgnoredPlayers.Length + 1];
+                stillValidIgnoredPlayers.CopyTo(longerStillValidIgnoredPlayers, 0);
+                stillValidIgnoredPlayers = longerStillValidIgnoredPlayers;
+                stillValidIgnoredPlayers[validPlayers] = vrcPlayerApi.playerId;
+                ++validPlayers;
+
+                // unset occlusion values and directionality effects
+                UpdateVoiceAudio(vrcPlayerApi, 1f);
+                UpdateAvatarAudio(vrcPlayerApi, 1f);
+            }
+
+            // shrink the validated array content (happens when ignored players have left the world)
+            // and store it again in the old array
+            _playersToIgnore = new int[validPlayers];
+            for (var i = 0; i < validPlayers; i++)
+            {
+                _playersToIgnore[i] = stillValidIgnoredPlayers[i];
+            }
+        }
+
+        /// <summary>
+        /// Remove a player from the ignore list and let it be affected again by this script.
+        /// The ignored players are internally kept in a sorted array (ascending by player id) which is cleaned up every
+        /// time a player is removed.
+        /// This function is local only.
+        /// </summary>
+        /// <param name="ignoredPlayer"></param>
+        public void UnIgnorePlayer(VRCPlayerApi ignoredPlayer)
+        {
+            // validate the player
+            if (ignoredPlayer == null)
+            {
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] BetterPlayerAudio.UnIgnorePlayer: invalid argument");
+                return;
+            }
+
+            var vrcPlayerApi = VRCPlayerApi.GetPlayerById(ignoredPlayer.playerId);
+            if (vrcPlayerApi == null)
+            {
+                Debug.LogError(
+                    $"[<color=#008000>BetterAudio</color>] BetterPlayerAudio.UnIgnorePlayer: player {ignoredPlayer} doesn't exist");
+                return;
+            }
+
+            if (_playersToIgnore == null || _playersToIgnore.Length < 2)
+            {
+                _playersToIgnore = null;
+                return;
+            }
+
+            // make sure all contained players are still alive, otherwise remove them
+            var validPlayers = 0;
+            var stillValidIgnoredPlayers = new int[_playersToIgnore.Length];
+
+            foreach (var playerId in _playersToIgnore)
+            {
+                if (VRCPlayerApi.GetPlayerById(playerId) == null)
+                {
+                    continue;
+                }
+
+                // keep all valid players
+                stillValidIgnoredPlayers[validPlayers] = playerId;
+                ++validPlayers;
+
+                // decrement the index by one again if the player id is found
+                if (playerId == vrcPlayerApi.playerId)
+                {
+                    --validPlayers;
+                }
+            }
+
+            // shrink the validated array content (happens when ignored players have left the world)
+            // and store it again in the old array
+            _playersToIgnore = new int[validPlayers];
+            for (var i = 0; i < validPlayers; i++)
+            {
+                _playersToIgnore[i] = stillValidIgnoredPlayers[i];
             }
         }
     }
