@@ -63,7 +63,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
-        public float defaultOcclusionFactor = 0.5f;
+        public float defaultOcclusionFactor = 0.7f;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -73,7 +73,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
-        public float defaultListenerDirectionality = 0.75f;
+        public float defaultListenerDirectionality = 0.5f;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -83,7 +83,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
-        public float defaultPlayerDirectionality = 0.5f;
+        public float defaultPlayerDirectionality = 0.3f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
@@ -96,16 +96,16 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1000000)] public float defaultVoiceDistanceNear;
 
         /// <summary>
-        /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-distance-far</remarks>
+        /// <remarks>https://docs.vrchat.com/docs/playewar-audio#set-voice-distance-far</remarks>
         /// </summary>
-        [Range(0, 1000000)] public float defaultVoiceDistanceFar = 50f;
+        [Range(0, 1000000)] public float defaultVoiceDistanceFar = 25f;
 
         /// <summary>
         /// Default is 15. In my experience this may lead to clipping when being close to someone with a loud microphone.
         /// My recommendation is to use 0 instead.
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-gain</remarks>
         /// </summary>
-        [Range(0, 24)] public float defaultVoiceGain = 10f;
+        [Range(0, 24)] public float defaultVoiceGain = 15f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-volumetric-radius</remarks>
