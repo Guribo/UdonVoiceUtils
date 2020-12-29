@@ -53,7 +53,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// When enabled the master can change the settings of all players
         /// </summary>
         [Tooltip("When enabled the master can change the settings of all players")]
-        public bool defaultAllowMasterControl = false;
+        public bool defaultAllowMasterControl;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -63,7 +63,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
-        public float defaultOcclusionFactor = 0.5f;
+        public float defaultOcclusionFactor = 0.7f;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -73,7 +73,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
-        public float defaultListenerDirectionality = 0.75f;
+        public float defaultListenerDirectionality = 0.5f;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -83,7 +83,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
-        public float defaultPlayerDirectionality = 0.5f;
+        public float defaultPlayerDirectionality = 0.3f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
@@ -93,29 +93,29 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-distance-near</remarks>
         /// </summary>
-        [Range(0, 1000000)] public float defaultVoiceDistanceNear = 0f;
+        [Range(0, 1000000)] public float defaultVoiceDistanceNear;
 
         /// <summary>
-        /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-distance-far</remarks>
+        /// <remarks>https://docs.vrchat.com/docs/playewar-audio#set-voice-distance-far</remarks>
         /// </summary>
-        [Range(0, 1000000)] public float defaultVoiceDistanceFar = 100f;
+        [Range(0, 1000000)] public float defaultVoiceDistanceFar = 25f;
 
         /// <summary>
         /// Default is 15. In my experience this may lead to clipping when being close to someone with a loud microphone.
         /// My recommendation is to use 0 instead.
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-gain</remarks>
         /// </summary>
-        [Range(0, 24)] public float defaultVoiceGain = 0f;
+        [Range(0, 24)] public float defaultVoiceGain = 15f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-volumetric-radius</remarks>
         /// </summary>
-        [Range(0, 1000)] public float defaultVoiceVolumetricRadius = 0f;
+        [Range(0, 1000)] public float defaultVoiceVolumetricRadius;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudioforcespatial</remarks>
         /// </summary>
-        [Header("Avatar Settings")] public bool defaultForceAvatarSpatialAudio = false;
+        [Header("Avatar Settings")] public bool defaultForceAvatarSpatialAudio;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiocustomcurve</remarks>
@@ -135,12 +135,12 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiogain</remarks>
         /// </summary>
-        [Range(0, 10)] public float defaultAvatarGain = 0f;
+        [Range(0, 10)] public float defaultAvatarGain;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiovolumetricradius</remarks>
         /// </summary>
-        public float defaultAvatarVolumetricRadius = 0f;
+        public float defaultAvatarVolumetricRadius;
 
         #endregion
 
@@ -299,10 +299,9 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private bool _initialized;
         private bool _isReallyOwner;
-        private int _playerIndex = 0;
-        private int _playerCount;
+        private int _playerIndex;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
-        private int[] _playersToIgnore = null;
+        private int[] _playersToIgnore;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
 
         #region Unity Lifecycle
@@ -316,44 +315,61 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             // skip local player
             var localPlayer = Networking.LocalPlayer;
-            if (localPlayer == null) return;
-
-            UpdatePlayerList();
-            if (_playerCount < 2) return;
-
-            var pendingPlayerUpdates = GetPendingPlayerUpdates();
-            for (int playerUpdate = 0; playerUpdate < pendingPlayerUpdates; ++playerUpdate)
+            if (localPlayer == null)
             {
-                _playerIndex = (_playerIndex + 1) % _playerCount;
+                return;
+            }
 
-                var vrcPlayerApi = _players[_playerIndex];
-                if (vrcPlayerApi == null
-                    || vrcPlayerApi.playerId == localPlayer.playerId
-                    || PlayerIsIgnored(vrcPlayerApi))
+            var playerCount = UpdatePlayerList();
+            if (playerCount < 2)
+            {
+                return;
+            }
+
+            var pendingPlayerUpdates = GetPendingPlayerUpdates(playerCount);
+            for (var playerUpdate = 0; playerUpdate < pendingPlayerUpdates; ++playerUpdate)
+            {
+                _playerIndex = (_playerIndex + 1) % playerCount;
+                var otherPlayer = _players[_playerIndex];
+                if (otherPlayer == null)
                 {
+                    // this should never be the case!!!
                     continue;
                 }
 
-
-                var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-                var otherPlayerHead = vrcPlayerApi.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-
-                var listenerToPlayer = (otherPlayerHead.position - listenerHead.position);
-                var direction = listenerToPlayer.normalized;
-                var distance = listenerToPlayer.magnitude;
-
-                var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance, OcclusionFactor);
-                var directionality =
-                    CalculateDirectionality(listenerHead.rotation, otherPlayerHead.rotation, direction);
-
-                var distanceReduction = directionality * occlusionFactor;
-                var voiceDistanceFactor =
-                    CalculateRangeReduction(distance, distanceReduction, TargetVoiceDistanceFar);
-                UpdateVoiceAudio(vrcPlayerApi, voiceDistanceFactor);
-
-                var avatarDistanceFactor = CalculateRangeReduction(distance, distanceReduction, TargetAvatarFarRadius);
-                UpdateAvatarAudio(vrcPlayerApi, avatarDistanceFactor);
+                UpdatePlayer(localPlayer, otherPlayer);
             }
+        }
+
+        #endregion
+
+        private void UpdatePlayer(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer)
+        {
+            if (otherPlayer == null
+                || otherPlayer.playerId == localPlayer.playerId
+                || PlayerIsIgnored(otherPlayer))
+            {
+                return;
+            }
+
+            var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
+            var otherPlayerHead = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
+
+            var listenerToPlayer = (otherPlayerHead.position - listenerHead.position);
+            var direction = listenerToPlayer.normalized;
+            var distance = listenerToPlayer.magnitude;
+
+            var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance, OcclusionFactor);
+            var directionality =
+                CalculateDirectionality(listenerHead.rotation, otherPlayerHead.rotation, direction);
+
+            var distanceReduction = directionality * occlusionFactor;
+            var voiceDistanceFactor =
+                CalculateRangeReduction(distance, distanceReduction, TargetVoiceDistanceFar);
+            UpdateVoiceAudio(otherPlayer, voiceDistanceFactor);
+
+            var avatarDistanceFactor = CalculateRangeReduction(distance, distanceReduction, TargetAvatarFarRadius);
+            UpdateAvatarAudio(otherPlayer, avatarDistanceFactor);
         }
 
         private bool PlayerIsIgnored(VRCPlayerApi vrcPlayerApi)
@@ -364,18 +380,21 @@ namespace Guribo.UdonBetterAudio.Scripts
             // now until Array.BinarySearch is whitelisted
             foreach (var i in _playersToIgnore)
             {
-                if (i == vrcPlayerApi.playerId) return true;
+                if (i == vrcPlayerApi.playerId)
+                {
+                    return true;
+                }
             }
 
             return false;
         }
 
-        private int GetPendingPlayerUpdates()
+        private int GetPendingPlayerUpdates(int playerCount)
         {
             if (playerUpdateRate == -1)
             {
                 // this will update all players every update
-                return _playerCount;
+                return playerCount;
             }
 
             // calculate how many players need to be updated during this update to perform the requested updates
@@ -383,10 +402,9 @@ namespace Guribo.UdonBetterAudio.Scripts
             var pendingUpdates = Mathf.FloorToInt(playerUpdateRate * Time.deltaTime);
 
             // make sure at least one player gets updated and no player gets updated twice
-            return Mathf.Clamp(pendingUpdates, 1, _playerCount);
+            return Mathf.Clamp(pendingUpdates, 1, playerCount);
         }
 
-        #endregion
 
         /// <summary>
         /// initializes all runtime variables using the default values.
@@ -501,15 +519,20 @@ namespace Guribo.UdonBetterAudio.Scripts
             vrcPlayerApi.SetAvatarAudioVolumetricRadius(TargetAvatarVolumetricRadius);
         }
 
-        private void UpdatePlayerList()
+        /// <summary>
+        /// updates the player array for iteration
+        /// </summary>
+        /// <returns>current player count which can be less then the player array length</returns>
+        private int UpdatePlayerList()
         {
-            _playerCount = VRCPlayerApi.GetPlayerCount();
-            if (_players == null || _players.Length < _playerCount)
+            var playerCount = VRCPlayerApi.GetPlayerCount();
+            if (_players == null || _players.Length < playerCount)
             {
-                _players = new VRCPlayerApi[_playerCount];
+                _players = new VRCPlayerApi[playerCount];
             }
 
             VRCPlayerApi.GetPlayers(_players);
+            return playerCount;
         }
 
         public bool IsOwner()
@@ -521,11 +544,11 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             if (_isReallyOwner)
             {
-                Debug.Log("[<color=#008000>BetterAudio</color>] Taking real ownership away as data is received");
+                Debug.Log("[<color=#008000>BetterAudio</color>] Taking away ownership as data is received");
+                _isReallyOwner = false;
             }
 
-            _isReallyOwner = false;
-            UseMasterValues();
+            TryUseMasterValues();
         }
 
         public override void OnPreSerialization()
@@ -551,15 +574,18 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
             else
             {
-                Debug.LogWarning(
-                    "[<color=#008000>BetterAudio</color>] Is not really owner but tries to serialize data");
+                Debug.LogWarning("[<color=#008000>BetterAudio</color>] " +
+                                 "Is not really owner but tries to serialize data");
             }
         }
 
         public override void OnOwnershipTransferred()
         {
             _allowMasterControl = false;
-            uiController.SendCustomEvent(updateUiEventName);
+            if (uiController)
+            {
+                uiController.SendCustomEvent(updateUiEventName);
+            }
         }
 
         public override void OnPlayerLeft(VRCPlayerApi player)
@@ -569,16 +595,18 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _allowMasterControl = false;
             }
 
-            uiController.SendCustomEvent(updateUiEventName);
+            if (uiController)
+            {
+                uiController.SendCustomEvent(updateUiEventName);
+            }
         }
-
 
         public void SetUseMasterControls(bool use)
         {
             if (use && !_allowMasterControl)
             {
                 _allowMasterControl = true;
-                UseMasterValues();
+                TryUseMasterValues();
             }
             else
             {
@@ -591,7 +619,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             return _allowMasterControl;
         }
 
-        private void UseMasterValues()
+        private bool TryUseMasterValues()
         {
             if (_allowMasterControl && uiController)
             {
@@ -611,7 +639,10 @@ namespace Guribo.UdonBetterAudio.Scripts
                 TargetAvatarVolumetricRadius = masterTargetAvatarVolumetricRadius;
 
                 uiController.SendCustomEvent(updateUiEventName);
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
@@ -630,7 +661,8 @@ namespace Guribo.UdonBetterAudio.Scripts
             // validate the player
             if (playerToIgnore == null)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterPlayerAudio.IgnorePlayer: invalid argument");
+                Debug.LogError("[<color=#008000>BetterAudio</color>] " +
+                               "BetterPlayerAudio.IgnorePlayer: invalid argument");
                 return;
             }
 
@@ -713,16 +745,16 @@ namespace Guribo.UdonBetterAudio.Scripts
             // validate the player
             if (ignoredPlayer == null)
             {
-                Debug.LogError(
-                    "[<color=#008000>BetterAudio</color>] BetterPlayerAudio.UnIgnorePlayer: invalid argument");
+                Debug.LogError("[<color=#008000>BetterAudio</color>] " +
+                               "BetterPlayerAudio.UnIgnorePlayer: invalid argument");
                 return;
             }
 
             var vrcPlayerApi = VRCPlayerApi.GetPlayerById(ignoredPlayer.playerId);
             if (vrcPlayerApi == null)
             {
-                Debug.LogError(
-                    $"[<color=#008000>BetterAudio</color>] BetterPlayerAudio.UnIgnorePlayer: player {ignoredPlayer} doesn't exist");
+                Debug.LogError($"[<color=#008000>BetterAudio</color>] " +
+                               $"BetterPlayerAudio.UnIgnorePlayer: player {ignoredPlayer} doesn't exist");
                 return;
             }
 
