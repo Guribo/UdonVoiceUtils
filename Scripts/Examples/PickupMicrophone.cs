@@ -92,7 +92,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// </summary>
         private void CleanUpOldUser(int oldUser)
         {
-            if (playerAudio == null)
+            if (!playerAudio)
             {
                 Debug.LogError("PickupMicrophone.CleanUpOldUser: playerAudio is invalid");
                 return;
@@ -115,7 +115,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// </summary>
         private void NewUserStartUsingMic(int newUser)
         {
-            if (playerAudio == null)
+            if (!playerAudio)
             {
                 Debug.LogError("PickupMicrophone.CleanUpOldUser: playerAudio is invalid");
                 return;

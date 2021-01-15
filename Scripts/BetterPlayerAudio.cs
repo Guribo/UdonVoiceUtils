@@ -67,6 +67,17 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         /// <summary>
         /// Range 0.0 to 1.0.
+        /// Occlusion when a player is occluded by another player.
+        /// A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the
+        /// voice/player to the current distance and make him/her/them in-audible
+        /// </summary>
+        [Range(0, 1)]
+        [Tooltip(
+            "Occlusion when a player is occluded by another player. A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
+        public float defaultPlayerOcclusionFactor = 0.85f;
+
+        /// <summary>
+        /// Range 0.0 to 1.0.
         /// A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar
         /// and thus making them more quiet.
         /// </summary>
@@ -157,6 +168,11 @@ namespace Guribo.UdonBetterAudio.Scripts
         [NonSerialized] public float OcclusionFactor;
 
         /// <summary>
+        /// <inheritdoc cref="defaultPlayerOcclusionFactor"/>
+        /// </summary>
+        [NonSerialized] public float PlayerOcclusionFactor;
+
+        /// <summary>
         /// <inheritdoc cref="defaultListenerDirectionality"/>
         /// </summary>
         [NonSerialized] public float ListenerDirectionality;
@@ -229,6 +245,11 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <inheritdoc cref="defaultOcclusionFactor"/>
         /// </summary>
         [UdonSynced] [HideInInspector] public float masterOcclusionFactor;
+
+        /// <summary>
+        /// <inheritdoc cref="defaultPlayerOcclusionFactor"/>
+        /// </summary>
+        [UdonSynced] [HideInInspector] public float masterPlayerOcclusionFactor;
 
         /// <summary>
         /// <inheritdoc cref="defaultListenerDirectionality"/>
@@ -359,7 +380,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             var direction = listenerToPlayer.normalized;
             var distance = listenerToPlayer.magnitude;
 
-            var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance, OcclusionFactor);
+            var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance);
             var directionality =
                 CalculateDirectionality(listenerHead.rotation, otherPlayerHead.rotation, direction);
 
@@ -423,6 +444,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         public void ResetToDefault()
         {
             OcclusionFactor = defaultOcclusionFactor;
+            PlayerOcclusionFactor = defaultPlayerOcclusionFactor;
             ListenerDirectionality = defaultListenerDirectionality;
             PlayerDirectionality = defaultPlayerDirectionality;
             EnableVoiceLowpass = defaultEnableVoiceLowpass;
@@ -472,9 +494,11 @@ namespace Guribo.UdonBetterAudio.Scripts
                    Mathf.Clamp01(dotSource + (1 - PlayerDirectionality));
         }
 
-        private float CalculateOcclusion(Vector3 listenerHead, Vector3 direction, float distance, float occlusionFactor)
+        private float CalculateOcclusion(Vector3 listenerHead, Vector3 direction, float distance)
         {
-            if (Mathf.Abs(occlusionFactor - 1f) < 0.01f)
+            var occlusionIsOff = Mathf.Abs(OcclusionFactor - 1f) < 0.01f
+                                 && Mathf.Abs(PlayerOcclusionFactor - 1f) < 0.01f;
+            if (occlusionIsOff)
             {
                 // don't waste time ray casting when it doesn't have any effect
                 return 1f;
@@ -485,17 +509,55 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _rayHits,
                 distance,
                 occlusionMask);
-
-            // if the UI layer is used for occlusion (UI layer contains the player capsules) allow at least one hit
-            var uiLayerInUse = (occlusionMask | UILayerMask) > 0;
-            if (uiLayerInUse)
+            if (hits == 0)
             {
-                // it is always supposed to hit the other player so at least 1 hit is expected, more then 1 hit indicates
-                // the ray hit another player first or hit the environment (when using the default occlusionMask)
-                return hits > 1 ? OcclusionFactor : 1f;
+                // nothing to do
+                return 1f;
             }
 
-            return hits > 0 ? OcclusionFactor : 1f;
+            // if the UI layer is used for occlusion (UI layer contains the player capsules) allow at least one hit
+            var playersCanOcclude = (occlusionMask | UILayerMask) > 0;
+            if (!playersCanOcclude)
+            {
+                // result when players can't occlude other players
+                return hits > 0 ? OcclusionFactor : 1f;
+            }
+
+            if (hits < 2)
+            {
+                // sometimes the other player's head leaves it's own UI player capsule which causes
+                // the number of hits to go down by 1
+                // or there was no environment hit while the player UI capsule was hit
+
+                // check how far away the hit is from the player and if it is above a certain threshold
+                // assume an object occludes the player (threshold is 1m for now)
+                // TODO find a solution that also works for bigger avatars for which the radius of the capsule can exceed 1m
+                var minOcclusionTriggerDistance = distance - 1f;
+                var occlusionTriggered = _rayHits[0].distance < minOcclusionTriggerDistance;
+                if (!occlusionTriggered)
+                {
+                    return 1f;
+                }
+
+                // if the transform of the hit is not null (due to filtering of player objects by UDON)
+                // then the environment got hit and we use regular occlusion values
+                return _rayHits[0].transform ? OcclusionFactor : PlayerOcclusionFactor;
+            }
+
+            // more then 1 hit indicates the ray hit another player first or hit the environment
+            // _rayHits contains 2 valid hits now (not ordered by distance!!!
+            // see https://docs.unity3d.com/ScriptReference/Physics.RaycastNonAlloc.html)
+
+            // if in both of the hits the transform is now null (due to filtering of player objects by UDON)
+            // this indicates that another player occluded the emitting player we ray casted to.
+            var anotherPlayerOccludes = !_rayHits[0].transform && !_rayHits[1].transform;
+            if (anotherPlayerOccludes)
+            {
+                return PlayerOcclusionFactor;
+            }
+
+            // just return the occlusion factor for everything else
+            return OcclusionFactor;
         }
 
         private void UpdateVoiceAudio(VRCPlayerApi vrcPlayerApi, float distanceFactor)
@@ -558,6 +620,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _isReallyOwner = true;
 
                 masterOcclusionFactor = OcclusionFactor;
+                masterPlayerOcclusionFactor = PlayerOcclusionFactor;
                 masterListenerDirectionality = ListenerDirectionality;
                 masterPlayerDirectionality = PlayerDirectionality;
                 masterEnableVoiceLowpass = EnableVoiceLowpass;
@@ -624,6 +687,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             if (_allowMasterControl && uiController)
             {
                 OcclusionFactor = masterOcclusionFactor;
+                PlayerOcclusionFactor = masterPlayerOcclusionFactor;
                 ListenerDirectionality = masterListenerDirectionality;
                 PlayerDirectionality = masterPlayerDirectionality;
                 EnableVoiceLowpass = masterEnableVoiceLowpass;
