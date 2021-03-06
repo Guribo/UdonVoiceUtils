@@ -5,6 +5,7 @@ using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Scripts.Examples
 {
+    [DefaultExecutionOrder(10000)]
     public class PickupMicrophone : UdonSharpBehaviour
     {
         protected const int NoUser = -1;
@@ -20,7 +21,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         public override void OnPickup()
         {
             var localPlayer = Networking.LocalPlayer;
-            if (localPlayer == null)
+            if (!Utilities.IsValid(localPlayer))
             {
                 return;
             }
@@ -80,19 +81,24 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// <param name="force"></param>
         private void TakeOwnership(VRCPlayerApi localPlayer, bool force)
         {
+            if (!Utilities.IsValid(localPlayer))
+            {
+                Debug.LogWarning("PickupMicrophone.TakeOwnership: Invalid local player", this);
+                return;
+            }
+            
             if (force || !Networking.IsOwner(localPlayer, gameObject))
             {
                 Networking.SetOwner(localPlayer, gameObject);
             }
         }
 
-
         /// <summary>
         /// if the mic is still held by the given user let that person no longer be affected by the mic
         /// </summary>
         private void CleanUpOldUser(int oldUser)
         {
-            if (!playerAudio)
+            if (!Utilities.IsValid(playerAudio))
             {
                 Debug.LogError("PickupMicrophone.CleanUpOldUser: playerAudio is invalid");
                 return;
@@ -104,7 +110,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             }
 
             var currentMicUser = VRCPlayerApi.GetPlayerById(oldUser);
-            if (currentMicUser != null)
+            if (Utilities.IsValid(currentMicUser))
             {
                 playerAudio.UnIgnorePlayer(currentMicUser);
             }
@@ -115,7 +121,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// </summary>
         private void NewUserStartUsingMic(int newUser)
         {
-            if (!playerAudio)
+            if (!Utilities.IsValid(playerAudio))
             {
                 Debug.LogError("PickupMicrophone.CleanUpOldUser: playerAudio is invalid");
                 return;
@@ -127,7 +133,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             }
 
             var newMicUser = VRCPlayerApi.GetPlayerById(newUser);
-            if (newMicUser == null)
+            if (!Utilities.IsValid(newMicUser))
             {
                 return;
             }

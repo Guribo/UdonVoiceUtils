@@ -148,7 +148,7 @@ MonoBehaviour:
   allowManipulationWhenEquipped: 1
   orientation: 0
   AutoHold: 0
-  InteractionText: Pickup to use
+  InteractionText: Pickup to speak to everyone
   UseText: 
   useEventBroadcastType: 0
   UseDownEventName: 

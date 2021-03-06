@@ -1,4 +1,5 @@
 ﻿using System;
+using Guribo.UdonUtils.Scripts.Testing;
 using UdonSharp;
 using UnityEngine;
 
@@ -8,24 +9,29 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
     {
         #region DO NOT EDIT
 
-        [HideInInspector] public BetterAudioTestController betterAudioTestController;
+        [HideInInspector] public TestController testController;
 
         public void Initialize()
         {
-            if (!betterAudioTestController)
+            if (!testController)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Initialize: invalid test controller", this);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Initialize: invalid test controller",
+                    this);
                 return;
             }
+
             Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Initialize", this);
             InitializeTest();
         }
 
         public void Run()
         {
-            if (!betterAudioTestController)
+            if (!testController)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Run: invalid test controller", this);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Run: invalid test controller",
+                    this);
                 return;
             }
 
@@ -35,16 +41,20 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
 
         public void CleanUp()
         {
-            if (!betterAudioTestController)
+            if (!testController)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.CleanUp: invalid test controller", this);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.CleanUp: invalid test controller",
+                    this);
                 return;
             }
+
             Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.CleanUp", this);
             CleanUpTest();
         }
 
         #endregion
+
         #region EDIT HERE
 
         [SerializeField] private BetterAudioSource betterAudioSource;
@@ -59,36 +69,29 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
         {
             if (!betterAudioSource)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Invalid better audio source", this);
-                betterAudioTestController.TestInitialized(false);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Invalid better audio source",
+                    this);
+                testController.TestInitialized(false);
                 return;
             }
 
             if (!betterAudioSource.gameObject.activeInHierarchy)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source must be active in the scene", this);
-                betterAudioTestController.TestInitialized(false);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source must be active in the scene",
+                    this);
+                testController.TestInitialized(false);
                 return;
             }
 
-            if (!betterAudioSource.playOnEnable)
-            {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source must have play on enable set to true", this);
-                betterAudioTestController.TestInitialized(false);
-                return;
-            }
-
-            if (betterAudioSource.playDelayedAccordingToDistance)
-            {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source must have playDelayedAccordingToDistance set to false", this);
-                betterAudioTestController.TestInitialized(false);
-                return;
-            }
+            betterAudioSource.playOnEnable = true;
+            betterAudioSource.playDelayedAccordingToDistance = false;
 
             _pendingCheck = false;
             _secondPass = false;
 
-            betterAudioTestController.TestInitialized(true);
+            testController.TestInitialized(true);
         }
 
         private void RunTest()
@@ -96,76 +99,92 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
             var proxyAudioSource = betterAudioSource.GetAudioSourceProxy();
             if (!proxyAudioSource)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source has no audio source proxy", this);
-                betterAudioTestController.TestCompleted(false);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source has no audio source proxy",
+                    this);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (!proxyAudioSource.loop)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Proxy audio source must have loop set to true", this);
-                betterAudioTestController.TestInitialized(false);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Proxy audio source must have loop set to true",
+                    this);
+                testController.TestInitialized(false);
                 return;
             }
 
             var actualAudioSource = betterAudioSource.GetActualAudioSource();
             if (!actualAudioSource)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source has no actual audio source and is thus not playing", this);
-                betterAudioTestController.TestCompleted(false);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Better audio source has no actual audio source and is thus not playing",
+                    this);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (!actualAudioSource.isPlaying)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source is not playing", this);
-                betterAudioTestController.TestCompleted(false);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source is not playing",
+                    this);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (Mathf.Abs(proxyAudioSource.minDistance - actualAudioSource.minDistance) > 0.001f)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source has not been initialized properly from the proxy audio source",
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source has not been initialized properly from the proxy audio source",
                     this);
-                betterAudioTestController.TestCompleted(false);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (Mathf.Abs(proxyAudioSource.maxDistance - actualAudioSource.maxDistance) > 0.001f)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source has not been initialized properly from the proxy audio source",
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source has not been initialized properly from the proxy audio source",
                     this);
-                betterAudioTestController.TestCompleted(false);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (Mathf.Abs(actualAudioSource.dopplerLevel) > 0.001f)
             {
-                Debug.LogError($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] DopplerLevel is not 0, is {actualAudioSource.dopplerLevel}", this);
-                betterAudioTestController.TestCompleted(false);
+                Debug.LogError(
+                    $"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] DopplerLevel is not 0, is {actualAudioSource.dopplerLevel}",
+                    this);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (Mathf.Abs(proxyAudioSource.pitch - 1f) > 0.001f)
             {
-                Debug.LogError($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test requires proxy audio source to have a pitch of 1, is {proxyAudioSource.pitch}",
+                Debug.LogError(
+                    $"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test requires proxy audio source to have a pitch of 1, is {proxyAudioSource.pitch}",
                     this);
-                betterAudioTestController.TestCompleted(false);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (Mathf.Abs(proxyAudioSource.pitch - actualAudioSource.pitch) > 0.001f)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source must have the same pitch as the proxy audio source for this test",
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source must have the same pitch as the proxy audio source for this test",
                     this);
-                betterAudioTestController.TestCompleted(false);
+                testController.TestCompleted(false);
                 return;
             }
 
             if (proxyAudioSource.clip.length < 4f)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test requires the audio clip to be at least 4 seconds long", this);
-                betterAudioTestController.TestCompleted(false);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test requires the audio clip to be at least 4 seconds long",
+                    this);
+                testController.TestCompleted(false);
                 return;
             }
 
@@ -178,7 +197,9 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
             _pendingCheck = true;
             _maxDifference = Time.deltaTime;
 
-            Debug.Log("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Waiting for delayed checks", this);
+            Debug.Log(
+                "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Waiting for delayed checks",
+                this);
         }
 
         private void Update()
@@ -190,15 +211,19 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
                 var actualAudioSource = betterAudioSource.GetActualAudioSource();
                 if (!actualAudioSource)
                 {
-                    Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] No actual audio available", this);
-                    betterAudioTestController.TestCompleted(false);
+                    Debug.LogError(
+                        "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] No actual audio available",
+                        this);
+                    testController.TestCompleted(false);
                     return;
                 }
 
                 if (!actualAudioSource.isPlaying)
                 {
-                    Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source is not playing", this);
-                    betterAudioTestController.TestCompleted(false);
+                    Debug.LogError(
+                        "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Actual audio source is not playing",
+                        this);
+                    testController.TestCompleted(false);
                     return;
                 }
 
@@ -209,13 +234,13 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
                     Debug.LogError(
                         $"Actual audio didn't play for the expected duration of {_expectedAudioTime}, is {actualAudioSource.time}",
                         this);
-                    betterAudioTestController.TestCompleted(false);
+                    testController.TestCompleted(false);
                     return;
                 }
 
                 if (_secondPass)
                 {
-                    betterAudioTestController.TestCompleted(true);
+                    testController.TestCompleted(true);
                 }
                 else
                 {
@@ -233,7 +258,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
         private void CleanUpTest()
         {
             _pendingCheck = false;
-            betterAudioTestController.TestCleanedUp(true);
+            testController.TestCleanedUp(true);
         }
 
         #endregion

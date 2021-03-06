@@ -10,10 +10,8 @@ namespace Guribo.UdonBetterAudio.Scripts
     {
         #region Better Audio
 
-        [Header("Better Audio")]
-        [Tooltip("Use either the spatialized AudioPool or the no-spatialized one")]
-        [SerializeField]
-        private BetterAudioPool betterAudioPool;
+        [Header("Better Audio")] [Tooltip("Use either the spatialized AudioPool or the no-spatialized one")]
+        public BetterAudioPool betterAudioPool;
 
         [Tooltip("Target the actual audio source shall follow, otherwise will not move")] [SerializeField]
         private Transform followTarget;
@@ -173,7 +171,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _proxyAudioSource = GetAudioSourceProxy();
             }
 
-            OnValidate();
+            CheckReady();
             _started = true;
 
             if (!_enabled)
@@ -182,7 +180,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
         }
 
-        private void OnValidate()
+        private void CheckReady()
         {
             if (!betterAudioPool)
             {
@@ -191,17 +189,23 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (occlusionLayers == 0)
             {
-                Debug.LogWarning("[<color=#008000>BetterAudio</color>] No occlusion collision layer set, audio occlusion won't work", this);
+                Debug.LogWarning(
+                    "[<color=#008000>BetterAudio</color>] No occlusion collision layer set, audio occlusion won't work",
+                    this);
             }
 
             if (useSonicBoom && !sonicBoom)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] Use Sonic boom is ticked but no better audio source is set", this);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] Use Sonic boom is ticked but no better audio source is set",
+                    this);
             }
 
             if (useSonicBoom && !followTarget)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] In order for sonic booms to be triggered a follow target must be set as well", this);
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] In order for sonic booms to be triggered a follow target must be set as well",
+                    this);
             }
 
             minOcclusionCheckDistance = Mathf.Max(minOcclusionCheckDistance, 0f);
@@ -227,7 +231,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (!betterAudioPool && _listener != null)
             {
-                Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource has no BetterAudioPool assigned");
+                Debug.LogError(
+                    "[<color=#008000>BetterAudio</color>] BetterAudioSource has no BetterAudioPool assigned");
                 gameObject.SetActive(false);
                 return;
             }
@@ -300,6 +305,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                         listenerRotation = debugListener.rotation;
                     }
                 }
+
 
                 // distance to the listener
                 var physicalEmitterDistance = Vector3.Distance(physicalEmitPosition, listenerPosition);
@@ -646,7 +652,8 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 if (_listener != null)
                 {
-                    Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource has no BetterAudioPool assigned");
+                    Debug.LogError(
+                        "[<color=#008000>BetterAudio</color>] BetterAudioSource has no BetterAudioPool assigned");
                     gameObject.SetActive(false);
                 }
 
@@ -658,7 +665,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                 var audioSourceInstance = betterAudioPool.GetAudioSourceInstance(this);
                 if (!audioSourceInstance)
                 {
-                    Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource.Play: received invalid audio source instance");
+                    Debug.LogError(
+                        "[<color=#008000>BetterAudio</color>] BetterAudioSource.Play: received invalid audio source instance");
                     return;
                 }
 
@@ -667,7 +675,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _actualAudioSource = go.GetComponent<AudioSource>();
                 if (!_actualAudioSource)
                 {
-                    Debug.LogError("[<color=#008000>BetterAudio</color>] BetterAudioSource.Play: received audio source instance is missing an AudioSource");
+                    Debug.LogError(
+                        "[<color=#008000>BetterAudio</color>] BetterAudioSource.Play: received audio source instance is missing an AudioSource");
                     return;
                 }
 
@@ -679,7 +688,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                     return;
                 }
 
-                _audioReverbFilter.reverbPreset = AudioReverbPreset.Off;
+                // _audioReverbFilter.reverbPreset = AudioReverbPreset.Off;
 
                 _audioLowPassFilter = go.GetComponent<AudioLowPassFilter>();
                 if (!_audioLowPassFilter)
@@ -804,7 +813,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <param name="y"></param>
         /// <param name="changeRate"></param>
         /// <returns></returns>
-        private float NoiseHeight(
+        public float NoiseHeight(
             float x,
             float y,
             float positionScale = 0.01f,
@@ -921,73 +930,89 @@ namespace Guribo.UdonBetterAudio.Scripts
             return _actualAudioSource;
         }
 
-        public override void OnPlayerTriggerEnter(VRCPlayerApi player)
-        {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerEnter {player}");
-        }
-
-        public override void OnPlayerTriggerExit(VRCPlayerApi player)
-        {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerExit {player}");
-        }
-
-        public override void OnPlayerTriggerStay(VRCPlayerApi player)
-        {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerStay {player}");
-        }
-
+        // public override void OnPlayerTriggerEnter(VRCPlayerApi player)
+        // {
+        //     // Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerEnter {player}");
+        // }
+        //
+        // public override void OnPlayerTriggerExit(VRCPlayerApi player)
+        // {
+        //     // Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerExit {player}");
+        // }
+        //
+        // public override void OnPlayerTriggerStay(VRCPlayerApi player)
+        // {
+        //     // Debug.Log($"[<color=#008000>BetterAudio</color>] OnPlayerTriggerStay {player}");
+        // }
+        //
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerEnter {other}");
+            // Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerEnter {other}");
         }
 
-        private void OnTriggerExit(Collider other)
-        {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerExit {other}");
-        }
-
-        private void OnTriggerStay(Collider other)
-        {
-            // Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerStay {other}");
-            if (!other) return;
-            if (!_actualAudioSource) return;
-            if (!_proxyAudioSource) return;
-            if (_proxyAudioSource.bypassReverbZones) return;
-            if (!_audioReverbFilter) return;
-
-            var penetration = CalculateReverbZonePenetration(other);
-            // Debug.Log($"[<color=#008000>BetterAudio</color>] Penetration = {penetration}");
-
-            var audioReverbFilterProxy = other.gameObject.GetComponent<AudioReverbFilter>();
-            if (audioReverbFilterProxy)
-            {
-                _audioReverbFilter.reverbPreset = AudioReverbPreset.User;
-                _audioReverbFilter.room = Mathf.Lerp(-10000f, audioReverbFilterProxy.room, penetration);
-                _audioReverbFilter.roomHF = Mathf.Lerp(-10000f, audioReverbFilterProxy.roomHF, penetration);
-                _audioReverbFilter.roomLF = Mathf.Lerp(-10000f, audioReverbFilterProxy.roomLF, penetration);
-                _audioReverbFilter.density = audioReverbFilterProxy.density;
-                _audioReverbFilter.decayTime = audioReverbFilterProxy.decayTime;
-                _audioReverbFilter.decayHFRatio = audioReverbFilterProxy.decayHFRatio;
-                _audioReverbFilter.reflectionsDelay = audioReverbFilterProxy.reflectionsDelay;
-                _audioReverbFilter.reflectionsLevel = audioReverbFilterProxy.reflectionsLevel;
-                _audioReverbFilter.dryLevel = audioReverbFilterProxy.dryLevel;
-                _audioReverbFilter.diffusion = audioReverbFilterProxy.diffusion;
-                _audioReverbFilter.hfReference = audioReverbFilterProxy.hfReference;
-                _audioReverbFilter.lfReference = audioReverbFilterProxy.lfReference;
-                _audioReverbFilter.reverbDelay = audioReverbFilterProxy.reverbDelay;
-                _audioReverbFilter.reverbLevel = audioReverbFilterProxy.reverbLevel;
-            }
-
-            if (_actualAudioSource.spatialize)
-            {
-                var listenerIsNotInZone = !ListenerIsInZone(other);
-                if (_actualAudioSource.spatializePostEffects != listenerIsNotInZone)
-                {
-                    _actualAudioSource.volume = 0.01f;
-                    _actualAudioSource.spatializePostEffects = listenerIsNotInZone;
-                }
-            }
-        }
+        // private void OnTriggerExit(Collider other)
+        // {
+        //     // Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerExit {other}");
+        //     if (!other) return;
+        //     if (!_audioReverbFilter) return;
+        //     var audioReverbFilterProxy = other.gameObject.GetComponent<AudioReverbFilter>();
+        //     if (audioReverbFilterProxy)
+        //     {
+        //         _audioReverbFilter.enabled = false;
+        //     }
+        // }
+        //
+        // private void OnTriggerStay(Collider other)
+        // {
+        //     if (Time.frameCount % 30 != 0)
+        //     {
+        //         return;
+        //     }
+        //
+        //     // Debug.Log($"[<color=#008000>BetterAudio</color>] OnTriggerStay {other}");
+        //     if (!other) return;
+        //     if (!_actualAudioSource) return;
+        //     if (!_proxyAudioSource) return;
+        //     if (_proxyAudioSource.bypassReverbZones) return;
+        //     if (!_audioReverbFilter) return;
+        //
+        //     // var penetration = CalculateReverbZonePenetration(other);
+        //     // Debug.Log($"[<color=#008000>BetterAudio</color>] Penetration = {penetration}");
+        //
+        //     var audioReverbFilterProxy = other.gameObject.GetComponent<AudioReverbFilter>();
+        //     if (audioReverbFilterProxy)
+        //     {
+        //         _audioReverbFilter.reverbPreset = AudioReverbPreset.User;
+        //         _audioReverbFilter.room =
+        //             audioReverbFilterProxy.room; //Mathf.Lerp(-10000f, audioReverbFilterProxy.room, penetration);
+        //         _audioReverbFilter.roomHF =
+        //             audioReverbFilterProxy.room; //Mathf.Lerp(-10000f, audioReverbFilterProxy.roomHF, penetration);
+        //         _audioReverbFilter.roomLF =
+        //             audioReverbFilterProxy.room; //Mathf.Lerp(-10000f, audioReverbFilterProxy.roomLF, penetration);
+        //         _audioReverbFilter.density = audioReverbFilterProxy.density;
+        //         _audioReverbFilter.decayTime = audioReverbFilterProxy.decayTime;
+        //         _audioReverbFilter.decayHFRatio = audioReverbFilterProxy.decayHFRatio;
+        //         _audioReverbFilter.reflectionsDelay = audioReverbFilterProxy.reflectionsDelay;
+        //         _audioReverbFilter.reflectionsLevel = audioReverbFilterProxy.reflectionsLevel;
+        //         _audioReverbFilter.dryLevel = audioReverbFilterProxy.dryLevel;
+        //         _audioReverbFilter.diffusion = audioReverbFilterProxy.diffusion;
+        //         _audioReverbFilter.hfReference = audioReverbFilterProxy.hfReference;
+        //         _audioReverbFilter.lfReference = audioReverbFilterProxy.lfReference;
+        //         _audioReverbFilter.reverbDelay = audioReverbFilterProxy.reverbDelay;
+        //         _audioReverbFilter.reverbLevel = audioReverbFilterProxy.reverbLevel;
+        //         _audioReverbFilter.enabled = true;
+        //     }
+        //
+        //     if (_actualAudioSource.spatialize)
+        //     {
+        //         var listenerIsNotInZone = !ListenerIsInZone(other);
+        //         if (_actualAudioSource.spatializePostEffects != listenerIsNotInZone)
+        //         {
+        //             _actualAudioSource.volume = 0.01f;
+        //             _actualAudioSource.spatializePostEffects = listenerIsNotInZone;
+        //         }
+        //     }
+        // }
 
         /// <summary>
         /// 
@@ -1041,6 +1066,21 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
 
             return penetration;
+        }
+
+        public bool IsPendingSonicBoom()
+        {
+            return _pendingSonicBoom;
+        }
+
+        public float GetSonicBoomDelay()
+        {
+            return _sonicBoomDelay;
+        }
+
+        public Vector3 GetSonicBoomAudioPosition()
+        {
+            return _sonicBoomPosition;
         }
     }
 }

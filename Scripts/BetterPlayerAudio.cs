@@ -6,6 +6,7 @@ using VRC.Udon;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
+    [DefaultExecutionOrder(10010)]
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
         #region Constants
@@ -395,19 +396,9 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private bool PlayerIsIgnored(VRCPlayerApi vrcPlayerApi)
         {
-            if (_playersToIgnore == null) return false;
-            // TODO do binary search here
-            // I assume not more then a handful of players are ignored at once so a regular search might be faster for
-            // now until Array.BinarySearch is whitelisted
-            foreach (var i in _playersToIgnore)
-            {
-                if (i == vrcPlayerApi.playerId)
-                {
-                    return true;
-                }
-            }
+            if (_playersToIgnore == null || !Utilities.IsValid(vrcPlayerApi)) return false;
 
-            return false;
+            return Array.BinarySearch(_playersToIgnore, vrcPlayerApi.playerId) > -1;
         }
 
         private int GetPendingPlayerUpdates(int playerCount)
@@ -723,7 +714,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         public void IgnorePlayer(VRCPlayerApi playerToIgnore)
         {
             // validate the player
-            if (playerToIgnore == null)
+            if (!Utilities.IsValid(playerToIgnore))
             {
                 Debug.LogError("[<color=#008000>BetterAudio</color>] " +
                                "BetterPlayerAudio.IgnorePlayer: invalid argument");
@@ -731,7 +722,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
 
             var vrcPlayerApi = VRCPlayerApi.GetPlayerById(playerToIgnore.playerId);
-            if (vrcPlayerApi == null)
+            if (!Utilities.IsValid(vrcPlayerApi))
             {
                 Debug.LogError(
                     $"[<color=#008000>BetterAudio</color>] BetterPlayerAudio.IgnorePlayer: player {playerToIgnore} doesn't exist");
@@ -742,7 +733,10 @@ namespace Guribo.UdonBetterAudio.Scripts
             if (noPlayerIgnoredYet)
             {
                 // simply add the player and return
-                _playersToIgnore = new[] {vrcPlayerApi.playerId};
+                _playersToIgnore = new[]
+                {
+                    vrcPlayerApi.playerId
+                };
                 return;
             }
 
@@ -753,8 +747,9 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             foreach (var playerId in _playersToIgnore)
             {
-                if (VRCPlayerApi.GetPlayerById(playerId) == null)
+                if (!Utilities.IsValid(VRCPlayerApi.GetPlayerById(playerId)))
                 {
+                    // skip (=remove) the player
                     continue;
                 }
 
@@ -782,10 +777,6 @@ namespace Guribo.UdonBetterAudio.Scripts
                 stillValidIgnoredPlayers = longerStillValidIgnoredPlayers;
                 stillValidIgnoredPlayers[validPlayers] = vrcPlayerApi.playerId;
                 ++validPlayers;
-
-                // unset occlusion values and directionality effects
-                UpdateVoiceAudio(vrcPlayerApi, 1f);
-                UpdateAvatarAudio(vrcPlayerApi, 1f);
             }
 
             // shrink the validated array content (happens when ignored players have left the world)

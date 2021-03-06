@@ -50,7 +50,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: betterAudioTestController
+      Data: testController
     - Name: $v
       Entry: 7
       Data: 2|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 4|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonBetterAudio.Scripts.Tests.BetterAudioTestController, Assembly-CSharp
+      Data: Guribo.UdonUtils.Scripts.Testing.TestController, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
@@ -77,10 +77,10 @@ MonoBehaviour:
       Data: VRCUdonUdonBehaviour
     - Name: symbolOriginalName
       Entry: 1
-      Data: betterAudioTestController
+      Data: testController
     - Name: symbolUniqueName
       Entry: 1
-      Data: betterAudioTestController
+      Data: testController
     - Name: symbolDefaultValue
       Entry: 6
       Data: 

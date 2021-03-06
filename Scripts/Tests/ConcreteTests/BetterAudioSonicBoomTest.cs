@@ -1,17 +1,19 @@
-﻿using UdonSharp;
+﻿using Guribo.UdonUtils.Scripts.Testing;
+using UdonSharp;
 using UnityEngine;
+using VRC.SDKBase;
 
-namespace Guribo.UdonBetterAudio.Scripts.Tests
+namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
 {
-    public class TestTemplate : UdonSharpBehaviour
+    public class BetterAudioSonicBoomTest : UdonSharpBehaviour
     {
         #region DO NOT EDIT
 
-        [HideInInspector] public BetterAudioTestController betterAudioTestController;
+        [HideInInspector] public TestController testController;
 
         public void Initialize()
         {
-            if (!betterAudioTestController)
+            if (!testController)
             {
                 Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Initialize: invalid test controller", this);
                 return;
@@ -22,7 +24,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
         public void Run()
         {
-            if (!betterAudioTestController)
+            if (!testController)
             {
                 Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Run: invalid test controller", this);
                 return;
@@ -34,7 +36,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
         public void CleanUp()
         {
-            if (!betterAudioTestController)
+            if (!testController)
             {
                 Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.CleanUp: invalid test controller", this);
                 return;
@@ -47,14 +49,26 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
         #region EDIT HERE
 
+        public BetterAudioSource audioSource;
+        
+        private readonly Vector3 _startOffset = Vector3.forward * 1000; 
         private void InitializeTest()
         {
             // TODO your init behaviour here
             // ...
 
+            if (!Utilities.IsValid(audioSource))
+            {
+                Debug.LogError("[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Test.Initialize: invalid BetterAudioSource", this);
+                testController.TestInitialized(false);
+            }
+            
+            audioSource.Stop();
+            audioSource.gameObject.transform.position = transform.position + _startOffset;
+
             // whenever the test is ready to be started call betterAudioTestController.TestInitialized,
             // can be later in update or whenever but MUST be called at some point
-            betterAudioTestController.TestInitialized(true);
+            testController.TestInitialized(true);
         }
 
         private void RunTest()
@@ -64,7 +78,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
             // whenever the test is completed call betterAudioTestController.TestCompleted,
             // can be later in update or whenever but MUST be called at some point
-            betterAudioTestController.TestCompleted(true);
+            testController.TestCompleted(true);
         }
 
         private void CleanUpTest()
@@ -74,7 +88,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests
 
             // whenever the test is cleaned up call betterAudioTestController.TestCleanedUp,
             // can be later in update or whenever but MUST be called at some point
-            betterAudioTestController.TestCleanedUp(true);
+            testController.TestCleanedUp(true);
         }
 
         #endregion
