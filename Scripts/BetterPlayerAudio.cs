@@ -97,19 +97,23 @@ namespace Guribo.UdonBetterAudio.Scripts
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
         public float defaultPlayerDirectionality = 0.3f;
 
+        [Header("Voice Settings")]
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
         /// </summary>
-        [Header("Voice Settings")] public bool defaultEnableVoiceLowpass = true;
+        [Tooltip("When enabled the voice of a player sounds muffled when close to the max. audible range.")]
+        public bool defaultEnableVoiceLowpass = true;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-distance-near</remarks>
         /// </summary>
+        [Tooltip("The volume will stay at max. when the player is closer than this distance.")]
         [Range(0, 1000000)] public float defaultVoiceDistanceNear;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/playewar-audio#set-voice-distance-far</remarks>
         /// </summary>
+        [Tooltip("Beyond this distance the player can't be heard.")]
         [Range(0, 1000000)] public float defaultVoiceDistanceFar = 25f;
 
         /// <summary>
@@ -117,41 +121,53 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// My recommendation is to use 0 instead.
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-gain</remarks>
         /// </summary>
+        [Tooltip("Additional volume increase. Changing this may require re-adjusting occlusion parameters!")]
         [Range(0, 24)] public float defaultVoiceGain = 15f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-volumetric-radius</remarks>
         /// </summary>
+        [Tooltip(
+            "Range in which the player voice is not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed.")]
         [Range(0, 1000)] public float defaultVoiceVolumetricRadius;
 
+        [Header("Avatar Settings")]
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudioforcespatial</remarks>
         /// </summary>
-        [Header("Avatar Settings")] public bool defaultForceAvatarSpatialAudio;
+        [Tooltip("When set overrides all avatar audio sources to be spatialized.")]
+        public bool defaultForceAvatarSpatialAudio;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiocustomcurve</remarks>
         /// </summary>
+        [Tooltip("When set custom audio curves on avatar audio sources are used.")]
         public bool defaultAllowAvatarCustomAudioCurves = true;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudionearradius</remarks>
         /// </summary>
-        public float defaultAvatarNearRadius = 1f;
+        [Tooltip("Max. distance at which player audio sources start to fall of in volume.")]
+        public float defaultAvatarNearRadius = 40f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiofarradius</remarks>
         /// </summary>
-        public float defaultAvatarFarRadius = 100f;
+        [Tooltip("Max. allowed distance at which player audio sources can be heard.")]
+        public float defaultAvatarFarRadius = 40f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiogain</remarks>
         /// </summary>
-        [Range(0, 10)] public float defaultAvatarGain;
+        [Range(0, 10)]
+        [Tooltip("Volume increase in decibel.")]
+        public float defaultAvatarGain = 10f;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiovolumetricradius</remarks>
         /// </summary>
+        [Tooltip(
+            "Range in which the player audio sources are not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed.")]
         public float defaultAvatarVolumetricRadius;
 
         #endregion
@@ -324,12 +340,15 @@ namespace Guribo.UdonBetterAudio.Scripts
         private int _playerIndex;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
         private int[] _playersToIgnore;
+        private int[] _playersToOverride = new int[0];
+        private BetterPlayerAudioOverride[] _playerOverrides;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
 
         #region Unity Lifecycle
 
         private void Start()
         {
+            _playerOverrides = new BetterPlayerAudioOverride[0];
             Initialize();
         }
 
@@ -367,31 +386,111 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private void UpdatePlayer(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer)
         {
-            if (otherPlayer == null
+            if (!Utilities.IsValid(otherPlayer)
                 || otherPlayer.playerId == localPlayer.playerId
                 || PlayerIsIgnored(otherPlayer))
             {
                 return;
             }
 
+            BetterPlayerAudioOverride playerOverride = null;
+            var playerOverrideIndex = Array.BinarySearch(_playersToOverride, otherPlayer.playerId);
+            if (playerOverrideIndex > -1)
+            {
+                playerOverride = _playerOverrides[playerOverrideIndex];
+            }
+
             var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
             var otherPlayerHead = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
-            var listenerToPlayer = (otherPlayerHead.position - listenerHead.position);
+            var listenerToPlayer = otherPlayerHead.position - listenerHead.position;
             var direction = listenerToPlayer.normalized;
             var distance = listenerToPlayer.magnitude;
 
-            var occlusionFactor = CalculateOcclusion(listenerHead.position, direction, distance);
-            var directionality =
-                CalculateDirectionality(listenerHead.rotation, otherPlayerHead.rotation, direction);
+            if (Utilities.IsValid(playerOverride) && playerOverride)
+            {
+                var occlusionFactor = CalculateOcclusion(listenerHead.position,
+                    direction,
+                    distance,
+                    playerOverride.occlusionFactor,
+                    playerOverride.playerOcclusionFactor,
+                    playerOverride.occlusionMask);
 
-            var distanceReduction = directionality * occlusionFactor;
-            var voiceDistanceFactor =
-                CalculateRangeReduction(distance, distanceReduction, TargetVoiceDistanceFar);
-            UpdateVoiceAudio(otherPlayer, voiceDistanceFactor);
+                var directionality = CalculateDirectionality(listenerHead.rotation,
+                    otherPlayerHead.rotation,
+                    direction,
+                    playerOverride.listenerDirectionality,
+                    playerOverride.playerDirectionality);
 
-            var avatarDistanceFactor = CalculateRangeReduction(distance, distanceReduction, TargetAvatarFarRadius);
-            UpdateAvatarAudio(otherPlayer, avatarDistanceFactor);
+                var distanceReduction = directionality * occlusionFactor;
+
+                var voiceDistanceFactor = CalculateRangeReduction(distance,
+                    distanceReduction,
+                    playerOverride.voiceDistanceFar);
+
+                UpdateVoiceAudio(otherPlayer,
+                    voiceDistanceFactor,
+                    playerOverride.enableVoiceLowpass,
+                    playerOverride.voiceGain,
+                    playerOverride.voiceDistanceFar,
+                    playerOverride.voiceDistanceNear,
+                    playerOverride.voiceVolumetricRadius);
+
+                var avatarDistanceFactor = CalculateRangeReduction(distance,
+                    distanceReduction,
+                    playerOverride.targetAvatarFarRadius);
+
+                UpdateAvatarAudio(otherPlayer,
+                    avatarDistanceFactor,
+                    playerOverride.forceAvatarSpatialAudio,
+                    playerOverride.allowAvatarCustomAudioCurves,
+                    playerOverride.targetAvatarGain,
+                    playerOverride.targetAvatarFarRadius,
+                    playerOverride.targetAvatarNearRadius,
+                    playerOverride.targetAvatarVolumetricRadius);
+            }
+            else
+            {
+                var occlusionFactor = CalculateOcclusion(listenerHead.position,
+                    direction,
+                    distance,
+                    OcclusionFactor,
+                    PlayerOcclusionFactor,
+                    occlusionMask);
+
+                var directionality = CalculateDirectionality(listenerHead.rotation,
+                    otherPlayerHead.rotation,
+                    direction,
+                    ListenerDirectionality,
+                    PlayerDirectionality);
+
+                var distanceReduction = directionality * occlusionFactor;
+
+                var voiceDistanceFactor = CalculateRangeReduction(distance,
+                    distanceReduction,
+                    TargetVoiceDistanceFar);
+
+                UpdateVoiceAudio(otherPlayer,
+                    voiceDistanceFactor,
+                    EnableVoiceLowpass,
+                    TargetVoiceGain,
+                    TargetVoiceDistanceFar,
+                    TargetVoiceDistanceNear,
+                    TargetVoiceVolumetricRadius);
+
+                var avatarDistanceFactor = CalculateRangeReduction(distance,
+                    distanceReduction,
+                    TargetAvatarFarRadius);
+
+                UpdateAvatarAudio(otherPlayer,
+                    avatarDistanceFactor,
+                    ForceAvatarSpatialAudio,
+                    AllowAvatarCustomAudioCurves,
+                    TargetAvatarGain,
+                    TargetAvatarFarRadius,
+                    TargetAvatarNearRadius,
+                    TargetAvatarVolumetricRadius);
+            }
         }
 
         private bool PlayerIsIgnored(VRCPlayerApi vrcPlayerApi)
@@ -472,23 +571,29 @@ namespace Guribo.UdonBetterAudio.Scripts
         }
 
         private float CalculateDirectionality(Quaternion listenerHeadRotation, Quaternion playerHeadRotation,
-            Vector3 directionToPlayer)
+            Vector3 directionToPlayer,
+            float listenerDirectionality,
+            float playerDirectionality)
         {
             var listenerForward = listenerHeadRotation * Vector3.forward;
             var playerBackward = playerHeadRotation * Vector3.back;
 
-
             var dotListener = 0.5f * (Vector3.Dot(listenerForward, directionToPlayer) + 1f);
             var dotSource = 0.5f * (Vector3.Dot(playerBackward, directionToPlayer) + 1f);
 
-            return Mathf.Clamp01(dotListener + (1 - ListenerDirectionality)) *
-                   Mathf.Clamp01(dotSource + (1 - PlayerDirectionality));
+            return Mathf.Clamp01(dotListener + (1 - listenerDirectionality)) *
+                   Mathf.Clamp01(dotSource + (1 - playerDirectionality));
         }
 
-        private float CalculateOcclusion(Vector3 listenerHead, Vector3 direction, float distance)
+        private float CalculateOcclusion(Vector3 listenerHead,
+            Vector3 direction,
+            float distance,
+            float occlusionFactor,
+            float playerOcclusionFactor,
+            int playerOcclusionMask)
         {
-            var occlusionIsOff = Mathf.Abs(OcclusionFactor - 1f) < 0.01f
-                                 && Mathf.Abs(PlayerOcclusionFactor - 1f) < 0.01f;
+            var occlusionIsOff = Mathf.Abs(occlusionFactor - 1f) < 0.01f
+                                 && Mathf.Abs(playerOcclusionFactor - 1f) < 0.01f;
             if (occlusionIsOff)
             {
                 // don't waste time ray casting when it doesn't have any effect
@@ -499,7 +604,9 @@ namespace Guribo.UdonBetterAudio.Scripts
                 direction,
                 _rayHits,
                 distance,
-                occlusionMask);
+                playerOcclusionMask);
+
+
             if (hits == 0)
             {
                 // nothing to do
@@ -507,11 +614,11 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
 
             // if the UI layer is used for occlusion (UI layer contains the player capsules) allow at least one hit
-            var playersCanOcclude = (occlusionMask | UILayerMask) > 0;
+            var playersCanOcclude = (playerOcclusionMask | UILayerMask) > 0;
             if (!playersCanOcclude)
             {
                 // result when players can't occlude other players
-                return hits > 0 ? OcclusionFactor : 1f;
+                return hits > 0 ? occlusionFactor : 1f;
             }
 
             if (hits < 2)
@@ -532,7 +639,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
                 // if the transform of the hit is not null (due to filtering of player objects by UDON)
                 // then the environment got hit and we use regular occlusion values
-                return _rayHits[0].transform ? OcclusionFactor : PlayerOcclusionFactor;
+                return _rayHits[0].transform ? occlusionFactor : playerOcclusionFactor;
             }
 
             // more then 1 hit indicates the ray hit another player first or hit the environment
@@ -544,32 +651,45 @@ namespace Guribo.UdonBetterAudio.Scripts
             var anotherPlayerOccludes = !_rayHits[0].transform && !_rayHits[1].transform;
             if (anotherPlayerOccludes)
             {
-                return PlayerOcclusionFactor;
+                return playerOcclusionFactor;
             }
 
             // just return the occlusion factor for everything else
-            return OcclusionFactor;
+            return occlusionFactor;
         }
 
-        private void UpdateVoiceAudio(VRCPlayerApi vrcPlayerApi, float distanceFactor)
+        private void UpdateVoiceAudio(VRCPlayerApi vrcPlayerApi,
+            float distanceFactor,
+            bool enableVoiceLowpass,
+            float targetVoiceGain,
+            float targetVoiceDistanceFar,
+            float targetVoiceDistanceNear,
+            float targetVoiceVolumetricRadius)
         {
-            vrcPlayerApi.SetVoiceLowpass(EnableVoiceLowpass);
+            vrcPlayerApi.SetVoiceLowpass(enableVoiceLowpass);
 
-            vrcPlayerApi.SetVoiceGain(TargetVoiceGain * distanceFactor);
-            vrcPlayerApi.SetVoiceDistanceFar(TargetVoiceDistanceFar * distanceFactor);
-            vrcPlayerApi.SetVoiceDistanceNear(TargetVoiceDistanceNear * distanceFactor);
-            vrcPlayerApi.SetVoiceVolumetricRadius(TargetVoiceVolumetricRadius);
+            vrcPlayerApi.SetVoiceGain(targetVoiceGain * distanceFactor);
+            vrcPlayerApi.SetVoiceDistanceFar(targetVoiceDistanceFar * distanceFactor);
+            vrcPlayerApi.SetVoiceDistanceNear(targetVoiceDistanceNear * distanceFactor);
+            vrcPlayerApi.SetVoiceVolumetricRadius(targetVoiceVolumetricRadius);
         }
 
-        private void UpdateAvatarAudio(VRCPlayerApi vrcPlayerApi, float occlusion)
-        {
-            vrcPlayerApi.SetAvatarAudioForceSpatial(ForceAvatarSpatialAudio);
-            vrcPlayerApi.SetAvatarAudioCustomCurve(AllowAvatarCustomAudioCurves);
 
-            vrcPlayerApi.SetAvatarAudioGain(TargetAvatarGain * occlusion);
-            vrcPlayerApi.SetAvatarAudioFarRadius(TargetAvatarFarRadius * occlusion);
-            vrcPlayerApi.SetAvatarAudioNearRadius(TargetAvatarNearRadius * occlusion);
-            vrcPlayerApi.SetAvatarAudioVolumetricRadius(TargetAvatarVolumetricRadius);
+        private void UpdateAvatarAudio(VRCPlayerApi vrcPlayerApi, float occlusion,
+            bool forceAvatarSpatialAudio,
+            bool allowAvatarCustomAudioCurves,
+            float targetAvatarGain,
+            float targetAvatarFarRadius,
+            float targetAvatarNearRadius,
+            float targetAvatarVolumetricRadius)
+        {
+            vrcPlayerApi.SetAvatarAudioForceSpatial(forceAvatarSpatialAudio);
+            vrcPlayerApi.SetAvatarAudioCustomCurve(allowAvatarCustomAudioCurves);
+
+            vrcPlayerApi.SetAvatarAudioGain(targetAvatarGain * occlusion);
+            vrcPlayerApi.SetAvatarAudioFarRadius(targetAvatarFarRadius * occlusion);
+            vrcPlayerApi.SetAvatarAudioNearRadius(targetAvatarNearRadius * occlusion);
+            vrcPlayerApi.SetAvatarAudioVolumetricRadius(targetAvatarVolumetricRadius);
         }
 
         /// <summary>
@@ -849,5 +969,230 @@ namespace Guribo.UdonBetterAudio.Scripts
                 _playersToIgnore[i] = stillValidIgnoredPlayers[i];
             }
         }
+
+
+        public void OverridePlayerSettings(BetterPlayerAudioOverride betterPlayerAudioOverride)
+        {
+            if (!Utilities.IsValid(betterPlayerAudioOverride))
+            {
+                Debug.LogError($"[<color=#008000>BetterAudio</color>] " +
+                               $"BetterPlayerAudio.OverridePlayerSettings: invalid betterPlayerAudioOverride");
+                return;
+            }
+
+            var affectedPlayers = betterPlayerAudioOverride.GetAffectedPlayers();
+            for (var i = 0; i < affectedPlayers.Length; i++)
+            {
+                var vrcPlayerApi = VRCPlayerApi.GetPlayerById(affectedPlayers[i]);
+                if (!Utilities.IsValid(vrcPlayerApi))
+                {
+                    continue;
+                }
+
+                Debug.Log(
+                    $"OverridePlayerSettings: override for player {{vrcPlayerApi.name}}({vrcPlayerApi.playerId})");
+
+
+                // check if the player already has an override
+                var index = Array.BinarySearch(_playersToOverride, vrcPlayerApi.playerId);
+                if (index > -1)
+                {
+                    // replace the current override
+                    _playerOverrides[index] = betterPlayerAudioOverride;
+                    Debug.Log($"OverridePlayerSettings: replaced override settings");
+                }
+                else
+                {
+                    var s = "Before: ";
+                    foreach (var i1 in _playersToOverride)
+                    {
+                        s += i1 + ", ";
+                    }
+
+                    Debug.Log(s);
+
+                    // add a new override for that player
+                    // add the player to the list of players that have overrides
+                    var newSize = _playersToOverride.Length + 1;
+
+                    var tempArray = new int[newSize];
+                    Array.ConstrainedCopy(_playersToOverride, 0, tempArray, 0, _playersToOverride.Length);
+                    _playersToOverride = tempArray;
+                    _playersToOverride[_playersToOverride.Length - 1] = vrcPlayerApi.playerId;
+
+                    s = "After increase: ";
+                    foreach (var i1 in _playersToOverride)
+                    {
+                        s += i1 + ", ";
+                    }
+
+                    Debug.Log(s);
+
+                    // sort it afterwards to allow binary search to work again
+                    Sort(_playersToOverride);
+
+                    s = "After sort: ";
+                    foreach (var i1 in _playersToOverride)
+                    {
+                        s += i1 + ", ";
+                    }
+
+                    Debug.Log(s);
+
+                    // get the index of the added player
+                    var position = Array.BinarySearch(_playersToOverride, vrcPlayerApi.playerId);
+                    Debug.Log($"position = {position}");
+
+
+                    // create a new list of overrides
+                    var tempOverrides = new BetterPlayerAudioOverride[newSize];
+
+                    // copy the first half up to the added player into a the new list
+                    if (position > 0)
+                    {
+                        Array.ConstrainedCopy(_playerOverrides, 0, tempOverrides, 0, position);
+                    }
+
+                    // insert the new entry for the added player
+                    tempOverrides[position] = betterPlayerAudioOverride;
+
+                    // copy the remaining overrides for the unchanged second half of overriden players
+                    Array.ConstrainedCopy(_playerOverrides,
+                        position,
+                        tempOverrides,
+                        position + 1,
+                        _playerOverrides.Length - position);
+
+                    // replace the overrides with the new list of overrides
+                    _playerOverrides = tempOverrides;
+
+                    Debug.Log($"OverridePlayerSettings: added override settings");
+                }
+            }
+        }
+
+        public void ClearPlayerOverride(int playerId)
+        {
+            if (_playersToOverride == null || _playersToOverride.Length == 0)
+            {
+                return;
+            }
+
+            var temp = new int[_playersToOverride.Length];
+            _playersToOverride.CopyTo(temp, 0);
+
+            // remove all invalid players first
+            foreach (var i in temp)
+            {
+                if (!Utilities.IsValid(VRCPlayerApi.GetPlayerById(i)))
+                {
+                    ClearSinglePlayerOverride(i);
+                }
+            }
+
+            // remove the actual player that was requested to be removed
+            ClearSinglePlayerOverride(playerId);
+        }
+
+        private void ClearSinglePlayerOverride(int playerId)
+        {
+            Debug.Log($"ClearSinglePlayerOverride: clearing override settings for player {playerId}");
+
+            if (_playersToOverride.Length == 0)
+            {
+                return;
+            }
+
+            // check if the player already has an override
+            var index = Array.BinarySearch(_playersToOverride, playerId);
+            if (index > -1)
+            {
+                _playersToOverride[index] = int.MaxValue;
+
+                // add the player to the list of players that have overrides
+                var newSize = _playersToOverride.Length - 1;
+                Sort(_playersToOverride);
+                var tempArray = new int[newSize];
+                Array.ConstrainedCopy(_playersToOverride, 0, tempArray, 0, newSize);
+                _playersToOverride = tempArray;
+
+
+                // create a new list of overrides
+                var tempOverrides = new BetterPlayerAudioOverride[newSize];
+
+                // copy the first half up to the added player into a the new list
+                Array.ConstrainedCopy(_playerOverrides, 0, tempOverrides, 0, index);
+                // copy the remaining overrides for the unchanged second half of overriden players
+                var firstIndexSecondHalf = index + 1;
+                Array.ConstrainedCopy(_playerOverrides,
+                    firstIndexSecondHalf,
+                    tempOverrides,
+                    index,
+                    _playerOverrides.Length - firstIndexSecondHalf);
+
+                // replace the overrides with the new list of overrides
+                _playerOverrides = tempOverrides;
+
+                Debug.Log($"ClearSinglePlayerOverride: cleared");
+            }
+            else
+            {
+                Debug.Log($"ClearSinglePlayerOverride: not settings to clear found");
+            }
+        }
+
+        #region Sorting
+
+        private void Sort(int[] array)
+        {
+            if (array == null || array.Length < 2)
+            {
+                return;
+            }
+
+            BubbleSort(array);
+        }
+
+        private void BubbleSort(int[] array)
+        {
+            var arrayLength = array.Length;
+            for (var i = 0; i < arrayLength; i++)
+            {
+                for (var j = 0; j < arrayLength - 1; j++)
+                {
+                    var next = j + 1;
+
+                    if (array[j] > array[next])
+                    {
+                        var tmp = array[j];
+                        array[j] = array[next];
+                        array[next] = tmp;
+                    }
+                }
+            }
+        }
+
+        public void TestSorting()
+        {
+            var array = new[] {0, 5, 3, 2, 10, 5, -1};
+            var s = "Unsorted: ";
+            foreach (var i in array)
+            {
+                s += i + ",";
+            }
+
+            Debug.Log(s);
+            Sort(array);
+
+            s = "Sorted: ";
+            foreach (var i in array)
+            {
+                s += i + ",";
+            }
+
+            Debug.Log(s);
+        }
+
+        #endregion
     }
 }

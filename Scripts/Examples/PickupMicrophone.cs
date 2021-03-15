@@ -11,12 +11,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         protected const int NoUser = -1;
 
         public BetterPlayerAudio playerAudio;
+        public BetterPlayerAudioOverride betterPlayerAudioOverride;
 
         [UdonSynced] [SerializeField] protected int micUserId = NoUser;
         protected int OldMicUserId = NoUser;
-
-        public float micRange = 1000f;
-        public float micGain = 2f;
 
         public override void OnPickup()
         {
@@ -112,7 +110,12 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             var currentMicUser = VRCPlayerApi.GetPlayerById(oldUser);
             if (Utilities.IsValid(currentMicUser))
             {
-                playerAudio.UnIgnorePlayer(currentMicUser);
+                if (Utilities.IsValid(betterPlayerAudioOverride))
+                {
+                    betterPlayerAudioOverride.RemoveAffectedPlayer(currentMicUser);
+                }
+
+                playerAudio.ClearPlayerOverride(currentMicUser.playerId);
             }
         }
 
@@ -138,9 +141,11 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 return;
             }
 
-            playerAudio.IgnorePlayer(newMicUser);
-            newMicUser.SetVoiceDistanceFar(micRange);
-            newMicUser.SetVoiceGain(micGain);
+            if (Utilities.IsValid(betterPlayerAudioOverride))
+            {
+                betterPlayerAudioOverride.AffectPlayer(newMicUser);
+            }
+            playerAudio.OverridePlayerSettings( betterPlayerAudioOverride);
         }
     }
 }
