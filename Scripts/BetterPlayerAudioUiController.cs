@@ -13,17 +13,19 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Header("General Settings")] [SerializeField]
         private Slider sliderOcclusionFactor;
 
+        [SerializeField] private Slider sliderPlayerOcclusionFactor;
+
         [SerializeField] private Slider sliderListenerDirectionality;
         [SerializeField] private Slider sliderPlayerDirectionality;
 
         [SerializeField] private Text textListenerDirectionality;
         [SerializeField] private Text textPlayerDirectionality;
         [SerializeField] private Text textOcclusionFactor;
+        [SerializeField] private Text textPlayerOcclusionFactor;
 
         [SerializeField] private Text textAllowMasterControl;
         [SerializeField] private Toggle toggleAllowMasterControl;
 
-        
         [Header("Voice Settings")] [SerializeField]
         private Slider sliderVoiceDistanceNear;
 
@@ -53,21 +55,10 @@ namespace Guribo.UdonBetterAudio.Scripts
         [SerializeField] private Toggle toggleAvatarSpatialize;
         [SerializeField] private Toggle toggleAvatarCustomCurve;
 
-        [Header("Setting Tabs")]
-        
-        [SerializeField] private RectTransform voiceSettings;
-        [SerializeField] private RectTransform avatarSettings;
-        [SerializeField] private RectTransform generalSettings;
-
         private RectTransform[] _tabs;
 
-        void Start()
+        public void Start()
         {
-            _tabs = new RectTransform[3];
-            _tabs[0] = voiceSettings;
-            _tabs[1] = avatarSettings;
-            _tabs[2] = generalSettings;
-
             if (!betterPlayerAudio)
             {
                 Debug.LogError("[<color=#008000>BetterAudio</color>] Invalid betterPlayerAudio");
@@ -82,6 +73,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         public void OnSettingsChanged()
         {
             betterPlayerAudio.OcclusionFactor = sliderOcclusionFactor.value;
+            betterPlayerAudio.PlayerOcclusionFactor = sliderPlayerOcclusionFactor.value;
             betterPlayerAudio.PlayerDirectionality = sliderPlayerDirectionality.value;
             betterPlayerAudio.ListenerDirectionality = sliderListenerDirectionality.value;
 
@@ -101,6 +93,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             betterPlayerAudio.SetUseMasterControls(toggleAllowMasterControl.isOn);
 
             textOcclusionFactor.text = sliderOcclusionFactor.value.ToString("F");
+            textPlayerOcclusionFactor.text = sliderPlayerOcclusionFactor.value.ToString("F");
             textPlayerDirectionality.text = sliderPlayerDirectionality.value.ToString("F");
             textListenerDirectionality.text = sliderListenerDirectionality.value.ToString("F");
 
@@ -117,6 +110,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             var locallyControlled = !betterPlayerAudio.AllowMasterTakeControl() || betterPlayerAudio.IsOwner();
 
             sliderOcclusionFactor.interactable = locallyControlled;
+            sliderPlayerOcclusionFactor.interactable = locallyControlled;
             sliderListenerDirectionality.interactable = locallyControlled;
             sliderPlayerDirectionality.interactable = locallyControlled;
             sliderVoiceDistanceNear.interactable = locallyControlled;
@@ -141,6 +135,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             toggleAllowMasterControl.isOn = betterPlayerAudio.defaultAllowMasterControl;
 
             sliderOcclusionFactor.value = betterPlayerAudio.defaultOcclusionFactor;
+            sliderPlayerOcclusionFactor.value = betterPlayerAudio.defaultPlayerOcclusionFactor;
             sliderListenerDirectionality.value = betterPlayerAudio.defaultListenerDirectionality;
             sliderPlayerDirectionality.value = betterPlayerAudio.defaultPlayerDirectionality;
 
@@ -170,8 +165,9 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 textAllowMasterControl.text = $"Let {owner.displayName} (owner) control everything";
             }
-            
+
             sliderOcclusionFactor.value = betterPlayerAudio.OcclusionFactor;
+            sliderPlayerOcclusionFactor.value = betterPlayerAudio.PlayerOcclusionFactor;
             sliderListenerDirectionality.value = betterPlayerAudio.ListenerDirectionality;
             sliderPlayerDirectionality.value = betterPlayerAudio.PlayerDirectionality;
 
@@ -191,36 +187,6 @@ namespace Guribo.UdonBetterAudio.Scripts
             toggleAvatarCustomCurve.isOn = betterPlayerAudio.AllowAvatarCustomAudioCurves;
 
             toggleAllowMasterControl.isOn = betterPlayerAudio.AllowMasterTakeControl();
-        }
-
-        public void ShowVoiceSettings()
-        {
-            HideAllTabs();
-            if (voiceSettings) voiceSettings.gameObject.SetActive(true);
-        }
-
-        public void ShowAvatarSettings()
-        {
-            HideAllTabs();
-            if (avatarSettings) avatarSettings.gameObject.SetActive(true);
-        }
-
-        public void ShowGeneralSettings()
-        {
-            HideAllTabs();
-            if (generalSettings) generalSettings.gameObject.SetActive(true);
-        }
-
-
-        private void HideAllTabs()
-        {
-            foreach (var rectTransform in _tabs)
-            {
-                if (rectTransform)
-                {
-                    rectTransform.gameObject.SetActive(false);
-                }
-            }
         }
     }
 }
