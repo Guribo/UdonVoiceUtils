@@ -5,6 +5,7 @@ using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Scripts.Examples
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(10000)]
     public class PickupMicrophone : UdonSharpBehaviour
     {
@@ -12,8 +13,9 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
 
         public BetterPlayerAudio playerAudio;
         public BetterPlayerAudioOverride betterPlayerAudioOverride;
-
-        [UdonSynced] [SerializeField] protected int micUserId = NoUser;
+        
+        public int playerId = NoUser;
+        [SerializeField] protected SyncedPlayerId syncedPlayerId;
         protected int OldMicUserId = NoUser;
 
         public override void OnPickup()
@@ -25,12 +27,14 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             }
 
             TakeOwnership(localPlayer, false);
-            micUserId = localPlayer.playerId;
+            playerId = localPlayer.playerId;
+            TryRequestSerialization();
         }
 
         public override void OnDrop()
         {
-            micUserId = NoUser;
+            playerId = NoUser;
+            TryRequestSerialization();
         }
 
         public override void OnDeserialization()
@@ -45,17 +49,17 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
 
         private void OnEnable()
         {
-            NewUserStartUsingMic(micUserId);
+            NewUserStartUsingMic(playerId);
         }
 
         private void OnDisable()
         {
-            CleanUpOldUser(micUserId);
+            CleanUpOldUser(playerId);
         }
 
         private void OnDestroy()
         {
-            CleanUpOldUser(micUserId);
+            CleanUpOldUser(playerId);
         }
 
         /// <summary>
@@ -63,13 +67,13 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// </summary>
         private void UpdateMicUser()
         {
-            if (micUserId != OldMicUserId)
+            if (playerId != OldMicUserId)
             {
                 CleanUpOldUser(OldMicUserId);
-                NewUserStartUsingMic(micUserId);
+                NewUserStartUsingMic(playerId);
             }
 
-            OldMicUserId = micUserId;
+            OldMicUserId = playerId;
         }
 
         /// <summary>
@@ -146,6 +150,16 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 betterPlayerAudioOverride.AffectPlayer(newMicUser);
             }
             playerAudio.OverridePlayerSettings( betterPlayerAudioOverride);
+        }
+        
+        private bool TryRequestSerialization()
+        {
+            if (Utilities.IsValid(syncedPlayerId))
+            {
+                syncedPlayerId.UpdateForAll();
+                return true;
+            }
+            return false;
         }
     }
 }

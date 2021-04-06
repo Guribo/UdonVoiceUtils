@@ -6,6 +6,7 @@ using VRC.Udon;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     [DefaultExecutionOrder(10010)]
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
@@ -18,6 +19,12 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         [Header("General Settings")] [SerializeField]
         private UdonBehaviour uiController;
+
+        /// <summary>
+        /// Whether ownership can be changed by any player at any time with Networking.SetOwner(...)
+        /// </summary>
+        [Tooltip("Whether ownership can be changed by any player at any time with Networking.SetOwner(...)")]
+        [SerializeField] protected bool allowOwnershipTransfer = false;
 
         /// <summary>
         /// How many player updates should be performed every second (framerate independent). Example: with 60 players
@@ -256,7 +263,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         #endregion
 
-        #region Synched values
+        #region Manually Synced values
 
         /// <summary>
         /// <inheritdoc cref="defaultOcclusionFactor"/>
@@ -548,6 +555,20 @@ namespace Guribo.UdonBetterAudio.Scripts
             TargetAvatarFarRadius = defaultAvatarFarRadius;
             TargetAvatarGain = defaultAvatarGain;
             TargetAvatarVolumetricRadius = defaultAvatarVolumetricRadius;
+
+            TryRequestSerialization();
+        }
+
+        private bool TryRequestSerialization()
+        {
+            var localPlayer = Networking.LocalPlayer;
+            if (Utilities.IsValid(localPlayer) && localPlayer.IsOwner(gameObject))
+            {
+                RequestSerialization();
+                return true;
+            }
+
+            return false;
         }
 
         private float CalculateRangeReduction(float distance, float distanceReduction, float maxAudibleRange)
@@ -753,13 +774,22 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
         }
 
-        public override void OnOwnershipTransferred()
+        public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
             _allowMasterControl = false;
             if (uiController)
             {
                 uiController.SendCustomEvent(updateUiEventName);
             }
+        }
+        
+        /// <summary>
+        /// Notifies the component that changes to variables have been made.
+        /// Triggers synchronization of master values if the calling player is the owner.
+        /// </summary>
+        public void SetDirty()
+        {
+            TryRequestSerialization();
         }
 
         public override void OnPlayerLeft(VRCPlayerApi player)
@@ -1194,5 +1224,10 @@ namespace Guribo.UdonBetterAudio.Scripts
         }
 
         #endregion
+
+        public override bool OnOwnershipRequest(VRCPlayerApi requestingPlayer, VRCPlayerApi requestedOwner)
+        {
+            return allowOwnershipTransfer && Utilities.IsValid(requestingPlayer);
+        }
     }
 }

@@ -6,6 +6,7 @@ using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterPlayerAudioUiController : UdonSharpBehaviour
     {
         [SerializeField] private BetterPlayerAudio betterPlayerAudio;
@@ -91,6 +92,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             betterPlayerAudio.AllowAvatarCustomAudioCurves = toggleAvatarCustomCurve.isOn;
 
             betterPlayerAudio.SetUseMasterControls(toggleAllowMasterControl.isOn);
+            betterPlayerAudio.SetDirty();
 
             textOcclusionFactor.text = sliderOcclusionFactor.value.ToString("F");
             textPlayerOcclusionFactor.text = sliderPlayerOcclusionFactor.value.ToString("F");
