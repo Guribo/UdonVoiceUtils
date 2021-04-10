@@ -13,10 +13,12 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
 
         public BetterPlayerAudio playerAudio;
         public BetterPlayerAudioOverride betterPlayerAudioOverride;
-        
+
         public int playerId = NoUser;
         [SerializeField] protected SyncedPlayerId syncedPlayerId;
         protected int OldMicUserId = NoUser;
+
+        public OwnershipTransfer ownershipTransfer;
 
         public override void OnPickup()
         {
@@ -26,7 +28,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 return;
             }
 
-            TakeOwnership(localPlayer, false);
+            TakeOwnership(localPlayer);
             playerId = localPlayer.playerId;
             TryRequestSerialization();
         }
@@ -80,18 +82,17 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// take ownership of the microphone if the user doesn't have it yet, or force it
         /// </summary>
         /// <param name="localPlayer"></param>
-        /// <param name="force"></param>
-        private void TakeOwnership(VRCPlayerApi localPlayer, bool force)
+        private void TakeOwnership(VRCPlayerApi localPlayer)
         {
-            if (!Utilities.IsValid(localPlayer))
+            if (!Utilities.IsValid(ownershipTransfer))
             {
-                Debug.LogWarning("PickupMicrophone.TakeOwnership: Invalid local player", this);
+                Debug.LogError("PickupMicrophone.TakeOwnership: ownershipTransfer is invalid");
                 return;
             }
-            
-            if (force || !Networking.IsOwner(localPlayer, gameObject))
+
+            if (!ownershipTransfer.TransferOwnership(gameObject, localPlayer))
             {
-                Networking.SetOwner(localPlayer, gameObject);
+                Debug.LogError("PickupMicrophone.TakeOwnership: failed to transfer ownership");
             }
         }
 
@@ -149,9 +150,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             {
                 betterPlayerAudioOverride.AffectPlayer(newMicUser);
             }
-            playerAudio.OverridePlayerSettings( betterPlayerAudioOverride);
+
+            playerAudio.OverridePlayerSettings(betterPlayerAudioOverride);
         }
-        
+
         private bool TryRequestSerialization()
         {
             if (Utilities.IsValid(syncedPlayerId))
@@ -159,6 +161,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 syncedPlayerId.UpdateForAll();
                 return true;
             }
+
             return false;
         }
     }
