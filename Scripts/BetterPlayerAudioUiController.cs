@@ -58,6 +58,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private RectTransform[] _tabs;
 
+        private bool _preventChangeEvent;
+
         public void Start()
         {
             if (!betterPlayerAudio)
@@ -73,6 +75,11 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void OnSettingsChanged()
         {
+            if (_preventChangeEvent)
+            {
+                return;
+            }
+
             betterPlayerAudio.OcclusionFactor = sliderOcclusionFactor.value;
             betterPlayerAudio.PlayerOcclusionFactor = sliderPlayerOcclusionFactor.value;
             betterPlayerAudio.PlayerDirectionality = sliderPlayerDirectionality.value;
@@ -132,6 +139,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void ResetAll()
         {
+            _preventChangeEvent = true;
+
             // Resetting the sliders/toggles will cause the betterPlayerAudio script to be reset automatically
             // due to the change events being triggered, so there is no need to call betterPlayerAudio.Reset()
             toggleAllowMasterControl.isOn = betterPlayerAudio.defaultAllowMasterControl;
@@ -155,6 +164,9 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             toggleAvatarSpatialize.isOn = betterPlayerAudio.defaultForceAvatarSpatialAudio;
             toggleAvatarCustomCurve.isOn = betterPlayerAudio.defaultAllowAvatarCustomAudioCurves;
+
+            _preventChangeEvent = false;
+            OnSettingsChanged();
         }
 
         /// <summary>

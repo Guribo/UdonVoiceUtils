@@ -350,6 +350,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         private int[] _playersToOverride = new int[0];
         private BetterPlayerAudioOverride[] _playerOverrides;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
+        private int _serializationRequests;
 
         #region Unity Lifecycle
 
@@ -559,16 +560,45 @@ namespace Guribo.UdonBetterAudio.Scripts
             TryRequestSerialization();
         }
 
-        private bool TryRequestSerialization()
+        /// <summary>
+        /// Notifies the component that changes to variables have been made.
+        /// Triggers synchronization of master values if the calling player is the owner.
+        /// </summary>
+        public void SetDirty()
+        {
+            TryRequestSerialization();
+        }
+
+        private void TryRequestSerialization()
         {
             var localPlayer = Networking.LocalPlayer;
             if (Utilities.IsValid(localPlayer) && localPlayer.IsOwner(gameObject))
             {
+                _serializationRequests++;
+                Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                          $"TryRequestSerialization: Requesting serialization (queue length = {_serializationRequests})");
                 RequestSerialization();
-                return true;
+            }
+        }
+
+        public override void OnPostSerialization()
+        {
+            Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"OnPostSerialization called");
+            if (Networking.IsOwner(gameObject))
+            {
+                _serializationRequests--;
+                if (_serializationRequests > 0)
+                {
+                    RequestSerialization();
+                }
+            }
+            else
+            {
+                _serializationRequests = 0;
             }
 
-            return false;
+            Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                      $"OnPostSerialization: (queue length = {_serializationRequests})");
         }
 
         private float CalculateRangeReduction(float distance, float distanceReduction, float maxAudibleRange)
@@ -736,6 +766,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public override void OnDeserialization()
         {
+            Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"OnDeserialization called");
             if (_isReallyOwner)
             {
                 Debug.Log("[<color=#008000>BetterAudio</color>] Taking away ownership as data is received");
@@ -747,6 +778,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public override void OnPreSerialization()
         {
+            Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"OnPreSerialization called");
             if (Networking.IsOwner(gameObject))
             {
                 _isReallyOwner = true;
@@ -766,6 +798,9 @@ namespace Guribo.UdonBetterAudio.Scripts
                 masterTargetAvatarFarRadius = TargetAvatarFarRadius;
                 masterTargetAvatarGain = TargetAvatarGain;
                 masterTargetAvatarVolumetricRadius = TargetAvatarVolumetricRadius;
+
+                Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                          $"OnPreSerialization: serialized data (queue length = {_serializationRequests})");
             }
             else
             {
@@ -781,15 +816,6 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 uiController.SendCustomEvent(updateUiEventName);
             }
-        }
-        
-        /// <summary>
-        /// Notifies the component that changes to variables have been made.
-        /// Triggers synchronization of master values if the calling player is the owner.
-        /// </summary>
-        public void SetDirty()
-        {
-            TryRequestSerialization();
         }
 
         public override void OnPlayerLeft(VRCPlayerApi player)
@@ -1019,8 +1045,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                     continue;
                 }
 
-                Debug.Log(
-                    $"OverridePlayerSettings: override for player {{vrcPlayerApi.name}}({vrcPlayerApi.playerId})");
+                Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                          $"OverridePlayerSettings: override for player {{vrcPlayerApi.name}}({vrcPlayerApi.playerId})");
 
 
                 // check if the player already has an override
@@ -1029,7 +1055,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                 {
                     // replace the current override
                     _playerOverrides[index] = betterPlayerAudioOverride;
-                    Debug.Log($"OverridePlayerSettings: replaced override settings");
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                              $"OverridePlayerSettings: replaced override settings");
                 }
                 else
                 {
@@ -1039,7 +1066,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                         s += i1 + ", ";
                     }
 
-                    Debug.Log(s);
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
 
                     // add a new override for that player
                     // add the player to the list of players that have overrides
@@ -1056,7 +1083,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                         s += i1 + ", ";
                     }
 
-                    Debug.Log(s);
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
 
                     // sort it afterwards to allow binary search to work again
                     Sort(_playersToOverride);
@@ -1067,11 +1094,11 @@ namespace Guribo.UdonBetterAudio.Scripts
                         s += i1 + ", ";
                     }
 
-                    Debug.Log(s);
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
 
                     // get the index of the added player
                     var position = Array.BinarySearch(_playersToOverride, vrcPlayerApi.playerId);
-                    Debug.Log($"position = {position}");
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"position = {position}");
 
 
                     // create a new list of overrides
@@ -1096,7 +1123,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                     // replace the overrides with the new list of overrides
                     _playerOverrides = tempOverrides;
 
-                    Debug.Log($"OverridePlayerSettings: added override settings");
+                    Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                              $"OverridePlayerSettings: added override settings");
                 }
             }
         }
@@ -1126,7 +1154,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private void ClearSinglePlayerOverride(int playerId)
         {
-            Debug.Log($"ClearSinglePlayerOverride: clearing override settings for player {playerId}");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                      $"ClearSinglePlayerOverride: clearing override settings for player {playerId}");
 
             if (_playersToOverride.Length == 0)
             {
@@ -1163,11 +1192,12 @@ namespace Guribo.UdonBetterAudio.Scripts
                 // replace the overrides with the new list of overrides
                 _playerOverrides = tempOverrides;
 
-                Debug.Log($"ClearSinglePlayerOverride: cleared");
+                Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"ClearSinglePlayerOverride: cleared");
             }
             else
             {
-                Debug.Log($"ClearSinglePlayerOverride: not settings to clear found");
+                Debug.Log($"[<color=#008000>BetterAudio</color>] " +
+                          $"ClearSinglePlayerOverride: not settings to clear found");
             }
         }
 
@@ -1211,7 +1241,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 s += i + ",";
             }
 
-            Debug.Log(s);
+            Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
             Sort(array);
 
             s = "Sorted: ";
@@ -1220,7 +1250,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 s += i + ",";
             }
 
-            Debug.Log(s);
+            Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
         }
 
         #endregion
