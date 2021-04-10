@@ -98,6 +98,40 @@ namespace Guribo.UdonBetterAudio.Scripts
             betterPlayerAudio.ForceAvatarSpatialAudio = toggleAvatarSpatialize.isOn;
             betterPlayerAudio.AllowAvatarCustomAudioCurves = toggleAvatarCustomCurve.isOn;
 
+            Debug.Log($"OnSettingsChanged: Values in UI "
+                      + $"{sliderOcclusionFactor.value}, "
+                      + $"{sliderPlayerOcclusionFactor.value}, "
+                      + $"{sliderPlayerDirectionality.value}, "
+                      + $"{ sliderListenerDirectionality.value}, "
+                      + $"{ sliderVoiceDistanceNear.value}, "
+                      + $"{sliderVoiceDistanceFar.value}, "
+                      + $"{sliderVoiceGain.value}, "
+                      + $"{sliderVoiceVolumetricRadius.value}, "
+                      + $"{ toggleVoiceLowpass.isOn}, "
+                      + $"{ sliderAvatarDistanceNear.value}, "
+                      + $"{ sliderAvatarDistanceFar.value}, "
+                      + $"{ sliderAvatarGain.value}, "
+                      + $"{sliderAvatarVolumetricRadius.value}, "
+                      + $"{ toggleAvatarSpatialize.isOn}, "
+                      + $"{ toggleAvatarCustomCurve.isOn}");
+
+            Debug.Log($"OnSettingsChanged: Values in BetterPlayerAudio updated from UI: "
+                      + $"{betterPlayerAudio.OcclusionFactor}, "
+                      + $"{betterPlayerAudio.PlayerOcclusionFactor}, "
+                      + $"{betterPlayerAudio.PlayerDirectionality}, "
+                      + $"{betterPlayerAudio.ListenerDirectionality}, "
+                      + $"{betterPlayerAudio.TargetVoiceDistanceNear}, "
+                      + $"{betterPlayerAudio.TargetVoiceDistanceFar}, "
+                      + $"{betterPlayerAudio.TargetVoiceGain}, "
+                      + $"{betterPlayerAudio.TargetVoiceVolumetricRadius}, "
+                      + $"{betterPlayerAudio.EnableVoiceLowpass}, "
+                      + $"{betterPlayerAudio.TargetAvatarNearRadius}, "
+                      + $"{betterPlayerAudio.TargetAvatarFarRadius}, "
+                      + $"{betterPlayerAudio.TargetAvatarGain}, "
+                      + $"{betterPlayerAudio.TargetAvatarVolumetricRadius}, "
+                      + $"{betterPlayerAudio.ForceAvatarSpatialAudio}, "
+                      + $"{betterPlayerAudio.AllowAvatarCustomAudioCurves}");
+            
             betterPlayerAudio.SetUseMasterControls(toggleAllowMasterControl.isOn);
             betterPlayerAudio.SetDirty();
 
@@ -175,10 +209,12 @@ namespace Guribo.UdonBetterAudio.Scripts
         public void UpdateUi()
         {
             var owner = Networking.GetOwner(betterPlayerAudio.gameObject);
-            if (owner != null)
+            if (Utilities.IsValid(owner))
             {
                 textAllowMasterControl.text = $"Let {owner.displayName} (owner) control everything";
             }
+            
+            _preventChangeEvent = true;
 
             sliderOcclusionFactor.value = betterPlayerAudio.OcclusionFactor;
             sliderPlayerOcclusionFactor.value = betterPlayerAudio.PlayerOcclusionFactor;
@@ -201,6 +237,10 @@ namespace Guribo.UdonBetterAudio.Scripts
             toggleAvatarCustomCurve.isOn = betterPlayerAudio.AllowAvatarCustomAudioCurves;
 
             toggleAllowMasterControl.isOn = betterPlayerAudio.AllowMasterTakeControl();
+            
+            _preventChangeEvent = false;
+            
+            OnSettingsChanged();
         }
     }
 }

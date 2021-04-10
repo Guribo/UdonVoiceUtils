@@ -772,6 +772,23 @@ namespace Guribo.UdonBetterAudio.Scripts
                 Debug.Log("[<color=#008000>BetterAudio</color>] Taking away ownership as data is received");
                 _isReallyOwner = false;
             }
+            
+            Debug.Log($"OnDeserialization: New values received from owner in BetterPlayerAudio"
+                      + $"{masterOcclusionFactor}, "
+                      + $"{masterPlayerOcclusionFactor}, "
+                      + $"{masterListenerDirectionality}, "
+                      + $"{masterPlayerDirectionality}, "
+                      + $"{masterEnableVoiceLowpass}, "
+                      + $"{masterTargetVoiceDistanceNear}, "
+                      + $"{masterTargetVoiceDistanceFar}, "
+                      + $"{masterTargetVoiceGain}, "
+                      + $"{masterTargetVoiceVolumetricRadius}, "
+                      + $"{masterForceAvatarSpatialAudio}, "
+                      + $"{masterAllowAvatarCustomAudioCurves}, "
+                      + $"{masterTargetAvatarNearRadius}, "
+                      + $"{masterTargetAvatarFarRadius}, "
+                      + $"{masterTargetAvatarGain}, "
+                      + $"{masterTargetAvatarVolumetricRadius}");
 
             TryUseMasterValues();
         }
@@ -798,6 +815,23 @@ namespace Guribo.UdonBetterAudio.Scripts
                 masterTargetAvatarFarRadius = TargetAvatarFarRadius;
                 masterTargetAvatarGain = TargetAvatarGain;
                 masterTargetAvatarVolumetricRadius = TargetAvatarVolumetricRadius;
+
+                Debug.Log($"OnPreSerialization: New synchronized Values in BetterPlayerAudio "
+                          + $"{masterOcclusionFactor}, "
+                          + $"{masterPlayerOcclusionFactor}, "
+                          + $"{masterListenerDirectionality}, "
+                          + $"{masterPlayerDirectionality}, "
+                          + $"{masterEnableVoiceLowpass}, "
+                          + $"{masterTargetVoiceDistanceNear}, "
+                          + $"{masterTargetVoiceDistanceFar}, "
+                          + $"{masterTargetVoiceGain}, "
+                          + $"{masterTargetVoiceVolumetricRadius}, "
+                          + $"{masterForceAvatarSpatialAudio}, "
+                          + $"{masterAllowAvatarCustomAudioCurves}, "
+                          + $"{masterTargetAvatarNearRadius}, "
+                          + $"{masterTargetAvatarFarRadius}, "
+                          + $"{masterTargetAvatarGain}, "
+                          + $"{masterTargetAvatarVolumetricRadius}");
 
                 Debug.Log($"[<color=#008000>BetterAudio</color>] " +
                           $"OnPreSerialization: serialized data (queue length = {_serializationRequests})");
