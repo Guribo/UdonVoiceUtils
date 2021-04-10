@@ -1241,8 +1241,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   launchedFromSDKPipeline: 0
-  completedSDKPipeline: 1
-  blueprintId: wrld_1c116063-34ff-41b4-b72d-abe0ee188368
+  completedSDKPipeline: 0
+  blueprintId: 
   contentType: 1
   assetBundleUnityVersion: 
 --- !u!114 &1835737721
