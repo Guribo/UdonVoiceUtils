@@ -16,6 +16,8 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         [UdonSynced]
         public int playerId = -1;
 
+        private int _oldValue = -1;
+
         /// <summary>
         /// Udon behaviour that wants to have one of its variables synced to all players
         /// </summary>
@@ -24,6 +26,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// Variable which will get synchronized with all players
         /// </summary>
         [SerializeField] protected string targetVariable = "playerId";
+        [SerializeField] protected string targetChangeEvent = "OnPlayerIdChanged";
+        [SerializeField] protected string targetPreSerialization = "OnPreSerialization";
+        [SerializeField] protected string targetDeserializeEvent = "OnDeserialization";
+        [SerializeField] protected string targetSerializedEvent = "OnPostSerialization";
 
         /// <summary>
         /// Triggers Serialization of the manually synced player id.
@@ -40,7 +46,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 return false;
             }
             
-            targetBehaviour.SendCustomEvent("OnPreSerialization");
+            if (!string.IsNullOrEmpty(targetPreSerialization))
+            {
+                targetBehaviour.SendCustomEvent(targetPreSerialization);
+            }
 
             var value = targetBehaviour.GetProgramVariable(targetVariable);
             if (value == null)
@@ -54,6 +63,8 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             {
                 playerId = (int) value;
                 RequestSerialization();
+                            
+                _oldValue = playerId;
                 return true;
             }
 
@@ -64,8 +75,8 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         public override void OnDeserialization()
         {
             var localPlayer = Networking.LocalPlayer;
-            if (localPlayer.IsOwner(gameObject) || 
-                !Utilities.IsValid(targetBehaviour) 
+            if (localPlayer.IsOwner(gameObject) 
+                || !Utilities.IsValid(targetBehaviour) 
                 || !Utilities.IsValid(localPlayer))
             {
                 return;
@@ -73,14 +84,35 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
 
             // refresh the variable in the target udon behaviour
             targetBehaviour.SetProgramVariable(targetVariable, playerId);
-            targetBehaviour.SendCustomEvent("OnDeserialization");
+            if (!string.IsNullOrEmpty(targetDeserializeEvent))
+            {
+                targetBehaviour.SendCustomEvent(targetDeserializeEvent);
+            }
+
+            if (_oldValue != playerId)
+            {
+                if (!string.IsNullOrEmpty(targetChangeEvent))
+                {
+                    targetBehaviour.SendCustomEvent(targetChangeEvent);
+                }
+            }
+
+            _oldValue = playerId;
         }
 
         public override void OnPostSerialization()
         {
-            if (Utilities.IsValid(targetBehaviour))
+            var localPlayer = Networking.LocalPlayer;
+            if (!(localPlayer.IsOwner(gameObject) 
+                && Utilities.IsValid(targetBehaviour) 
+                && Utilities.IsValid(localPlayer)))
             {
-                targetBehaviour.SendCustomEvent("OnPostSerialization");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(targetSerializedEvent))
+            {
+                targetBehaviour.SendCustomEvent(targetSerializedEvent);
             }
         }
     }

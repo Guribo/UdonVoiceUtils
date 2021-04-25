@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterAudioPool : UdonSharpBehaviour
     {
         [SerializeField] private BetterAudioFactory betterAudioFactory;

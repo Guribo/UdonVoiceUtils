@@ -6,6 +6,8 @@ using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
+    [DefaultExecutionOrder(100)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterAudioSource : UdonSharpBehaviour
     {
         #region Better Audio

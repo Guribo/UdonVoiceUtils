@@ -27,6 +27,16 @@ namespace Guribo.UdonBetterAudio.Scripts
         [SerializeField] protected bool allowOwnershipTransfer = false;
 
         /// <summary>
+        /// How long to wait after start before applying changes to all players.
+        /// Prevents excessive volume on joining the world because player positions might not be up to date yet.
+        /// </summary>
+        [Tooltip(
+            "How long to wait after start before applying changes to all players. Prevents excessive volume on joining the world because player positions might not be up to date yet.")]
+        [SerializeField]
+        [Range(0, 10f)]
+        protected float startDelay = 10f;
+
+        /// <summary>
         /// How many player updates should be performed every second (framerate independent). Example: with 60 players
         /// in the world and playerUpdateRate = 20 it will take 60/20 = 3 seconds until every player got updated.
         /// If set to -1 it will update ALL PLAYERS EVERY FRAME (don't use this option in worlds with up to
@@ -342,7 +352,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         #endregion
 
-        private bool _initialized;
+        private bool _receivedStart;
+        private bool _canUpdate;
         private bool _isReallyOwner;
         private int _playerIndex;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
@@ -354,17 +365,58 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         #region Unity Lifecycle
 
+        private void OnEnable()
+        {
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnEnable", this);
+            
+            if (_receivedStart)
+            {
+                // don't wait for all players to load as they should be all loaded already
+                _canUpdate = true;
+            }
+        }
+
+        private void OnDisable()
+        {
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnDisable", this);
+        }
+
         private void Start()
         {
             _playerOverrides = new BetterPlayerAudioOverride[0];
             Initialize();
+
+            EnableProcessingDelayed(startDelay);
+        }
+
+        public void EnableProcessingDelayed(float delay)
+        {
+            SendCustomEventDelayedSeconds("EnableProcessing", 10f);
+        }
+
+        public void EnableProcessing()
+        {
+            if (!(Utilities.IsValid(this) 
+                && Utilities.IsValid(gameObject))
+            && gameObject.activeInHierarchy)
+            {
+                // do nothing if the behaviour is not alive/valid/active
+                return;
+            }
+
+            _canUpdate = true;
         }
 
         private void LateUpdate()
         {
+            if (!_canUpdate)
+            {
+                return;
+            }
+            
             // skip local player
             var localPlayer = Networking.LocalPlayer;
-            if (localPlayer == null)
+            if (!Utilities.IsValid(localPlayer))
             {
                 return;
             }
@@ -532,9 +584,9 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// </summary>
         public void Initialize()
         {
-            if (!_initialized)
+            if (!_receivedStart)
             {
-                _initialized = true;
+                _receivedStart = true;
                 ResetToDefault();
             }
         }
@@ -571,8 +623,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private void TryRequestSerialization()
         {
-            var localPlayer = Networking.LocalPlayer;
-            if (Utilities.IsValid(localPlayer) && localPlayer.IsOwner(gameObject))
+            if (Networking.IsOwner(gameObject))
             {
                 _serializationRequests++;
                 Debug.Log($"[<color=#008000>BetterAudio</color>] " +
@@ -772,8 +823,9 @@ namespace Guribo.UdonBetterAudio.Scripts
                 Debug.Log("[<color=#008000>BetterAudio</color>] Taking away ownership as data is received");
                 _isReallyOwner = false;
             }
-            
-            Debug.Log($"OnDeserialization: New values received from owner in BetterPlayerAudio"
+
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnDeserialization: New values received from owner " +
+                      $"in BetterPlayerAudio"
                       + $"{masterOcclusionFactor}, "
                       + $"{masterPlayerOcclusionFactor}, "
                       + $"{masterListenerDirectionality}, "

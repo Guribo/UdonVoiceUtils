@@ -50,9 +50,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Editor
             "Assets/Guribo/UdonBetterAudio/Scripts/BetterPlayerAudioOverride.cs",
             "Assets/Guribo/UdonBetterAudio/Scripts/BetterPlayerAudioUiController.asset",
             "Assets/Guribo/UdonBetterAudio/Scripts/BetterPlayerAudioUiController.cs",
+            "Assets/Guribo/UdonBetterAudio/Scripts/OwnershipTransfer.asset",
+            "Assets/Guribo/UdonBetterAudio/Scripts/OwnershipTransfer.cs",
 
-            "Assets/Guribo/UdonBetterAudio/Scripts/Examples/PickupMicrophone.asset",
-            "Assets/Guribo/UdonBetterAudio/Scripts/Examples/PickupMicrophone.cs"
+            "Assets/Guribo/UdonBetterAudio/Scripts/Examples"
         };
 
         /// <summary>

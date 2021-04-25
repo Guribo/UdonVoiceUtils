@@ -144,6 +144,7 @@ MonoBehaviour:
   proximity: 2
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
   serializedProgramAsset: {fileID: 11400000, guid: 9479243df379a9d4194270fcb80fef97,
     type: 2}
   programSource: {fileID: 11400000, guid: 8b8f9cb0539b5f1478338a32a48ca71c, type: 2}
@@ -297,6 +298,7 @@ MonoBehaviour:
   proximity: 2
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
   serializedProgramAsset: {fileID: 11400000, guid: 8e0f255e90c964c448fc377f58d3a06e,
     type: 2}
   programSource: {fileID: 11400000, guid: c2ebde7a8e4215944b87bf75792ca884, type: 2}
@@ -353,6 +355,7 @@ MonoBehaviour:
   proximity: 2
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
   serializedProgramAsset: {fileID: 11400000, guid: 317736f34c8993f418944e49f2c5fae6,
     type: 2}
   programSource: {fileID: 11400000, guid: 1f1cddce4d9842e9a54f0adbc4379f09, type: 2}
@@ -409,6 +412,7 @@ MonoBehaviour:
   proximity: 2
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
   serializedProgramAsset: {fileID: 11400000, guid: 9479243df379a9d4194270fcb80fef97,
     type: 2}
   programSource: {fileID: 11400000, guid: 8b8f9cb0539b5f1478338a32a48ca71c, type: 2}
@@ -598,6 +602,7 @@ MonoBehaviour:
   proximity: 2
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
   serializedProgramAsset: {fileID: 11400000, guid: dec84794463083b49aefc01b2f624ddd,
     type: 2}
   programSource: {fileID: 11400000, guid: 4f44a12918b543cf95381db6b944c0fc, type: 2}
@@ -657,6 +662,7 @@ MonoBehaviour:
   proximity: 2
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
   serializedProgramAsset: {fileID: 11400000, guid: 0aa2fd1c6d9483d408d9d9ac1950f9bd,
     type: 2}
   programSource: {fileID: 11400000, guid: dac046853b00f484483616142840853e, type: 2}
@@ -759,7 +765,7 @@ PrefabInstance:
     - target: {fileID: 1746959986939832274, guid: 570b43e77481126408f4e8cfdd133e63,
         type: 3}
       propertyPath: m_Name
-      value: BetterAudioNoTests
+      value: BetterAudioWithTests
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 570b43e77481126408f4e8cfdd133e63, type: 3}

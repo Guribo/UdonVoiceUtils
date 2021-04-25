@@ -3,14 +3,17 @@ using Guribo.UdonUtils.Scripts.Testing;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
+using VRC.Udon.Common.Enums;
 
 namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
 {
+    [DefaultExecutionOrder(110)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterAudioSoundPlayDelayTest : UdonSharpBehaviour
     {
         #region DO NOT EDIT
 
-        [HideInInspector] public TestController testController;
+        [NonSerialized] public TestController testController;
 
         public void Initialize()
         {
@@ -60,18 +63,14 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
 
         [SerializeField] private BetterAudioSource betterAudioSource;
         private float _expectedDelay = 3f;
-        private float _expectedPlayOffset = 0.5f;
         private float _expectedPlayPosition = 1f;
-        private Vector3 _playPosition = new Vector3(3f * 343f, 0, 0);
+        private readonly Vector3 _playPosition = new Vector3(3f * 343f, 0, 0);
         private bool _pendingCheck;
         private float _scheduledCheckTime;
         private float _maxDifference;
 
         private void InitializeTest()
         {
-            // TODO your init behaviour here
-            // ...
-
             if (!betterAudioSource)
             {
                 Debug.LogError(
@@ -82,7 +81,9 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
             }
 
             betterAudioSource.playOnEnable = false;
-            betterAudioSource.playOffset = _expectedPlayOffset;
+            betterAudioSource.playOffset = 0f;
+            betterAudioSource.Stop();
+            betterAudioSource.gameObject.SetActive(false);
 
             var localPlayer = Networking.LocalPlayer;
             if (localPlayer != null)
@@ -94,8 +95,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
                 betterAudioSource.transform.position = _playPosition;
             }
 
-            betterAudioSource.Stop();
-            betterAudioSource.gameObject.SetActive(false);
+
             _pendingCheck = false;
 
             // whenever the test is ready to be started call _betterAudioTestController.TestInitialized,
@@ -163,10 +163,10 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
                 return;
             }
 
-            _scheduledCheckTime = Time.time + _expectedDelay + _expectedPlayOffset;
-
             _pendingCheck = true;
             _maxDifference = Time.deltaTime;
+            
+            SendCustomEventDelayedSeconds("CheckIsPlaying", _expectedDelay + _expectedPlayPosition,EventTiming.LateUpdate);
 
             Debug.Log(
                 "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Waiting for delayed checks",
@@ -183,9 +183,9 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
             testController.TestCleanedUp(true);
         }
 
-        private void Update()
+        public void CheckIsPlaying()
         {
-            if (_pendingCheck && Time.time > _scheduledCheckTime)
+            if (_pendingCheck)
             {
                 _pendingCheck = false;
 

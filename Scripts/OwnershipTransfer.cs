@@ -1,6 +1,7 @@
 using System;
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Components;
 using VRC.SDKBase;
 using VRC.Udon;
 
@@ -24,7 +25,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 Debug.LogError("OwnershipTransfer.SetOwner: invalid GameObject");
                 return false;
             }
-            
+
             if (!Utilities.IsValid(newOwner))
             {
                 Debug.LogError("OwnershipTransfer.SetOwner: invalid new owner");
@@ -36,11 +37,11 @@ namespace Guribo.UdonBetterAudio.Scripts
             if (!Utilities.IsValid(topBehaviour))
             {
                 Debug.LogError($"OwnershipTransfer.SetOwner: GameObject {gameObject.name} " +
-                                 $"has no parent udon behaviour which could change ownership");
+                               $"has no parent udon behaviour which could change ownership");
                 return false;
             }
 
-            var allTransforms = GetComponentsInChildren<Transform>( true);
+            var allTransforms = topBehaviour.transform.GetComponentsInChildren<Transform>(true);
 
             if (allTransforms == null || allTransforms.Length == 0)
             {
@@ -48,6 +49,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                                $"has no udon behaviours it its hierarchy");
                 return false;
             }
+
+            var newOwnerPlayerId = newOwner.playerId;
 
             foreach (var childTransform in allTransforms)
             {
@@ -57,18 +60,26 @@ namespace Guribo.UdonBetterAudio.Scripts
                     continue;
                 }
 
-                var oldOwnerId = -1;
-                var oldOwner = Networking.GetOwner(childTransform.gameObject);
-                if (Utilities.IsValid(oldOwner))
+                var childGo = childTransform.gameObject;
+                // make sure to not overload the network by only taking ownership of objects that have synced components
+                if (Utilities.IsValid(childGo.GetComponent(typeof(UdonBehaviour)))
+                    || Utilities.IsValid(childGo.GetComponent(typeof(VRC.SDKBase.VRCStation)))
+                    || Utilities.IsValid(childGo.GetComponent(typeof(VRC_Pickup)))
+                    || Utilities.IsValid(childGo.GetComponent(typeof(VRCObjectSync))))
                 {
-                    oldOwnerId = oldOwner.playerId;
-                }
+                    var oldOwnerId = -1;
+                    var oldOwner = Networking.GetOwner(childTransform.gameObject);
+                    if (Utilities.IsValid(oldOwner))
+                    {
+                        oldOwnerId = oldOwner.playerId;
+                    }
 
-                Debug.Log($"OwnershipTransfer.SetOwner: setting owner of " +
-                          $"'{childTransform.gameObject.name}' " +
-                          $"from player {oldOwnerId} to player {newOwner.playerId}");
-                
-                Networking.SetOwner(newOwner, childTransform.gameObject);
+                    Debug.Log($"OwnershipTransfer.SetOwner: setting owner of " +
+                              $"'{childTransform.gameObject.name}' " +
+                              $"from player {oldOwnerId} to player {newOwnerPlayerId}");
+
+                    Networking.SetOwner(newOwner, childTransform.gameObject);
+                }
             }
 
             return true;
@@ -86,7 +97,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 return null;
             }
-            
+
             Component topComponent = null;
             var topTransform = start;
 

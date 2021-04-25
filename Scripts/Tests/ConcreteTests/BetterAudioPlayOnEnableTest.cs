@@ -2,14 +2,17 @@
 using Guribo.UdonUtils.Scripts.Testing;
 using UdonSharp;
 using UnityEngine;
+using VRC.Udon.Common.Enums;
 
 namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
 {
+    [DefaultExecutionOrder(110)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterAudioPlayOnEnableTest : UdonSharpBehaviour
     {
         #region DO NOT EDIT
 
-        [HideInInspector] public TestController testController;
+        [NonSerialized] public TestController testController;
 
         public void Initialize()
         {
@@ -60,7 +63,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
         [SerializeField] private BetterAudioSource betterAudioSource;
 
         private bool _pendingCheck;
-        private float _scheduledCheckTime;
         private float _expectedAudioTime;
         private float _maxDifference;
         private bool _secondPass;
@@ -190,21 +192,22 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
 
             var waitDuration = 3f;
 
-            _scheduledCheckTime = Time.time + waitDuration;
-
             actualAudioSource.time = 0f;
             _expectedAudioTime = waitDuration;
             _pendingCheck = true;
             _maxDifference = Time.deltaTime;
+
+            SendCustomEventDelayedSeconds("CheckIsPlaying", waitDuration, EventTiming.LateUpdate);
 
             Debug.Log(
                 "[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] Waiting for delayed checks",
                 this);
         }
 
-        private void Update()
+
+        public void CheckIsPlaying()
         {
-            if (_pendingCheck && Time.time > _scheduledCheckTime)
+            if (_pendingCheck)
             {
                 _pendingCheck = false;
 
@@ -253,7 +256,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests
                 }
             }
         }
-
 
         private void CleanUpTest()
         {
