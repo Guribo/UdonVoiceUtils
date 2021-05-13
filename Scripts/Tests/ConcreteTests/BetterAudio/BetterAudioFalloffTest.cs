@@ -7,10 +7,10 @@ using VRC.Udon;
 using VRC.Udon.Common.Enums;
 using VRC.Udon.Common.Interfaces;
 
-namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests.BetterPlayerAudio
+namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests.BetterAudio
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class BetterPlayerAudioVoiceFalloffTest : UdonSharpBehaviour
+    public class BetterAudioFalloffTest : UdonSharpBehaviour
     {
         #region DO NOT EDIT
 
@@ -89,118 +89,61 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests.BetterPlayerAudio
         public int samples = 100;
         public float stepSize = 1f;
         public float stepInterval = 1f;
-        public float startDelay = 13f;
+        public float startDelay = 1f;
 
         [Range(0, 180f)]
         public float emitterAngle = 0f;
         [Range(0, 180f)]
         public float listenerAngle = 0f;
-        public UdonBehaviour betterPlayerAudio;
 
         private int _currentStep;
-        private VRCPlayerApi _voiceListener;
-        private VRCPlayerApi _voiceEmitter;
+        private VRCPlayerApi _audioListener;
+        public BetterAudioSource betterAudioSource;
+
+        private AudioSource _audioSourceProxy;
 
         private void InitializeTest()
         {
-            if (!Assert(Networking.IsMaster, "Non-Master is not allowed to start the test"))
+            _audioListener = Networking.LocalPlayer;
+            if (!Assert(Utilities.IsValid(_audioListener), "Local player is invalid"))
             {
                 testController.TestInitialized(false);
                 return;
             }
 
-            // verify 2 players are in the world
-            var playerCount = VRCPlayerApi.GetPlayerCount();
-            if (!Assert(playerCount == 2, $"Requires 2 players to be present, found {playerCount}"))
+            if (!Assert(Utilities.IsValid(betterAudioSource), "betterAudioSource is invalid"))
             {
                 testController.TestInitialized(false);
                 return;
             }
 
-            var players = new VRCPlayerApi[2];
-            players = VRCPlayerApi.GetPlayers(players);
-
-            if (!Assert(Utilities.IsValid(players[0]), "First player is invalid"))
+            _audioSourceProxy = betterAudioSource.GetAudioSourceProxy();
+            if (!Assert(Utilities.IsValid(_audioSourceProxy), "audioSourceProxy is invalid"))
             {
                 testController.TestInitialized(false);
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(players[1]), "Second player is invalid"))
-            {
-                testController.TestInitialized(false);
-                return;
-            }
-
-            // turn the local player into the voice emitter and the other player into the listener
-            if (players[0].isLocal)
-            {
-                _voiceEmitter = players[0];
-                _voiceListener = players[1];
-            }
-            else
-            {
-                _voiceEmitter = players[1];
-                _voiceListener = players[0];
-            }
-
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            if (Utilities.IsValid(betterPlayerAudio))
-            {
-                if (!Assert(!betterPlayerAudio.enabled,
-                    "betterPlayerAudio component must be disabled by default for this test"))
-                {
-                    testController.TestInitialized(false);
-                    return;
-                }
-
-                SendCustomNetworkEvent(NetworkEventTarget.All, "SetAudioProperties");
-            }
+            _audioSourceProxy.loop = true;
 
             // ensure both players can't move around
-            _voiceEmitter.Immobilize(true);
+            _audioListener.Immobilize(true);
 
             _currentStep = 0;
             EmitterTeleportInFrontOfListener(_currentStep);
+            betterAudioSource.Play(false);
 
             testController.TestInitialized(true);
         }
 
-        public void SetAudioProperties()
-        {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] SetAudioProperties",
-                this);
-            if (!Assert(Utilities.IsValid(betterPlayerAudio), $"betterPlayerAudio invalid"))
-            {
-                testController.TestInitialized(false);
-                return;
-            }
-
-            betterPlayerAudio.enabled = true;
-        }
-
-        public void ClearAudioProperties()
-        {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] [<color=#804500>Testing</color>] ClearAudioProperties",
-                this);
-            if (!Assert(Utilities.IsValid(betterPlayerAudio), $"betterPlayerAudio invalid"))
-            {
-                testController.TestCleanedUp(false);
-                return;
-            }
-
-            betterPlayerAudio.enabled = false;
-        }
-
         private void EmitterTeleportInFrontOfListener(int step)
         {
-            var forward = (_voiceListener.GetRotation() * Quaternion.Euler(0, listenerAngle, 0)) * Vector3.forward;
+            var forward = (_audioListener.GetRotation() * Quaternion.Euler(0, listenerAngle, 0)) * Vector3.forward;
             var positionOffset = step * stepSize * forward;
-            var teleportPosition = _voiceListener.GetPosition() + positionOffset;
-            _voiceEmitter.TeleportTo(teleportPosition,
-                Quaternion.LookRotation(-forward, Vector3.up) * Quaternion.Euler(0, emitterAngle, 0),
-                VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,
-                false);
+            var teleportPosition = _audioListener.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position +
+                                   positionOffset;
+            betterAudioSource.transform.SetPositionAndRotation(teleportPosition,
+                Quaternion.LookRotation(-forward, Vector3.up) * Quaternion.Euler(0, emitterAngle, 0));
         }
 
         private void RunTest()
@@ -215,13 +158,13 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests.BetterPlayerAudio
                 testController.TestCompleted(false);
             }
 
-            if (!Assert(Utilities.IsValid(_voiceEmitter), "Voice emitting player is invalid"))
+            if (!Assert(Utilities.IsValid(betterAudioSource), "Emitting betterAudioSource is invalid"))
             {
                 testController.TestCompleted(false);
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(_voiceListener), "Voice listening player is invalid"))
+            if (!Assert(Utilities.IsValid(_audioListener), "Voice listening player is invalid"))
             {
                 testController.TestCompleted(false);
                 return;
@@ -250,26 +193,22 @@ namespace Guribo.UdonBetterAudio.Scripts.Tests.ConcreteTests.BetterPlayerAudio
                 testController.TestCleanedUp(false);
             }
 
-            if (!Assert(Utilities.IsValid(_voiceEmitter), "Voice emitting player is invalid"))
+            if (!Assert(Utilities.IsValid(betterAudioSource), "Emitting betterAudioSource is invalid"))
+            {
+                testController.TestCleanedUp(false);
+                return;
+            }
+            betterAudioSource.Stop();
+
+            if (!Assert(Utilities.IsValid(_audioListener), "Voice listening player is invalid"))
             {
                 testController.TestCleanedUp(false);
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(_voiceListener), "Voice listening player is invalid"))
-            {
-                testController.TestCleanedUp(false);
-                return;
-            }
+            EmitterTeleportInFrontOfListener(0);
 
-            EmitterTeleportInFrontOfListener(1);
-
-            if (Utilities.IsValid(betterPlayerAudio))
-            {
-                SendCustomNetworkEvent(NetworkEventTarget.All, "ClearAudioProperties");
-            }
-
-            _voiceEmitter.Immobilize(false);
+            _audioListener.Immobilize(false);
             testController.TestCleanedUp(true);
         }
 

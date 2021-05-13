@@ -37,12 +37,16 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Range(0, 2)]
         public float distanceLowpassFiltering = 1f;
 
+        public bool useCustomLowpassRolloff = false;
+        public AnimationCurve lowPassFilteringOverDistance = AnimationCurve.Linear(0, 1, 1, 0);
+
+        public float minFrequency = 100f;
+        
         [Tooltip(
             "Applying distance lowpass filtering uses logarithmic fall off. To calculate the falloff the larger value of customDistanceLowpassFilterStart and minimum distance (see AudioSource component) is used. Set this value if  for example a custom falloff curve is used.")]
         public float customDistanceLowpassFilterStart = 0;
 
-        [Tooltip(
-            "How much the audio is affected by fake air density changes when far away, increase to increase effect. Set to 0 to deactivate. Is only being used if distanceLowpassFiltering is bigger than 0")]
+        [Tooltip("How much the audio is affected by fake air density changes when far away, increase to increase effect. Set to 0 to deactivate. Is only being used if distanceLowpassFiltering is bigger than 0")]
         [Range(0, 1)]
         public float distanceNoise = 0.5f;
 
@@ -489,13 +493,13 @@ namespace Guribo.UdonBetterAudio.Scripts
                 {
                     targetVolume = _proxyAudioSource.volume;
                     targetPitch = _proxyAudioSource.pitch;
-                    finalCutOffFrequency = 22000f;
+                    finalCutOffFrequency = 22000f - minFrequency;
 
                     var soundSourcePosition = _actualAudioSource.transform.position;
 
 
                     // occlusion effects
-                    if (occlusionDampeningStrength > 0)
+                    if (occlusionDampeningStrength > 0.001f)
                     {
                         var occlusionFactor =
                             CalculateOcclusion(audibleSoundDistance, listenerPosition, soundSourcePosition,
@@ -506,16 +510,12 @@ namespace Guribo.UdonBetterAudio.Scripts
                     }
 
                     // distance lowpass filtering and noise
-                    if (distanceLowpassFiltering > 0.01f)
+                    if (distanceLowpassFiltering > 0.001f)
                     {
-                        var audioDistanceRolloff = GetLogarithmicRolloff(
-                            Mathf.Max(_actualAudioSource.minDistance, customDistanceLowpassFilterStart),
-                            audibleSoundDistance);
-                        // var audioDistanceRolloff = GetRollOffFromCurve(audibleSoundDistance); TODO await support of curves
-
+                        var audioDistanceRolloff = GetRollOffFromCurve(audibleSoundDistance);
                         var relativeFrequencyLossOverDistance = (1f - audioDistanceRolloff) * distanceLowpassFiltering;
 
-                        if (distanceNoise > 0.01f)
+                        if (distanceNoise != 0f)
                         {
                             var noise = NoiseHeight(soundSourcePosition.x,
                                 soundSourcePosition.y,
@@ -524,11 +524,11 @@ namespace Guribo.UdonBetterAudio.Scripts
                                 noiseAmplitudeWeight,
                                 noiseFrequencyIncrease,
                                 noiseChangeRate) * distanceNoise;
-                            relativeFrequencyLossOverDistance *= noise;
+                            relativeFrequencyLossOverDistance *= (1f - noise);
                         }
 
                         finalCutOffFrequency *=
-                            Mathf.Clamp01(audioDistanceRolloff * (1f + relativeFrequencyLossOverDistance));
+                            Mathf.Clamp01(audioDistanceRolloff * (1f - relativeFrequencyLossOverDistance));
                     }
 
 
@@ -572,9 +572,9 @@ namespace Guribo.UdonBetterAudio.Scripts
                 }
 
                 _actualAudioSource.volume = Mathf.Lerp(_actualAudioSource.volume, targetVolume, 0.25f);
-                _actualAudioSource.pitch = Mathf.Lerp(_actualAudioSource.pitch, targetPitch, 0.1f);
+                _actualAudioSource.pitch = Mathf.Lerp(_actualAudioSource.pitch, targetPitch, 0.25f);
                 _audioLowPassFilter.cutoffFrequency =
-                    Mathf.Lerp(_audioLowPassFilter.cutoffFrequency, finalCutOffFrequency, 0.1f);
+                    Mathf.Lerp(_audioLowPassFilter.cutoffFrequency, finalCutOffFrequency + minFrequency, 0.25f);
             }
         }
 
@@ -795,14 +795,35 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             return 1f;
         }
-
-        [Obsolete("Not yet supported by UDON, use GetLogarithmicRolloff for now")]
         public float GetRollOffFromCurve(float distance)
         {
-            return 0f;
-            // if (!_proxyAudioSource) return 0;
-            // return _proxyAudioSource.GetCustomCurve(AudioSourceCurveType.CustomRolloff).Evaluate(distance);
+            if (Utilities.IsValid(_proxyAudioSource))
+            {
+                var maxDistance = GetMaxDistance();
+                if (maxDistance > 0 && distance < maxDistance)
+                {
+                    if (useCustomLowpassRolloff)
+                    {
+                        return lowPassFilteringOverDistance.Evaluate(distance / maxDistance);
+                    }
+
+                    return _proxyAudioSource.GetCustomCurve(AudioSourceCurveType.CustomRolloff)
+                        .Evaluate(distance / maxDistance);
+                }
+            }
+
+            return 0;
         }
+
+        private float Remap(float iMin, float iMax, float oMin, float oMax, float value)
+        {
+            var t = InverseLerp(iMin, iMax, value);
+            return Lerp(oMin, oMax, t);
+        }
+
+        private float InverseLerp(float a, float b, float value) => (value - a) / (b - a);
+
+        private float Lerp(float a, float b, float t) => (1f - t) * a + t * b;
 
         /// <summary>
         /// 
@@ -831,7 +852,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             var xPos = x * positionScale;
             var yPos = y * positionScale;
 
-            var offset = (float) Networking.GetServerTimeInSeconds() * changeRate;
+            var offset = (float) Networking.GetServerTimeInMilliseconds() *0.001f  * changeRate;
 
             for (int i = 0; i < octaves; i++)
             {
@@ -847,7 +868,7 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             return noiseHeight;
         }
-
+        
         private void UpdateHistory(Vector3 position, Quaternion rotation)
         {
             _recordingPosition = (_recordingPosition + 1) % HistoryLength;
