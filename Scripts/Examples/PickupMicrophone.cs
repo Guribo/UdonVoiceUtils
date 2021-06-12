@@ -1,4 +1,5 @@
 ﻿using System;
+using Guribo.UdonUtils.Scripts.Common.Networking;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -15,7 +16,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         public BetterPlayerAudioOverride betterPlayerAudioOverride;
 
         public int playerId = NoUser;
-        [SerializeField] protected SyncedPlayerId syncedPlayerId;
+        [SerializeField] protected SyncedInteger syncedInteger;
         protected int OldMicUserId = NoUser;
 
         public OwnershipTransfer ownershipTransfer;
@@ -30,23 +31,13 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
 
             TakeOwnership(localPlayer);
             playerId = localPlayer.playerId;
-            TryRequestSerialization();
+            SynchronizePlayers();
         }
 
         public override void OnDrop()
         {
             playerId = NoUser;
-            TryRequestSerialization();
-        }
-
-        public override void OnDeserialization()
-        {
-            UpdateMicUser();
-        }
-
-        public override void OnPreSerialization()
-        {
-            UpdateMicUser();
+            SynchronizePlayers();
         }
 
         private void OnEnable()
@@ -67,7 +58,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// <summary>
         /// if the current user has changed switch let only the new user be affected by the mic
         /// </summary>
-        private void UpdateMicUser()
+        public void UpdateMicUser()
         {
             if (playerId != OldMicUserId)
             {
@@ -90,7 +81,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 return;
             }
 
-            if (!ownershipTransfer.TransferOwnership(gameObject, localPlayer))
+            if (!ownershipTransfer.TransferOwnership(gameObject, localPlayer, true))
             {
                 Debug.LogError("PickupMicrophone.TakeOwnership: failed to transfer ownership");
             }
@@ -154,15 +145,14 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             playerAudio.OverridePlayerSettings(betterPlayerAudioOverride);
         }
 
-        private bool TryRequestSerialization()
+        private void SynchronizePlayers()
         {
-            if (Utilities.IsValid(syncedPlayerId))
+            if (!Utilities.IsValid(syncedInteger))
             {
-                syncedPlayerId.UpdateForAll();
-                return true;
+                return;
             }
 
-            return false;
+            syncedInteger.UpdateForAll();
         }
     }
 }

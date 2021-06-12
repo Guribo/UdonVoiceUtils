@@ -299,7 +299,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: syncedPlayerId
+      Data: syncedInteger
     - Name: $v
       Entry: 7
       Data: 17|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -311,7 +311,7 @@ MonoBehaviour:
       Data: 19|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonBetterAudio.Scripts.Examples.SyncedPlayerId, Assembly-CSharp
+      Data: Guribo.UdonUtils.Scripts.Common.Networking.SyncedInteger, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
@@ -326,10 +326,10 @@ MonoBehaviour:
       Data: VRCUdonUdonBehaviour
     - Name: symbolOriginalName
       Entry: 1
-      Data: syncedPlayerId
+      Data: syncedInteger
     - Name: symbolUniqueName
       Entry: 1
-      Data: syncedPlayerId
+      Data: syncedInteger
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -437,7 +437,7 @@ MonoBehaviour:
       Data: 27|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonBetterAudio.Scripts.OwnershipTransfer, Assembly-CSharp
+      Data: Guribo.UdonUtils.Scripts.Common.Networking.OwnershipTransfer, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 

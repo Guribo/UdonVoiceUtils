@@ -3,6 +3,7 @@ using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDKBase;
+using VRC.Udon;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
@@ -17,6 +18,12 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         [Tooltip("Target the actual audio source shall follow, otherwise will not move")] [SerializeField]
         private Transform followTarget;
+
+        #endregion
+
+        #region UdonAudioAudioLink
+
+        public UdonBehaviour audioLink;
 
         #endregion
 
@@ -699,6 +706,11 @@ namespace Guribo.UdonBetterAudio.Scripts
                         "BetterAudioSource.Play: received audio source instance is missing an AudioLowPassFilter");
                     return;
                 }
+            }
+            
+            if (Utilities.IsValid(audioLink))
+            {
+                audioLink.SetProgramVariable("audioSource", _actualAudioSource);
             }
 
             if (IsPlaying())

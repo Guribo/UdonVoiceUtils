@@ -3,6 +3,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRC.Udon.Common;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
@@ -632,9 +633,16 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
         }
 
-        public override void OnPostSerialization()
+        public override void OnPostSerialization(SerializationResult result)
         {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"OnPostSerialization called");
+            if (!result.success)
+            {
+                Debug.LogWarning( $"[<color=#008000>BetterAudio</color>] OnPostSerialization: Serialization failed, trying again", this);
+                RequestSerialization();
+                return;
+            }
+
+            Debug.Log( $"[<color=#008000>BetterAudio</color>] OnPostSerialization: Serialized {result.byteCount} bytes");
             if (Networking.IsOwner(gameObject))
             {
                 _serializationRequests--;
@@ -1132,7 +1140,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 }
 
                 Debug.Log($"[<color=#008000>BetterAudio</color>] " +
-                          $"OverridePlayerSettings: override for player {{vrcPlayerApi.name}}({vrcPlayerApi.playerId})");
+                          $"OverridePlayerSettings: override for player {vrcPlayerApi.displayName}({vrcPlayerApi.playerId})");
 
 
                 // check if the player already has an override
