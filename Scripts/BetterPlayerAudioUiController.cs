@@ -6,6 +6,7 @@ using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Scripts
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterPlayerAudioUiController : UdonSharpBehaviour
     {
         [SerializeField] private BetterPlayerAudio betterPlayerAudio;
@@ -57,6 +58,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         private RectTransform[] _tabs;
 
+        private bool _preventChangeEvent;
+
         public void Start()
         {
             if (!betterPlayerAudio)
@@ -72,6 +75,11 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void OnSettingsChanged()
         {
+            if (_preventChangeEvent)
+            {
+                return;
+            }
+
             betterPlayerAudio.OcclusionFactor = sliderOcclusionFactor.value;
             betterPlayerAudio.PlayerOcclusionFactor = sliderPlayerOcclusionFactor.value;
             betterPlayerAudio.PlayerDirectionality = sliderPlayerDirectionality.value;
@@ -90,7 +98,42 @@ namespace Guribo.UdonBetterAudio.Scripts
             betterPlayerAudio.ForceAvatarSpatialAudio = toggleAvatarSpatialize.isOn;
             betterPlayerAudio.AllowAvatarCustomAudioCurves = toggleAvatarCustomCurve.isOn;
 
+            Debug.Log($"OnSettingsChanged: Values in UI "
+                      + $"{sliderOcclusionFactor.value}, "
+                      + $"{sliderPlayerOcclusionFactor.value}, "
+                      + $"{sliderPlayerDirectionality.value}, "
+                      + $"{ sliderListenerDirectionality.value}, "
+                      + $"{ sliderVoiceDistanceNear.value}, "
+                      + $"{sliderVoiceDistanceFar.value}, "
+                      + $"{sliderVoiceGain.value}, "
+                      + $"{sliderVoiceVolumetricRadius.value}, "
+                      + $"{ toggleVoiceLowpass.isOn}, "
+                      + $"{ sliderAvatarDistanceNear.value}, "
+                      + $"{ sliderAvatarDistanceFar.value}, "
+                      + $"{ sliderAvatarGain.value}, "
+                      + $"{sliderAvatarVolumetricRadius.value}, "
+                      + $"{ toggleAvatarSpatialize.isOn}, "
+                      + $"{ toggleAvatarCustomCurve.isOn}");
+
+            Debug.Log($"OnSettingsChanged: Values in BetterPlayerAudio updated from UI: "
+                      + $"{betterPlayerAudio.OcclusionFactor}, "
+                      + $"{betterPlayerAudio.PlayerOcclusionFactor}, "
+                      + $"{betterPlayerAudio.PlayerDirectionality}, "
+                      + $"{betterPlayerAudio.ListenerDirectionality}, "
+                      + $"{betterPlayerAudio.TargetVoiceDistanceNear}, "
+                      + $"{betterPlayerAudio.TargetVoiceDistanceFar}, "
+                      + $"{betterPlayerAudio.TargetVoiceGain}, "
+                      + $"{betterPlayerAudio.TargetVoiceVolumetricRadius}, "
+                      + $"{betterPlayerAudio.EnableVoiceLowpass}, "
+                      + $"{betterPlayerAudio.TargetAvatarNearRadius}, "
+                      + $"{betterPlayerAudio.TargetAvatarFarRadius}, "
+                      + $"{betterPlayerAudio.TargetAvatarGain}, "
+                      + $"{betterPlayerAudio.TargetAvatarVolumetricRadius}, "
+                      + $"{betterPlayerAudio.ForceAvatarSpatialAudio}, "
+                      + $"{betterPlayerAudio.AllowAvatarCustomAudioCurves}");
+            
             betterPlayerAudio.SetUseMasterControls(toggleAllowMasterControl.isOn);
+            betterPlayerAudio.SetDirty();
 
             textOcclusionFactor.text = sliderOcclusionFactor.value.ToString("F");
             textPlayerOcclusionFactor.text = sliderPlayerOcclusionFactor.value.ToString("F");
@@ -130,6 +173,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void ResetAll()
         {
+            _preventChangeEvent = true;
+
             // Resetting the sliders/toggles will cause the betterPlayerAudio script to be reset automatically
             // due to the change events being triggered, so there is no need to call betterPlayerAudio.Reset()
             toggleAllowMasterControl.isOn = betterPlayerAudio.defaultAllowMasterControl;
@@ -153,6 +198,9 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             toggleAvatarSpatialize.isOn = betterPlayerAudio.defaultForceAvatarSpatialAudio;
             toggleAvatarCustomCurve.isOn = betterPlayerAudio.defaultAllowAvatarCustomAudioCurves;
+
+            _preventChangeEvent = false;
+            OnSettingsChanged();
         }
 
         /// <summary>
@@ -161,10 +209,12 @@ namespace Guribo.UdonBetterAudio.Scripts
         public void UpdateUi()
         {
             var owner = Networking.GetOwner(betterPlayerAudio.gameObject);
-            if (owner != null)
+            if (Utilities.IsValid(owner))
             {
                 textAllowMasterControl.text = $"Let {owner.displayName} (owner) control everything";
             }
+            
+            _preventChangeEvent = true;
 
             sliderOcclusionFactor.value = betterPlayerAudio.OcclusionFactor;
             sliderPlayerOcclusionFactor.value = betterPlayerAudio.PlayerOcclusionFactor;
@@ -187,6 +237,10 @@ namespace Guribo.UdonBetterAudio.Scripts
             toggleAvatarCustomCurve.isOn = betterPlayerAudio.AllowAvatarCustomAudioCurves;
 
             toggleAllowMasterControl.isOn = betterPlayerAudio.AllowMasterTakeControl();
+            
+            _preventChangeEvent = false;
+            
+            OnSettingsChanged();
         }
     }
 }

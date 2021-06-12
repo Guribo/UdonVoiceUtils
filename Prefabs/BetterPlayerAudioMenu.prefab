@@ -2260,6 +2260,7 @@ MonoBehaviour:
   proximity: 2
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
   serializedProgramAsset: {fileID: 11400000, guid: b4d12f05b7311e44faf6cb814103a413,
     type: 2}
   programSource: {fileID: 11400000, guid: bb7f0f1c83ce5af4ca88ed109558c275, type: 2}
@@ -3750,7 +3751,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8613197021454976029}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
+  m_MaxValue: 1000
   m_WholeNumbers: 0
   m_Value: 0
   m_OnValueChanged:
@@ -4400,9 +4401,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8613197019726592134}
   m_Direction: 0
   m_MinValue: 1
-  m_MaxValue: 250
+  m_MaxValue: 10000
   m_WholeNumbers: 0
-  m_Value: 40
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -6726,7 +6727,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8613197020867628461}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
+  m_MaxValue: 10000
   m_WholeNumbers: 0
   m_Value: 1
   m_OnValueChanged:

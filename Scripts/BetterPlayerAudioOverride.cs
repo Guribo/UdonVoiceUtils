@@ -9,6 +9,7 @@ namespace Guribo.UdonBetterAudio.Scripts
     /// This override contains values that can be used to override the default audio settings in
     /// <see cref="BetterPlayerAudio"/> for a group of players.
     /// </summary>
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterPlayerAudioOverride : UdonSharpBehaviour
     {
         #region Constants

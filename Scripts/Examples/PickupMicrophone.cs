@@ -1,10 +1,12 @@
 ﻿using System;
+using Guribo.UdonUtils.Scripts.Common.Networking;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Scripts.Examples
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(10000)]
     public class PickupMicrophone : UdonSharpBehaviour
     {
@@ -13,8 +15,11 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         public BetterPlayerAudio playerAudio;
         public BetterPlayerAudioOverride betterPlayerAudioOverride;
 
-        [UdonSynced] [SerializeField] protected int micUserId = NoUser;
+        public int playerId = NoUser;
+        [SerializeField] protected SyncedInteger syncedInteger;
         protected int OldMicUserId = NoUser;
+
+        public OwnershipTransfer ownershipTransfer;
 
         public override void OnPickup()
         {
@@ -24,70 +29,61 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 return;
             }
 
-            TakeOwnership(localPlayer, false);
-            micUserId = localPlayer.playerId;
+            TakeOwnership(localPlayer);
+            playerId = localPlayer.playerId;
+            SynchronizePlayers();
         }
 
         public override void OnDrop()
         {
-            micUserId = NoUser;
-        }
-
-        public override void OnDeserialization()
-        {
-            UpdateMicUser();
-        }
-
-        public override void OnPreSerialization()
-        {
-            UpdateMicUser();
+            playerId = NoUser;
+            SynchronizePlayers();
         }
 
         private void OnEnable()
         {
-            NewUserStartUsingMic(micUserId);
+            NewUserStartUsingMic(playerId);
         }
 
         private void OnDisable()
         {
-            CleanUpOldUser(micUserId);
+            CleanUpOldUser(playerId);
         }
 
         private void OnDestroy()
         {
-            CleanUpOldUser(micUserId);
+            CleanUpOldUser(playerId);
         }
 
         /// <summary>
         /// if the current user has changed switch let only the new user be affected by the mic
         /// </summary>
-        private void UpdateMicUser()
+        public void UpdateMicUser()
         {
-            if (micUserId != OldMicUserId)
+            if (playerId != OldMicUserId)
             {
                 CleanUpOldUser(OldMicUserId);
-                NewUserStartUsingMic(micUserId);
+                NewUserStartUsingMic(playerId);
             }
 
-            OldMicUserId = micUserId;
+            OldMicUserId = playerId;
         }
 
         /// <summary>
         /// take ownership of the microphone if the user doesn't have it yet, or force it
         /// </summary>
         /// <param name="localPlayer"></param>
-        /// <param name="force"></param>
-        private void TakeOwnership(VRCPlayerApi localPlayer, bool force)
+        private void TakeOwnership(VRCPlayerApi localPlayer)
         {
-            if (!Utilities.IsValid(localPlayer))
+            if (!Utilities.IsValid(ownershipTransfer))
             {
-                Debug.LogWarning("PickupMicrophone.TakeOwnership: Invalid local player", this);
+                Debug.LogError("PickupMicrophone.TakeOwnership: ownershipTransfer is invalid");
                 return;
             }
-            
-            if (force || !Networking.IsOwner(localPlayer, gameObject))
+
+            if (!ownershipTransfer.TransferOwnership(gameObject, localPlayer, true))
             {
-                Networking.SetOwner(localPlayer, gameObject);
+                Debug.LogError("PickupMicrophone.TakeOwnership: failed to transfer ownership");
             }
         }
 
@@ -145,7 +141,18 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             {
                 betterPlayerAudioOverride.AffectPlayer(newMicUser);
             }
-            playerAudio.OverridePlayerSettings( betterPlayerAudioOverride);
+
+            playerAudio.OverridePlayerSettings(betterPlayerAudioOverride);
+        }
+
+        private void SynchronizePlayers()
+        {
+            if (!Utilities.IsValid(syncedInteger))
+            {
+                return;
+            }
+
+            syncedInteger.UpdateForAll();
         }
     }
 }
