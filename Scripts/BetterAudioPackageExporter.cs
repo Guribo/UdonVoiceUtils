@@ -71,6 +71,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                 "Assets/Guribo/UdonBetterAudio/Scripts/OwnershipTransfer.cs",
 
                 "Assets/Guribo/UdonBetterAudio/Scripts/Examples",
+                
+                "Assets/Guribo/UdonBetterAudio/Tutorials",
 
                 // UdonUtils
                 "Assets/Guribo/UdonUtils/Scripts",
