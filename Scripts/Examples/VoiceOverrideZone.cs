@@ -12,7 +12,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
 
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
         {
-            if (!Utilities.IsValid(playerAudioOverride) // do nothing for invalid players
+            if (!Utilities.IsValid(player) // do nothing for invalid players
                 || Networking.LocalPlayer == player // or when the player was the local player
                 || !Utilities.IsValid(playerAudioOverride) // or when the required components are invalid
                 || !Utilities.IsValid(playerAudio))
@@ -29,7 +29,7 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
         {
-            if (!Utilities.IsValid(playerAudioOverride) // do nothing for invalid players
+            if (!Utilities.IsValid(player) // do nothing for invalid players
                 || Networking.LocalPlayer == player // or when the player was the local player
                 || !Utilities.IsValid(playerAudioOverride) // or when the required components are invalid
                 || !Utilities.IsValid(playerAudio))
