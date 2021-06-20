@@ -470,45 +470,68 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (Utilities.IsValid(playerOverride) && playerOverride)
             {
-                var occlusionFactor = CalculateOcclusion(listenerHead.position,
-                    direction,
-                    distance,
-                    playerOverride.occlusionFactor,
-                    playerOverride.playerOcclusionFactor,
-                    playerOverride.occlusionMask);
+                if (playerOverride.allowPrivateConversations
+                 && !playerOverride.CanHearPrivateConversations())
+                {
+                    UpdateVoiceAudio(otherPlayer,
+                        0f,
+                        false,
+                        0f,
+                        0f,
+                        0f,
+                        0f);
 
-                var directionality = CalculateDirectionality(listenerHead.rotation,
-                    otherPlayerHead.rotation,
-                    direction,
-                    playerOverride.listenerDirectionality,
-                    playerOverride.playerDirectionality);
+                    UpdateAvatarAudio(otherPlayer,
+                        0,
+                        false,
+                        false,
+                        0f,
+                        0f,
+                        0f,
+                        0f);
+                }
+                else
+                {
+                    var occlusionFactor = CalculateOcclusion(listenerHead.position,
+                        direction,
+                        distance,
+                        playerOverride.occlusionFactor,
+                        playerOverride.playerOcclusionFactor,
+                        playerOverride.occlusionMask);
 
-                var distanceReduction = directionality * occlusionFactor;
+                    var directionality = CalculateDirectionality(listenerHead.rotation,
+                        otherPlayerHead.rotation,
+                        direction,
+                        playerOverride.listenerDirectionality,
+                        playerOverride.playerDirectionality);
 
-                var voiceDistanceFactor = CalculateRangeReduction(distance,
-                    distanceReduction,
-                    playerOverride.voiceDistanceFar);
+                    var distanceReduction = directionality * occlusionFactor;
 
-                UpdateVoiceAudio(otherPlayer,
-                    voiceDistanceFactor,
-                    playerOverride.enableVoiceLowpass,
-                    playerOverride.voiceGain,
-                    playerOverride.voiceDistanceFar,
-                    playerOverride.voiceDistanceNear,
-                    playerOverride.voiceVolumetricRadius);
+                    var voiceDistanceFactor = CalculateRangeReduction(distance,
+                        distanceReduction,
+                        playerOverride.voiceDistanceFar);
 
-                var avatarDistanceFactor = CalculateRangeReduction(distance,
-                    distanceReduction,
-                    playerOverride.targetAvatarFarRadius);
+                    UpdateVoiceAudio(otherPlayer,
+                        voiceDistanceFactor,
+                        playerOverride.enableVoiceLowpass,
+                        playerOverride.voiceGain,
+                        playerOverride.voiceDistanceFar,
+                        playerOverride.voiceDistanceNear,
+                        playerOverride.voiceVolumetricRadius);
 
-                UpdateAvatarAudio(otherPlayer,
-                    avatarDistanceFactor,
-                    playerOverride.forceAvatarSpatialAudio,
-                    playerOverride.allowAvatarCustomAudioCurves,
-                    playerOverride.targetAvatarGain,
-                    playerOverride.targetAvatarFarRadius,
-                    playerOverride.targetAvatarNearRadius,
-                    playerOverride.targetAvatarVolumetricRadius);
+                    var avatarDistanceFactor = CalculateRangeReduction(distance,
+                        distanceReduction,
+                        playerOverride.targetAvatarFarRadius);
+
+                    UpdateAvatarAudio(otherPlayer,
+                        avatarDistanceFactor,
+                        playerOverride.forceAvatarSpatialAudio,
+                        playerOverride.allowAvatarCustomAudioCurves,
+                        playerOverride.targetAvatarGain,
+                        playerOverride.targetAvatarFarRadius,
+                        playerOverride.targetAvatarNearRadius,
+                        playerOverride.targetAvatarVolumetricRadius);
+                }
             }
             else
             {

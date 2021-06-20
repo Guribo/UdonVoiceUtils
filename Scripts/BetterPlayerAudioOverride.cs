@@ -19,10 +19,12 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         #endregion
 
+        public BetterPlayerAudio playerAudio;
+
         /// <summary>
         /// Players that this override should be applied to. Must be sorted at all times to allow searching inside with binary search!
         /// </summary>
-        protected int[] AffectedPlayers = null;
+        protected int[] AffectedPlayers;
 
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.occlusionMask"/>
@@ -134,7 +136,15 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Tooltip(
             "Range in which the player audio sources are not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed.")]
         public float targetAvatarVolumetricRadius;
-
+        
+        /// <summary>
+        /// If set to true players that are affected by this override can not be heard by other players.
+        /// </summary>
+        [Header("Privacy Settings")]
+        [Tooltip("If set to true players that are affected by this override can not be heard by other players.")]
+        public bool allowPrivateConversations;
+        
+        private bool _canHearPrivateConversations;
 
         /// <summary>
         /// Add players to the list of players that should make use of the here defined override values.
@@ -191,7 +201,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             return true;
         }
 
-        private readonly VRCPlayerApi[] _singlePlayer = new VRCPlayerApi[1];
+        private readonly VRCPlayerApi[] _noAllocSinglePlayerArray = new VRCPlayerApi[1];
 
         /// <summary>
         /// Add a single player to the list of players that should make use of the here defined override values.
@@ -202,8 +212,29 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <returns>true if the player was added/was already added before</returns>
         public bool AffectPlayer(VRCPlayerApi playerToAffect)
         {
-            _singlePlayer[0] = playerToAffect;
-            return AffectPlayers(_singlePlayer);
+            var localPlayer = Networking.LocalPlayer;
+            if (Utilities.IsValid(playerToAffect)
+                && Utilities.IsValid(localPlayer)
+                && playerToAffect.playerId == localPlayer.playerId)
+            {
+                _canHearPrivateConversations = true;
+                return true;
+            }
+
+            if (!Utilities.IsValid(playerAudio))
+            {
+                return false;
+            }
+            
+            _noAllocSinglePlayerArray[0] = playerToAffect;
+            if (!AffectPlayers(_noAllocSinglePlayerArray))
+            {
+                return false;
+            }
+            
+            // have the controller affect all players that are currently added to the override
+            playerAudio.OverridePlayerSettings(this);
+            return true;
         }
 
         /// <summary>
@@ -272,8 +303,24 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <returns>true if the player was removed/not affected yet</returns>
         public bool RemoveAffectedPlayer(VRCPlayerApi playerToRemove)
         {
-            _singlePlayer[0] = playerToRemove;
-            return RemoveAffectedPlayers(_singlePlayer);
+            var localPlayer = Networking.LocalPlayer;
+            if (Utilities.IsValid(playerToRemove)
+                && Utilities.IsValid(localPlayer)
+                && playerToRemove.playerId == localPlayer.playerId)
+            {
+                _canHearPrivateConversations = false;
+                return true;
+            }
+            
+            _noAllocSinglePlayerArray[0] = playerToRemove;
+            if (!RemoveAffectedPlayers(_noAllocSinglePlayerArray))
+            {
+                return false;
+            }
+            
+            // make the controller apply default settings to the player again
+            playerAudio.ClearPlayerOverride(playerToRemove.playerId);
+            return true;
         }
 
         /// <summary>
@@ -358,5 +405,14 @@ namespace Guribo.UdonBetterAudio.Scripts
         }
 
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>true if the local player has been added to the override (independent of <see cref="allowPrivateConversations"/>)</returns>
+        public bool CanHearPrivateConversations()
+        {
+            return _canHearPrivateConversations;
+        }
     }
 }
