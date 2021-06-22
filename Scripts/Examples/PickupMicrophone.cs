@@ -12,7 +12,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
     {
         protected const int NoUser = -1;
 
-        public BetterPlayerAudio playerAudio;
         public BetterPlayerAudioOverride betterPlayerAudioOverride;
 
         public int playerId = NoUser;
@@ -92,12 +91,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// </summary>
         private void CleanUpOldUser(int oldUser)
         {
-            if (!Utilities.IsValid(playerAudio))
-            {
-                Debug.LogError("PickupMicrophone.CleanUpOldUser: playerAudio is invalid");
-                return;
-            }
-
             if (oldUser == NoUser)
             {
                 return;
@@ -110,8 +103,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
                 {
                     betterPlayerAudioOverride.RemoveAffectedPlayer(currentMicUser);
                 }
-
-                playerAudio.ClearPlayerOverride(currentMicUser.playerId);
             }
         }
 
@@ -120,12 +111,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
         /// </summary>
         private void NewUserStartUsingMic(int newUser)
         {
-            if (!Utilities.IsValid(playerAudio))
-            {
-                Debug.LogError("PickupMicrophone.CleanUpOldUser: playerAudio is invalid");
-                return;
-            }
-
             if (newUser == NoUser)
             {
                 return;
@@ -141,8 +126,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Examples
             {
                 betterPlayerAudioOverride.AffectPlayer(newMicUser);
             }
-
-            playerAudio.OverridePlayerSettings(betterPlayerAudioOverride);
         }
 
         private void SynchronizePlayers()

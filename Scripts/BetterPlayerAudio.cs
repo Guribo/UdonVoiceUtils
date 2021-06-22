@@ -351,6 +351,19 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// </summary>
         [UdonSynced] [HideInInspector] public float masterTargetAvatarVolumetricRadius;
 
+        /// <summary>
+        /// != -1 if the local player is part of any private voice override
+        /// </summary>
+        [HideInInspector]
+        public int currentPrivacyChannel;
+
+        /// <summary>
+        /// if set to true and the currentPrivacyChannel is not -1 it can mute all other players not affected by the
+        /// current audio override
+        /// </summary>
+        [HideInInspector]
+        public bool muteOutsiders;
+        
         #endregion
 
         private bool _receivedStart;
@@ -364,12 +377,13 @@ namespace Guribo.UdonBetterAudio.Scripts
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         private int _serializationRequests;
 
+
         #region Unity Lifecycle
 
         private void OnEnable()
         {
             Debug.Log($"[<color=#008000>BetterAudio</color>] OnEnable", this);
-            
+
             if (_receivedStart)
             {
                 // don't wait for all players to load as they should be all loaded already
@@ -397,9 +411,9 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         public void EnableProcessing()
         {
-            if (!(Utilities.IsValid(this) 
-                && Utilities.IsValid(gameObject))
-            && gameObject.activeInHierarchy)
+            if (!(Utilities.IsValid(this)
+                  && Utilities.IsValid(gameObject))
+                && gameObject.activeInHierarchy)
             {
                 // do nothing if the behaviour is not alive/valid/active
                 return;
@@ -414,7 +428,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 return;
             }
-            
+
             // skip local player
             var localPlayer = Networking.LocalPlayer;
             if (!Utilities.IsValid(localPlayer))
@@ -460,7 +474,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 playerOverride = _playerOverrides[playerOverrideIndex];
             }
-
+            
             var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
             var otherPlayerHead = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
@@ -468,113 +482,160 @@ namespace Guribo.UdonBetterAudio.Scripts
             var direction = listenerToPlayer.normalized;
             var distance = listenerToPlayer.magnitude;
 
-            if (Utilities.IsValid(playerOverride) && playerOverride)
-            {
-                if (playerOverride.allowPrivateConversations
-                 && !playerOverride.CanHearPrivateConversations())
-                {
-                    UpdateVoiceAudio(otherPlayer,
-                        0f,
-                        false,
-                        0f,
-                        0f,
-                        0f,
-                        0f);
 
-                    UpdateAvatarAudio(otherPlayer,
-                        0,
-                        false,
-                        false,
-                        0f,
-                        0f,
-                        0f,
-                        0f);
-                }
-                else
+            var localPlayerInPrivateChannel = currentPrivacyChannel != -1;
+
+            if (Utilities.IsValid(playerOverride))
+            {
+                if (OtherPlayerWithOverrideCanBeHeard(playerOverride, localPlayerInPrivateChannel))
                 {
-                    var occlusionFactor = CalculateOcclusion(listenerHead.position,
+                    ApplyAudioOverrides(otherPlayer,
+                        listenerHead,
                         direction,
                         distance,
-                        playerOverride.occlusionFactor,
-                        playerOverride.playerOcclusionFactor,
-                        playerOverride.occlusionMask);
-
-                    var directionality = CalculateDirectionality(listenerHead.rotation,
-                        otherPlayerHead.rotation,
-                        direction,
-                        playerOverride.listenerDirectionality,
-                        playerOverride.playerDirectionality);
-
-                    var distanceReduction = directionality * occlusionFactor;
-
-                    var voiceDistanceFactor = CalculateRangeReduction(distance,
-                        distanceReduction,
-                        playerOverride.voiceDistanceFar);
-
-                    UpdateVoiceAudio(otherPlayer,
-                        voiceDistanceFactor,
-                        playerOverride.enableVoiceLowpass,
-                        playerOverride.voiceGain,
-                        playerOverride.voiceDistanceFar,
-                        playerOverride.voiceDistanceNear,
-                        playerOverride.voiceVolumetricRadius);
-
-                    var avatarDistanceFactor = CalculateRangeReduction(distance,
-                        distanceReduction,
-                        playerOverride.targetAvatarFarRadius);
-
-                    UpdateAvatarAudio(otherPlayer,
-                        avatarDistanceFactor,
-                        playerOverride.forceAvatarSpatialAudio,
-                        playerOverride.allowAvatarCustomAudioCurves,
-                        playerOverride.targetAvatarGain,
-                        playerOverride.targetAvatarFarRadius,
-                        playerOverride.targetAvatarNearRadius,
-                        playerOverride.targetAvatarVolumetricRadius);
+                        playerOverride,
+                        otherPlayerHead);
+                    return;
                 }
+
+                MutePlayer(otherPlayer);
+                return;
             }
-            else
+
+            if (localPlayerInPrivateChannel && muteOutsiders)
             {
-                var occlusionFactor = CalculateOcclusion(listenerHead.position,
-                    direction,
-                    distance,
-                    OcclusionFactor,
-                    PlayerOcclusionFactor,
-                    occlusionMask);
-
-                var directionality = CalculateDirectionality(listenerHead.rotation,
-                    otherPlayerHead.rotation,
-                    direction,
-                    ListenerDirectionality,
-                    PlayerDirectionality);
-
-                var distanceReduction = directionality * occlusionFactor;
-
-                var voiceDistanceFactor = CalculateRangeReduction(distance,
-                    distanceReduction,
-                    TargetVoiceDistanceFar);
-
-                UpdateVoiceAudio(otherPlayer,
-                    voiceDistanceFactor,
-                    EnableVoiceLowpass,
-                    TargetVoiceGain,
-                    TargetVoiceDistanceFar,
-                    TargetVoiceDistanceNear,
-                    TargetVoiceVolumetricRadius);
-
-                var avatarDistanceFactor = CalculateRangeReduction(distance,
-                    distanceReduction,
-                    TargetAvatarFarRadius);
-
-                UpdateAvatarAudio(otherPlayer,
-                    avatarDistanceFactor,
-                    ForceAvatarSpatialAudio,
-                    AllowAvatarCustomAudioCurves,
-                    TargetAvatarGain,
-                    TargetAvatarFarRadius,
-                    TargetAvatarNearRadius,
-                    TargetAvatarVolumetricRadius);
+                MutePlayer(otherPlayer);
+                return;
             }
+
+            ApplyGlobalAudioSettings(otherPlayer,
+                listenerHead,
+                direction,
+                distance,
+                otherPlayerHead);
+        }
+
+        private bool OtherPlayerWithOverrideCanBeHeard(BetterPlayerAudioOverride playerOverride,
+            bool localPlayerInPrivateChannel)
+        {
+            // ReSharper disable once PossibleNullReferenceException (invalid warning because of IsValid check)
+            var playerInSamePrivateChannel = playerOverride.privacyChannelId == currentPrivacyChannel;
+            var otherPlayerNotInAnyPrivateChannel = playerOverride.privacyChannelId == -1;
+            var isOutsiderAndCanBeHeard = localPlayerInPrivateChannel
+                                     && otherPlayerNotInAnyPrivateChannel
+                                     && !muteOutsiders;
+
+            return  playerInSamePrivateChannel || isOutsiderAndCanBeHeard;
+        }
+
+        private void ApplyGlobalAudioSettings(VRCPlayerApi otherPlayer, VRCPlayerApi.TrackingData listenerHead,
+            Vector3 direction,
+            float distance, VRCPlayerApi.TrackingData otherPlayerHead)
+        {
+            var occlusionFactor = CalculateOcclusion(listenerHead.position,
+                direction,
+                distance,
+                OcclusionFactor,
+                PlayerOcclusionFactor,
+                occlusionMask);
+
+            var directionality = CalculateDirectionality(listenerHead.rotation,
+                otherPlayerHead.rotation,
+                direction,
+                ListenerDirectionality,
+                PlayerDirectionality);
+
+            var distanceReduction = directionality * occlusionFactor;
+
+            var voiceDistanceFactor = CalculateRangeReduction(distance,
+                distanceReduction,
+                TargetVoiceDistanceFar);
+
+            UpdateVoiceAudio(otherPlayer,
+                voiceDistanceFactor,
+                EnableVoiceLowpass,
+                TargetVoiceGain,
+                TargetVoiceDistanceFar,
+                TargetVoiceDistanceNear,
+                TargetVoiceVolumetricRadius);
+
+            var avatarDistanceFactor = CalculateRangeReduction(distance,
+                distanceReduction,
+                TargetAvatarFarRadius);
+
+            UpdateAvatarAudio(otherPlayer,
+                avatarDistanceFactor,
+                ForceAvatarSpatialAudio,
+                AllowAvatarCustomAudioCurves,
+                TargetAvatarGain,
+                TargetAvatarFarRadius,
+                TargetAvatarNearRadius,
+                TargetAvatarVolumetricRadius);
+        }
+
+        private void ApplyAudioOverrides(VRCPlayerApi otherPlayer, VRCPlayerApi.TrackingData listenerHead,
+            Vector3 direction, float distance,
+            BetterPlayerAudioOverride playerOverride, VRCPlayerApi.TrackingData otherPlayerHead)
+        {
+            var occlusionFactor = CalculateOcclusion(listenerHead.position,
+                direction,
+                distance,
+                playerOverride.occlusionFactor,
+                playerOverride.playerOcclusionFactor,
+                playerOverride.occlusionMask);
+
+            var directionality = CalculateDirectionality(listenerHead.rotation,
+                otherPlayerHead.rotation,
+                direction,
+                playerOverride.listenerDirectionality,
+                playerOverride.playerDirectionality);
+
+            var distanceReduction = directionality * occlusionFactor;
+
+            var voiceDistanceFactor = CalculateRangeReduction(distance,
+                distanceReduction,
+                playerOverride.voiceDistanceFar);
+
+            UpdateVoiceAudio(otherPlayer,
+                voiceDistanceFactor,
+                playerOverride.enableVoiceLowpass,
+                playerOverride.voiceGain,
+                playerOverride.voiceDistanceFar,
+                playerOverride.voiceDistanceNear,
+                playerOverride.voiceVolumetricRadius);
+
+            var avatarDistanceFactor = CalculateRangeReduction(distance,
+                distanceReduction,
+                playerOverride.targetAvatarFarRadius);
+
+            UpdateAvatarAudio(otherPlayer,
+                avatarDistanceFactor,
+                playerOverride.forceAvatarSpatialAudio,
+                playerOverride.allowAvatarCustomAudioCurves,
+                playerOverride.targetAvatarGain,
+                playerOverride.targetAvatarFarRadius,
+                playerOverride.targetAvatarNearRadius,
+                playerOverride.targetAvatarVolumetricRadius);
+        }
+
+        private void MutePlayer(VRCPlayerApi otherPlayer)
+        {
+            UpdateVoiceAudio(otherPlayer,
+                0f,
+                false,
+                0f,
+                0f,
+                0f,
+                0f);
+
+            UpdateAvatarAudio(otherPlayer,
+                0,
+                false,
+                false,
+                0f,
+                0f,
+                0f,
+                0f);
         }
 
         private bool PlayerIsIgnored(VRCPlayerApi vrcPlayerApi)
@@ -660,12 +721,14 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             if (!result.success)
             {
-                Debug.LogWarning( $"[<color=#008000>BetterAudio</color>] OnPostSerialization: Serialization failed, trying again", this);
+                Debug.LogWarning(
+                    $"[<color=#008000>BetterAudio</color>] OnPostSerialization: Serialization failed, trying again",
+                    this);
                 RequestSerialization();
                 return;
             }
 
-            Debug.Log( $"[<color=#008000>BetterAudio</color>] OnPostSerialization: Serialized {result.byteCount} bytes");
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnPostSerialization: Serialized {result.byteCount} bytes");
             if (Networking.IsOwner(gameObject))
             {
                 _serializationRequests--;
@@ -1246,7 +1309,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
         }
 
-        public void ClearPlayerOverride(int playerId)
+        public void ClearPlayerOverride(BetterPlayerAudioOverride betterPlayerAudioOverride, int playerId)
         {
             if (_playersToOverride == null || _playersToOverride.Length == 0)
             {
@@ -1261,15 +1324,15 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 if (!Utilities.IsValid(VRCPlayerApi.GetPlayerById(i)))
                 {
-                    ClearSinglePlayerOverride(i);
+                    ClearSinglePlayerOverride(betterPlayerAudioOverride, i);
                 }
             }
 
             // remove the actual player that was requested to be removed
-            ClearSinglePlayerOverride(playerId);
+            ClearSinglePlayerOverride(betterPlayerAudioOverride,playerId);
         }
 
-        private void ClearSinglePlayerOverride(int playerId)
+        private void ClearSinglePlayerOverride(BetterPlayerAudioOverride betterPlayerAudioOverride, int playerId)
         {
             Debug.Log($"[<color=#008000>BetterAudio</color>] " +
                       $"ClearSinglePlayerOverride: clearing override settings for player {playerId}");
@@ -1283,6 +1346,14 @@ namespace Guribo.UdonBetterAudio.Scripts
             var index = Array.BinarySearch(_playersToOverride, playerId);
             if (index > -1)
             {
+                var audioOverrideChanged = Utilities.IsValid(_playerOverrides[index]) 
+                              && _playerOverrides[index] != betterPlayerAudioOverride;
+                if (audioOverrideChanged)
+                {
+                    // abort to prevent removing the audio override that is now in use
+                    return;
+                }
+                
                 _playersToOverride[index] = int.MaxValue;
 
                 // add the player to the list of players that have overrides

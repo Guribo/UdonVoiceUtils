@@ -138,14 +138,22 @@ namespace Guribo.UdonBetterAudio.Scripts
         public float targetAvatarVolumetricRadius;
         
         /// <summary>
-        /// If set to true players that are affected by this override can not be heard by other players.
+        /// Players affected by different overrides with the same privacy channel id can hear each other and can't be
+        /// heard by non-affected players.
+        /// If set to -1 the feature is turned off for this override component and only players affected by this
+        /// override can hear each other.
         /// </summary>
         [Header("Privacy Settings")]
-        [Tooltip("If set to true players that are affected by this override can not be heard by other players.")]
-        public bool allowPrivateConversations;
-        
-        private bool _canHearPrivateConversations;
+        [Tooltip("Players affected by different overrides with the same privacy channel id can hear each other and can't be heard by non-affected players. If set to -1 the feature is turned off and all players affected by this override can be heard.")]
+        public int privacyChannelId = -1;
 
+        /// <summary>
+        /// If set to true affected players also can't hear non-affected players.
+        /// Only in effect in combination with a privacy channel not equal to -1.
+        /// </summary>
+        [Tooltip("If set to true affected players also can't hear non-affected players. Only in effect in combination with a privacy channel not equal to -1.")]
+        public bool muteOutsiders = true;
+        
         /// <summary>
         /// Add players to the list of players that should make use of the here defined override values.
         /// Methods can be expensive when call with a lot of players! Avoid using in Update in every frame!
@@ -217,15 +225,14 @@ namespace Guribo.UdonBetterAudio.Scripts
                 && Utilities.IsValid(localPlayer)
                 && playerToAffect.playerId == localPlayer.playerId)
             {
-                _canHearPrivateConversations = true;
+                if (Utilities.IsValid(playerAudio))
+                {
+                    playerAudio.currentPrivacyChannel = privacyChannelId;
+                    playerAudio.muteOutsiders = muteOutsiders;
+                }
                 return true;
             }
 
-            if (!Utilities.IsValid(playerAudio))
-            {
-                return false;
-            }
-            
             _noAllocSinglePlayerArray[0] = playerToAffect;
             if (!AffectPlayers(_noAllocSinglePlayerArray))
             {
@@ -233,6 +240,11 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
             
             // have the controller affect all players that are currently added to the override
+            if (!Utilities.IsValid(playerAudio))
+            {
+                return false;
+            }
+
             playerAudio.OverridePlayerSettings(this);
             return true;
         }
@@ -308,7 +320,12 @@ namespace Guribo.UdonBetterAudio.Scripts
                 && Utilities.IsValid(localPlayer)
                 && playerToRemove.playerId == localPlayer.playerId)
             {
-                _canHearPrivateConversations = false;
+                if (Utilities.IsValid(playerAudio) 
+                    && playerAudio.currentPrivacyChannel == privacyChannelId) // local player did not switch channel
+                {
+                    playerAudio.currentPrivacyChannel = -1;
+                    playerAudio.muteOutsiders = false;
+                }
                 return true;
             }
             
@@ -318,8 +335,13 @@ namespace Guribo.UdonBetterAudio.Scripts
                 return false;
             }
             
+            if (!Utilities.IsValid(playerAudio))
+            {
+                return false;
+            }
+            
             // make the controller apply default settings to the player again
-            playerAudio.ClearPlayerOverride(playerToRemove.playerId);
+            playerAudio.ClearPlayerOverride(this, playerToRemove.playerId);
             return true;
         }
 
@@ -405,14 +427,5 @@ namespace Guribo.UdonBetterAudio.Scripts
         }
 
         #endregion
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>true if the local player has been added to the override (independent of <see cref="allowPrivateConversations"/>)</returns>
-        public bool CanHearPrivateConversations()
-        {
-            return _canHearPrivateConversations;
-        }
     }
 }

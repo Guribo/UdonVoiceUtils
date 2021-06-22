@@ -43,13 +43,14 @@ namespace Guribo.UdonBetterAudio.Scripts
                 "Assets/Guribo/UdonBetterAudio/README.md",
                 "Assets/Guribo/UdonBetterAudio/Version.txt",
 
-                "Assets/Guribo/UdonBetterAudio/Materials/MetalBlack.mat",
-                "Assets/Guribo/UdonBetterAudio/Materials/PlasticWhite.mat",
+                "Assets/Guribo/UdonBetterAudio/Materials",
 
                 "Assets/Guribo/UdonBetterAudio/Prefabs/BetterPlayerAudio.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/BetterPlayerAudioController.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/BetterPlayerAudioMenu.prefab",
-                "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/Microphone.prefab",
+                
+                "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/PickupMicrophone.prefab",
+                "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/VoiceOverrideZone.prefab",
 
                 "Assets/Guribo/UdonBetterAudio/Scenes/UdonBetterPlayerAudio",
                 "Assets/Guribo/UdonBetterAudio/Scenes/UdonBetterPlayerAudio_MicPickup",
