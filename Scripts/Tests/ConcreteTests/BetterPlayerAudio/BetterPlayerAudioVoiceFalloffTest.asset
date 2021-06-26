@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 4|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonUtils.Scripts.Testing.TestController, Assembly-CSharp
+      Data: Guribo.UdonUtils.Scripts.Testing.TestController, Guribo.UdonUtils
     - Name: 
       Entry: 8
       Data: 

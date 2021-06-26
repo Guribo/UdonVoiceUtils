@@ -1,4 +1,5 @@
 ﻿using System;
+using Guribo.UdonUtils.Scripts.Common;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -18,9 +19,25 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         #endregion
 
+        #region Libraries
+
+        [Header("Libraries")]
+        public UdonDebug udonDebug;
+
+        #endregion
+
+        #region Prefabs
+
+        [Header("Required prefabs")]
+        public GameObject overrideListPrefab;
+
+        #endregion
+
         [Header("General Settings")] [SerializeField]
         private UdonBehaviour uiController;
 
+        public BetterPlayerAudioOverrideList localPlayerOverrideList;
+        
         /// <summary>
         /// Whether ownership can be changed by any player at any time with Networking.SetOwner(...)
         /// </summary>
@@ -350,19 +367,6 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// <inheritdoc cref="defaultAvatarVolumetricRadius"/>
         /// </summary>
         [UdonSynced] [HideInInspector] public float masterTargetAvatarVolumetricRadius;
-
-        /// <summary>
-        /// != -1 if the local player is part of any private voice override
-        /// </summary>
-        [HideInInspector]
-        public int currentPrivacyChannel;
-
-        /// <summary>
-        /// if set to true and the currentPrivacyChannel is not -1 it can mute all other players not affected by the
-        /// current audio override
-        /// </summary>
-        [HideInInspector]
-        public bool muteOutsiders;
         
         #endregion
 
@@ -373,14 +377,14 @@ namespace Guribo.UdonBetterAudio.Scripts
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
         private int[] _playersToIgnore;
         private int[] _playersToOverride = new int[0];
-        private BetterPlayerAudioOverride[] _playerOverrides;
+        private BetterPlayerAudioOverrideList[] _playerOverrideLists;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         private int _serializationRequests;
 
 
         #region Unity Lifecycle
 
-        private void OnEnable()
+        public void OnEnable()
         {
             Debug.Log($"[<color=#008000>BetterAudio</color>] OnEnable", this);
 
@@ -391,14 +395,14 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
         }
 
-        private void OnDisable()
+        public void OnDisable()
         {
             Debug.Log($"[<color=#008000>BetterAudio</color>] OnDisable", this);
         }
 
-        private void Start()
+        public void Start()
         {
-            _playerOverrides = new BetterPlayerAudioOverride[0];
+            _playerOverrideLists = new BetterPlayerAudioOverrideList[0];
             Initialize();
 
             EnableProcessingDelayed(startDelay);
@@ -468,13 +472,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                 return;
             }
 
-            BetterPlayerAudioOverride playerOverride = null;
-            var playerOverrideIndex = Array.BinarySearch(_playersToOverride, otherPlayer.playerId);
-            if (playerOverrideIndex > -1)
-            {
-                playerOverride = _playerOverrides[playerOverrideIndex];
-            }
-            
+            var playerOverride = GetMaxPriorityOverride(otherPlayer);
+
             var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
             var otherPlayerHead = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
@@ -483,11 +482,19 @@ namespace Guribo.UdonBetterAudio.Scripts
             var distance = listenerToPlayer.magnitude;
 
 
-            var localPlayerInPrivateChannel = currentPrivacyChannel != -1;
+            var localPlayerOverride = localPlayerOverrideList.Get(0);
+            var privacyChannelId = -1;
+            var muteOutsiders = false;
 
+            if (Utilities.IsValid(localPlayerOverride))
+            {
+                privacyChannelId = localPlayerOverride.privacyChannelId;
+                muteOutsiders = localPlayerOverride.muteOutsiders;
+            }
+            var localPlayerInPrivateChannel = privacyChannelId != -1;
             if (Utilities.IsValid(playerOverride))
             {
-                if (OtherPlayerWithOverrideCanBeHeard(playerOverride, localPlayerInPrivateChannel))
+                if (OtherPlayerWithOverrideCanBeHeard(playerOverride, localPlayerInPrivateChannel, privacyChannelId, muteOutsiders))
                 {
                     ApplyAudioOverrides(otherPlayer,
                         listenerHead,
@@ -515,17 +522,17 @@ namespace Guribo.UdonBetterAudio.Scripts
                 otherPlayerHead);
         }
 
-        private bool OtherPlayerWithOverrideCanBeHeard(BetterPlayerAudioOverride playerOverride,
-            bool localPlayerInPrivateChannel)
+        public bool OtherPlayerWithOverrideCanBeHeard(BetterPlayerAudioOverride playerOverride,
+            bool localPlayerInPrivateChannel, int currentPrivacyChannel, bool muteOutsiders)
         {
             // ReSharper disable once PossibleNullReferenceException (invalid warning because of IsValid check)
             var playerInSamePrivateChannel = playerOverride.privacyChannelId == currentPrivacyChannel;
             var otherPlayerNotInAnyPrivateChannel = playerOverride.privacyChannelId == -1;
             var isOutsiderAndCanBeHeard = localPlayerInPrivateChannel
-                                     && otherPlayerNotInAnyPrivateChannel
-                                     && !muteOutsiders;
+                                          && otherPlayerNotInAnyPrivateChannel
+                                          && !muteOutsiders;
 
-            return  playerInSamePrivateChannel || isOutsiderAndCanBeHeard;
+            return playerInSamePrivateChannel || isOutsiderAndCanBeHeard;
         }
 
         private void ApplyGlobalAudioSettings(VRCPlayerApi otherPlayer, VRCPlayerApi.TrackingData listenerHead,
@@ -1207,106 +1214,84 @@ namespace Guribo.UdonBetterAudio.Scripts
         }
 
 
-        public void OverridePlayerSettings(BetterPlayerAudioOverride betterPlayerAudioOverride)
+        public bool OverridePlayerSettings(BetterPlayerAudioOverride betterPlayerAudioOverride,
+            VRCPlayerApi playerToAffect)
         {
-            if (!Utilities.IsValid(betterPlayerAudioOverride))
+            if (!(Utilities.IsValid(betterPlayerAudioOverride) 
+                  && Utilities.IsValid(playerToAffect)))
             {
-                Debug.LogError($"[<color=#008000>BetterAudio</color>] " +
-                               $"BetterPlayerAudio.OverridePlayerSettings: invalid betterPlayerAudioOverride");
-                return;
+                return false;
             }
-
-            var affectedPlayers = betterPlayerAudioOverride.GetAffectedPlayers();
-            for (var i = 0; i < affectedPlayers.Length; i++)
+            
+            // check if the player already has an override
+            var index = Array.BinarySearch(_playersToOverride, playerToAffect.playerId);
+            if (index > -1)
             {
-                var vrcPlayerApi = VRCPlayerApi.GetPlayerById(affectedPlayers[i]);
-                if (!Utilities.IsValid(vrcPlayerApi))
+                if (!udonDebug.Assert(Utilities.IsValid(_playerOverrideLists[index]),
+                    "Missing playerOverrideList for player", this))
                 {
-                    continue;
+                    return false;
                 }
-
+                
+                // add the new override
+                _playerOverrideLists[index].AddOverride(betterPlayerAudioOverride);
                 Debug.Log($"[<color=#008000>BetterAudio</color>] " +
-                          $"OverridePlayerSettings: override for player {vrcPlayerApi.displayName}({vrcPlayerApi.playerId})");
-
-
-                // check if the player already has an override
-                var index = Array.BinarySearch(_playersToOverride, vrcPlayerApi.playerId);
-                if (index > -1)
-                {
-                    // replace the current override
-                    _playerOverrides[index] = betterPlayerAudioOverride;
-                    Debug.Log($"[<color=#008000>BetterAudio</color>] " +
-                              $"OverridePlayerSettings: replaced override settings");
-                }
-                else
-                {
-                    var s = "Before: ";
-                    foreach (var i1 in _playersToOverride)
-                    {
-                        s += i1 + ", ";
-                    }
-
-                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
-
-                    // add a new override for that player
-                    // add the player to the list of players that have overrides
-                    var newSize = _playersToOverride.Length + 1;
-
-                    var tempArray = new int[newSize];
-                    Array.ConstrainedCopy(_playersToOverride, 0, tempArray, 0, _playersToOverride.Length);
-                    _playersToOverride = tempArray;
-                    _playersToOverride[_playersToOverride.Length - 1] = vrcPlayerApi.playerId;
-
-                    s = "After increase: ";
-                    foreach (var i1 in _playersToOverride)
-                    {
-                        s += i1 + ", ";
-                    }
-
-                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
-
-                    // sort it afterwards to allow binary search to work again
-                    Sort(_playersToOverride);
-
-                    s = "After sort: ";
-                    foreach (var i1 in _playersToOverride)
-                    {
-                        s += i1 + ", ";
-                    }
-
-                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + s);
-
-                    // get the index of the added player
-                    var position = Array.BinarySearch(_playersToOverride, vrcPlayerApi.playerId);
-                    Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"position = {position}");
-
-
-                    // create a new list of overrides
-                    var tempOverrides = new BetterPlayerAudioOverride[newSize];
-
-                    // copy the first half up to the added player into a the new list
-                    if (position > 0)
-                    {
-                        Array.ConstrainedCopy(_playerOverrides, 0, tempOverrides, 0, position);
-                    }
-
-                    // insert the new entry for the added player
-                    tempOverrides[position] = betterPlayerAudioOverride;
-
-                    // copy the remaining overrides for the unchanged second half of overriden players
-                    Array.ConstrainedCopy(_playerOverrides,
-                        position,
-                        tempOverrides,
-                        position + 1,
-                        _playerOverrides.Length - position);
-
-                    // replace the overrides with the new list of overrides
-                    _playerOverrides = tempOverrides;
-
-                    Debug.Log($"[<color=#008000>BetterAudio</color>] " +
-                              $"OverridePlayerSettings: added override settings");
-                }
+                          $"OverridePlayerSettings: added override");
             }
+            else
+            {
+                var newSize = CreateOverrideSlotForPlayer(playerToAffect);
+
+                // get the index of the added player
+                var position = Array.BinarySearch(_playersToOverride, playerToAffect.playerId);
+                // create a new list of overrides
+                var tempOverrides = new BetterPlayerAudioOverrideList[newSize];
+
+                // copy the first half up to the added player into a the new list
+                if (position > 0)
+                {
+                    Array.ConstrainedCopy(_playerOverrideLists, 0, tempOverrides, 0, position);
+                }
+
+                var prefabInstance = VRCInstantiate(overrideListPrefab);
+                // insert the new entry for the added player
+                var betterPlayerAudioOverrideList = prefabInstance.GetComponent<BetterPlayerAudioOverrideList>();
+                if (!udonDebug.Assert(betterPlayerAudioOverrideList.AddOverride(betterPlayerAudioOverride),
+                    "Failed adding override to instantiated list prefab", this))
+                {
+                    return false;
+                }
+
+                tempOverrides[position] = betterPlayerAudioOverrideList;
+
+                // copy the remaining overrides for the unchanged second half of overriden players
+                Array.ConstrainedCopy(_playerOverrideLists,
+                    position,
+                    tempOverrides,
+                    position + 1,
+                    _playerOverrideLists.Length - position);
+
+                // replace the overrides with the new list of overrides
+                _playerOverrideLists = tempOverrides;
+            }
+
+            return true;
+        }
+
+        public int CreateOverrideSlotForPlayer(VRCPlayerApi playerToAffect)
+        {
+            // add a new override list for that player
+            // add the player to the list of players that have overrides
+            var newSize = _playersToOverride.Length + 1;
+
+            var tempArray = new int[newSize];
+            Array.ConstrainedCopy(_playersToOverride, 0, tempArray, 0, _playersToOverride.Length);
+            _playersToOverride = tempArray;
+            _playersToOverride[_playersToOverride.Length - 1] = playerToAffect.playerId;
+
+            // sort it afterwards to allow binary search to work again
+            Sort(_playersToOverride);
+            return newSize;
         }
 
         public void ClearPlayerOverride(BetterPlayerAudioOverride betterPlayerAudioOverride, int playerId)
@@ -1329,7 +1314,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             }
 
             // remove the actual player that was requested to be removed
-            ClearSinglePlayerOverride(betterPlayerAudioOverride,playerId);
+            ClearSinglePlayerOverride(betterPlayerAudioOverride, playerId);
         }
 
         private void ClearSinglePlayerOverride(BetterPlayerAudioOverride betterPlayerAudioOverride, int playerId)
@@ -1346,14 +1331,15 @@ namespace Guribo.UdonBetterAudio.Scripts
             var index = Array.BinarySearch(_playersToOverride, playerId);
             if (index > -1)
             {
-                var audioOverrideChanged = Utilities.IsValid(_playerOverrides[index]) 
-                              && _playerOverrides[index] != betterPlayerAudioOverride;
-                if (audioOverrideChanged)
+                var remaining = _playerOverrideLists[index].RemoveOverride(betterPlayerAudioOverride);
+
+                if (remaining > 0)
                 {
-                    // abort to prevent removing the audio override that is now in use
                     return;
                 }
-                
+
+                Destroy(_playerOverrideLists[index]);
+
                 _playersToOverride[index] = int.MaxValue;
 
                 // add the player to the list of players that have overrides
@@ -1365,20 +1351,20 @@ namespace Guribo.UdonBetterAudio.Scripts
 
 
                 // create a new list of overrides
-                var tempOverrides = new BetterPlayerAudioOverride[newSize];
+                var tempOverrides = new BetterPlayerAudioOverrideList[newSize];
 
                 // copy the first half up to the added player into a the new list
-                Array.ConstrainedCopy(_playerOverrides, 0, tempOverrides, 0, index);
+                Array.ConstrainedCopy(_playerOverrideLists, 0, tempOverrides, 0, index);
                 // copy the remaining overrides for the unchanged second half of overriden players
                 var firstIndexSecondHalf = index + 1;
-                Array.ConstrainedCopy(_playerOverrides,
+                Array.ConstrainedCopy(_playerOverrideLists,
                     firstIndexSecondHalf,
                     tempOverrides,
                     index,
-                    _playerOverrides.Length - firstIndexSecondHalf);
+                    _playerOverrideLists.Length - firstIndexSecondHalf);
 
                 // replace the overrides with the new list of overrides
-                _playerOverrides = tempOverrides;
+                _playerOverrideLists = tempOverrides;
 
                 Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"ClearSinglePlayerOverride: cleared");
             }
@@ -1446,6 +1432,120 @@ namespace Guribo.UdonBetterAudio.Scripts
         public override bool OnOwnershipRequest(VRCPlayerApi requestingPlayer, VRCPlayerApi requestedOwner)
         {
             return allowOwnershipTransfer && Utilities.IsValid(requestingPlayer);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns>True when a player is not ignored and has no active override</returns>
+        public bool UsesDefaultEffects(VRCPlayerApi player)
+        {
+            if (IsIgnored(player))
+            {
+                return false;
+            }
+
+            return !UsesVoiceOverride(player);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns>true when a player is affected neither by global nor by override effects</returns>
+        public bool IsIgnored(VRCPlayerApi player)
+        {
+            var mustBeIgnored = false;
+
+            var playersIgnored = _playersToIgnore != null && _playersToIgnore.Length > 0;
+            if (playersIgnored)
+            {
+                mustBeIgnored = Array.BinarySearch(_playersToIgnore, player.playerId) > -1;
+            }
+
+            return mustBeIgnored;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns>true if the player is not ignored and is assigned to at least one override</returns>
+        public bool UsesVoiceOverride(VRCPlayerApi player)
+        {
+            if (IsIgnored(player))
+            {
+                return false;
+            }
+
+            return HasVoiceOverrides(player);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns>true if the player is assigned to at least one override</returns>
+        public bool HasVoiceOverrides(VRCPlayerApi player)
+        {
+            if (!Utilities.IsValid(player))
+            {
+                return false;
+            }
+
+            var playersWithOverride = _playersToOverride != null && _playersToOverride.Length > 0;
+            if (playersWithOverride)
+            {
+                return Array.BinarySearch(_playersToOverride, player.playerId) > -1;
+            }
+
+            return false;
+        }
+
+        public BetterPlayerAudioOverride GetMaxPriorityOverride(VRCPlayerApi player)
+        {
+            if (!Utilities.IsValid(player))
+            {
+                return null;
+            }
+
+            var playersWithOverride = _playersToOverride != null && _playersToOverride.Length > 0;
+            var playerOverridesExist = _playerOverrideLists != null && _playerOverrideLists.Length > 0;
+            if (!playersWithOverride || !playerOverridesExist)
+            {
+                return null;
+            }
+
+            var index = Array.BinarySearch(_playersToOverride, player.playerId);
+
+            if (index > -1 && index < _playerOverrideLists.Length && Utilities.IsValid(_playerOverrideLists[index]))
+            {
+                return _playerOverrideLists[index].Get(0);
+            }
+
+            return null;
+        }
+
+        public int PlayersWithOverridesCount()
+        {
+            if (_playersToOverride == null)
+            {
+                return 0;
+            }
+            return _playersToOverride.Length;
+        }
+
+        public int[] GetPlayersWithOverrides()
+        {
+            if (_playersToOverride == null)
+            {
+                return new int[0];
+            }
+
+            var temp = new int[_playersToOverride.Length];
+            _playersToOverride.CopyTo(temp,0);
+            return temp;
         }
     }
 }

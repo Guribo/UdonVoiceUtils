@@ -127,7 +127,7 @@ MonoBehaviour:
       Data: 8|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonBetterAudio.Scripts.BetterPlayerAudioOverride, Assembly-CSharp
+      Data: Guribo.UdonBetterAudio.Scripts.BetterPlayerAudioOverride, Guribo.UdonBetterAudio
     - Name: 
       Entry: 8
       Data: 
@@ -247,7 +247,7 @@ MonoBehaviour:
       Data: 15|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonUtils.Scripts.Common.Networking.SyncedInteger, Assembly-CSharp
+      Data: Guribo.UdonUtils.Scripts.Common.Networking.SyncedInteger, Guribo.UdonUtils
     - Name: 
       Entry: 8
       Data: 
@@ -373,7 +373,7 @@ MonoBehaviour:
       Data: 23|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonUtils.Scripts.Common.Networking.OwnershipTransfer, Assembly-CSharp
+      Data: Guribo.UdonUtils.Scripts.Common.Networking.OwnershipTransfer, Guribo.UdonUtils
     - Name: 
       Entry: 8
       Data: 

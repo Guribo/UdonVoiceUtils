@@ -1,0 +1,19 @@
+{
+    "name": "Guribo.UdonBetterAudio.Tests.Editor",
+    "references": [
+        "UdonSharp.Editor",
+        "UdonSharp.Runtime",
+        "Guribo.UdonBetterAudio",
+        "Guribo.UdonUtils"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

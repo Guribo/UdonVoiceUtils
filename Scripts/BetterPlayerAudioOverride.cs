@@ -20,6 +20,14 @@ namespace Guribo.UdonBetterAudio.Scripts
         #endregion
 
         public BetterPlayerAudio playerAudio;
+        
+        /// <summary>
+        /// Determines whether it 
+        /// Overrides with equal or higher values can override other overrides with lower priority.
+        /// When removed from a player and it was currently the highest priority override it will
+        /// fall back to the next lower override available.
+        /// </summary>
+        public int priority;
 
         /// <summary>
         /// Players that this override should be applied to. Must be sorted at all times to allow searching inside with binary search!
@@ -180,16 +188,17 @@ namespace Guribo.UdonBetterAudio.Scripts
                 }
 
                 // if no player is affected yet simply add the player
+                var playerId = playerToAffect.playerId;
                 if (AffectedPlayers == null)
                 {
                     AffectedPlayers = new[]
                     {
-                        playerToAffect.playerId
+                        playerId
                     };
                     continue;
                 }
 
-                var playerAlreadyAffected = Array.BinarySearch(AffectedPlayers, playerToAffect.playerId) > -1;
+                var playerAlreadyAffected = Array.BinarySearch(AffectedPlayers, playerId) > -1;
                 if (playerAlreadyAffected)
                 {
                     // player already affected, nothing to do
@@ -200,7 +209,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 var tempArray = new int[AffectedPlayers.Length + 1];
                 AffectedPlayers.CopyTo(tempArray, 0);
                 AffectedPlayers = tempArray;
-                AffectedPlayers[AffectedPlayers.Length - 1] = playerToAffect.playerId;
+                AffectedPlayers[AffectedPlayers.Length - 1] = playerId;
 
                 // sort it afterwards to allow binary search to work again
                 Sort(AffectedPlayers);
@@ -227,10 +236,10 @@ namespace Guribo.UdonBetterAudio.Scripts
             {
                 if (Utilities.IsValid(playerAudio))
                 {
-                    playerAudio.currentPrivacyChannel = privacyChannelId;
-                    playerAudio.muteOutsiders = muteOutsiders;
+                    return playerAudio.localPlayerOverrideList.AddOverride(this);
                 }
-                return true;
+
+                return false;
             }
 
             _noAllocSinglePlayerArray[0] = playerToAffect;
@@ -245,7 +254,7 @@ namespace Guribo.UdonBetterAudio.Scripts
                 return false;
             }
 
-            playerAudio.OverridePlayerSettings(this);
+            playerAudio.OverridePlayerSettings(this, playerToAffect);
             return true;
         }
 
@@ -265,8 +274,8 @@ namespace Guribo.UdonBetterAudio.Scripts
 
             if (AffectedPlayers == null || AffectedPlayers.Length == 0)
             {
-                // nothing to do
-                return true;
+                // nothing to do so player was not removed
+                return false;
             }
 
             // create a look-up list for players to be removed
@@ -305,7 +314,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             var tempArray = new int[AffectedPlayers.Length - removedPlayers];
             Array.ConstrainedCopy(AffectedPlayers, 0, tempArray, 0, AffectedPlayers.Length - removedPlayers);
             AffectedPlayers = tempArray;
-            return true;
+            return removedPlayers > 0;
         }
 
         /// <summary>
@@ -320,13 +329,10 @@ namespace Guribo.UdonBetterAudio.Scripts
                 && Utilities.IsValid(localPlayer)
                 && playerToRemove.playerId == localPlayer.playerId)
             {
-                if (Utilities.IsValid(playerAudio) 
-                    && playerAudio.currentPrivacyChannel == privacyChannelId) // local player did not switch channel
+                if (Utilities.IsValid(playerAudio))
                 {
-                    playerAudio.currentPrivacyChannel = -1;
-                    playerAudio.muteOutsiders = false;
+                    playerAudio.localPlayerOverrideList.RemoveOverride(this);
                 }
-                return true;
             }
             
             _noAllocSinglePlayerArray[0] = playerToRemove;
@@ -368,7 +374,8 @@ namespace Guribo.UdonBetterAudio.Scripts
         {
             if (AffectedPlayers == null)
             {
-                return new int[0];
+                AffectedPlayers = new int[0];
+                return AffectedPlayers;
             }
 
             return AffectedPlayers;

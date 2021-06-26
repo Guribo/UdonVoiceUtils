@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
-  m_Name: BetterAudioPool
+  m_Name: BetterPlayerAudioOverrideList
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 0038ab856cb26244fb5a68f203558073,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 807a752f38757d24992878c5bed28a8a,
     type: 2}
   udonAssembly: 
   assemblyError: 
-  sourceCsScript: {fileID: 11500000, guid: 3e88b02c727b3a54f900499167b4a869, type: 3}
+  sourceCsScript: {fileID: 11500000, guid: 936acf65749e3cc47a2c9a7d679dc33d, type: 3}
   behaviourSyncMode: 1
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
@@ -25,7 +25,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11500000, guid: 590ecd540832f2c478ed794fde8e2d2d, type: 3}
+    - {fileID: 11500000, guid: 3129fbbfb84d27b46b0aa680686a5a1f, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -50,7 +50,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: betterAudioFactory
+      Data: _betterPlayerAudioOverride
     - Name: $v
       Entry: 7
       Data: 2|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -62,25 +62,25 @@ MonoBehaviour:
       Data: 4|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonBetterAudio.Scripts.BetterAudioFactory, Guribo.UdonBetterAudio
+      Data: Guribo.UdonBetterAudio.Scripts.BetterPlayerAudioOverride[], Guribo.UdonBetterAudio
     - Name: 
       Entry: 8
       Data: 
     - Name: declarationType
       Entry: 3
-      Data: 1
+      Data: 2
     - Name: syncMode
       Entry: 3
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: VRCUdonUdonBehaviour
+      Data: UnityEngineComponentArray
     - Name: symbolOriginalName
       Entry: 1
-      Data: betterAudioFactory
+      Data: _betterPlayerAudioOverride
     - Name: symbolUniqueName
       Entry: 1
-      Data: betterAudioFactory
+      Data: _betterPlayerAudioOverride
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -92,13 +92,7 @@ MonoBehaviour:
       Data: 5|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 6|UnityEngine.SerializeField, UnityEngine.CoreModule
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 0
     - Name: 
       Entry: 13
       Data: 
