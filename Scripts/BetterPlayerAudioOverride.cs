@@ -1,4 +1,5 @@
 ﻿using System;
+using Guribo.UdonUtils.Scripts.Common;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -19,8 +20,9 @@ namespace Guribo.UdonBetterAudio.Scripts
 
         #endregion
 
+        public UdonDebug udonDebug;
         public BetterPlayerAudio playerAudio;
-        
+
         /// <summary>
         /// Determines whether it 
         /// Overrides with equal or higher values can override other overrides with lower priority.
@@ -66,7 +68,6 @@ namespace Guribo.UdonBetterAudio.Scripts
             "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
         public float listenerDirectionality = 0.5f;
 
-        [Header("Voice Settings")]
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultPlayerDirectionality"/>
         /// </summary>
@@ -75,6 +76,7 @@ namespace Guribo.UdonBetterAudio.Scripts
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
         public float playerDirectionality = 0.3f;
 
+        [Header("Voice Settings")]
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultEnableVoiceLowpass"/>
         /// </summary>
@@ -144,7 +146,7 @@ namespace Guribo.UdonBetterAudio.Scripts
         [Tooltip(
             "Range in which the player audio sources are not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed.")]
         public float targetAvatarVolumetricRadius;
-        
+
         /// <summary>
         /// Players affected by different overrides with the same privacy channel id can hear each other and can't be
         /// heard by non-affected players.
@@ -152,57 +154,48 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// override can hear each other.
         /// </summary>
         [Header("Privacy Settings")]
-        [Tooltip("Players affected by different overrides with the same privacy channel id can hear each other and can't be heard by non-affected players. If set to -1 the feature is turned off and all players affected by this override can be heard.")]
+        [Tooltip(
+            "Players affected by different overrides with the same privacy channel id can hear each other and can't be heard by non-affected players. If set to -1 the feature is turned off and all players affected by this override can be heard.")]
         public int privacyChannelId = -1;
 
         /// <summary>
         /// If set to true affected players also can't hear non-affected players.
         /// Only in effect in combination with a privacy channel not equal to -1.
         /// </summary>
-        [Tooltip("If set to true affected players also can't hear non-affected players. Only in effect in combination with a privacy channel not equal to -1.")]
+        [Tooltip(
+            "If set to true affected players also can't hear non-affected players. Only in effect in combination with a privacy channel not equal to -1.")]
         public bool muteOutsiders = true;
-        
+
         /// <summary>
-        /// Add players to the list of players that should make use of the here defined override values.
+        /// Add a single player to the list of players that should make use of the here defined override values.
+        /// When adding multiple players use <see cref="AffectPlayers"/> instead.
         /// Methods can be expensive when call with a lot of players! Avoid using in Update in every frame!
         /// </summary>
-        /// <param name="playersToAffect"></param>
-        /// <returns>true if the players were added/were already added before</returns>
-        public bool AffectPlayers(VRCPlayerApi[] playersToAffect)
+        /// <param name="playerToAffect"></param>
+        /// <returns>true if the player was added/was already added before</returns>
+        public bool AffectPlayer(VRCPlayerApi playerToAffect)
         {
-            if (playersToAffect == null || playersToAffect.Length == 0)
+            if (!Utilities.IsValid(playerToAffect))
             {
-                Debug.LogError(
-                    $"[<color=#008000>BetterAudio</color>] BetterPlayerAudioOverride.AffectPlayers: received invalid player");
                 return false;
             }
 
-            // add all players
-            foreach (var playerToAffect in playersToAffect)
+            // if no player is affected yet simply add the player
+            var playerId = playerToAffect.playerId;
+            if (AffectedPlayers == null)
             {
-                if (!Utilities.IsValid(playerToAffect))
+                AffectedPlayers = new[]
                 {
-                    Debug.LogError(
-                        $"[<color=#008000>BetterAudio</color>] BetterPlayerAudioOverride.AffectPlayers: playersToAffect contains invalid player");
-                    continue;
-                }
-
-                // if no player is affected yet simply add the player
-                var playerId = playerToAffect.playerId;
-                if (AffectedPlayers == null)
-                {
-                    AffectedPlayers = new[]
-                    {
-                        playerId
-                    };
-                    continue;
-                }
-
+                    playerId
+                };
+            }
+            else
+            {
                 var playerAlreadyAffected = Array.BinarySearch(AffectedPlayers, playerId) > -1;
                 if (playerAlreadyAffected)
                 {
                     // player already affected, nothing to do
-                    continue;
+                    return true;
                 }
 
                 // add the player to the list 
@@ -215,81 +208,33 @@ namespace Guribo.UdonBetterAudio.Scripts
                 Sort(AffectedPlayers);
             }
 
-            return true;
-        }
-
-        private readonly VRCPlayerApi[] _noAllocSinglePlayerArray = new VRCPlayerApi[1];
-
-        /// <summary>
-        /// Add a single player to the list of players that should make use of the here defined override values.
-        /// When adding multiple players use <see cref="AffectPlayers"/> instead.
-        /// Methods can be expensive when call with a lot of players! Avoid using in Update in every frame!
-        /// </summary>
-        /// <param name="playerToAffect"></param>
-        /// <returns>true if the player was added/was already added before</returns>
-        public bool AffectPlayer(VRCPlayerApi playerToAffect)
-        {
-            var localPlayer = Networking.LocalPlayer;
-            if (Utilities.IsValid(playerToAffect)
-                && Utilities.IsValid(localPlayer)
-                && playerToAffect.playerId == localPlayer.playerId)
-            {
-                if (Utilities.IsValid(playerAudio))
-                {
-                    return playerAudio.localPlayerOverrideList.AddOverride(this);
-                }
-
-                return false;
-            }
-
-            _noAllocSinglePlayerArray[0] = playerToAffect;
-            if (!AffectPlayers(_noAllocSinglePlayerArray))
-            {
-                return false;
-            }
-            
             // have the controller affect all players that are currently added to the override
             if (!Utilities.IsValid(playerAudio))
             {
                 return false;
             }
 
-            playerAudio.OverridePlayerSettings(this, playerToAffect);
-            return true;
+            return playerAudio.OverridePlayerSettings(this, playerToAffect);
         }
 
         /// <summary>
-        /// Remove players from the list of players that should make use of the here defined override values.
+        /// Remove player from the list of players that should make use of the here defined override values.
         /// </summary>
-        /// <param name="playersToRemove"></param>
-        /// <returns>true if the players were removed/not affected yet</returns>
-        public bool RemoveAffectedPlayers(VRCPlayerApi[] playersToRemove)
+        /// <param name="playerToRemove"></param>
+        /// <returns>true if the player was removed/not affected yet</returns>
+        public bool RemoveAffectedPlayer(VRCPlayerApi playerToRemove)
         {
-            if (playersToRemove == null || playersToRemove.Length == 0)
+            if (!udonDebug.Assert(Utilities.IsValid(playerToRemove), "Player to remove invalid", this))
             {
-                Debug.LogError(
-                    $"[<color=#008000>BetterAudio</color>] BetterPlayerAudioOverride.AffectPlayers: received invalid player");
                 return false;
             }
+
 
             if (AffectedPlayers == null || AffectedPlayers.Length == 0)
             {
                 // nothing to do so player was not removed
                 return false;
             }
-
-            // create a look-up list for players to be removed
-            var playerIdsToRemove = new int[playersToRemove.Length];
-            for (var i = 0; i < playersToRemove.Length; i++)
-            {
-                if (Utilities.IsValid(playersToRemove[i]))
-                {
-                    playerIdsToRemove[i] = playersToRemove[i].playerId;
-                }
-            }
-
-            // sort for checking existence with binary search
-            Sort(playerIdsToRemove);
 
             var removedPlayers = 0;
 
@@ -299,11 +244,12 @@ namespace Guribo.UdonBetterAudio.Scripts
                 // mark invalid players/players to be removed for removal
                 var affectedPlayer = VRCPlayerApi.GetPlayerById(AffectedPlayers[i]);
                 if (!Utilities.IsValid(affectedPlayer)
-                    || Array.BinarySearch(playerIdsToRemove, affectedPlayer.playerId) > -1)
+                    || playerToRemove.playerId == affectedPlayer.playerId)
                 {
                     // player should be removed, mark for disposal
                     AffectedPlayers[i] = int.MaxValue;
                     removedPlayers++;
+                    break;
                 }
             }
 
@@ -314,41 +260,17 @@ namespace Guribo.UdonBetterAudio.Scripts
             var tempArray = new int[AffectedPlayers.Length - removedPlayers];
             Array.ConstrainedCopy(AffectedPlayers, 0, tempArray, 0, AffectedPlayers.Length - removedPlayers);
             AffectedPlayers = tempArray;
-            return removedPlayers > 0;
-        }
 
-        /// <summary>
-        /// Remove player from the list of players that should make use of the here defined override values.
-        /// </summary>
-        /// <param name="playerToRemove"></param>
-        /// <returns>true if the player was removed/not affected yet</returns>
-        public bool RemoveAffectedPlayer(VRCPlayerApi playerToRemove)
-        {
-            var localPlayer = Networking.LocalPlayer;
-            if (Utilities.IsValid(playerToRemove)
-                && Utilities.IsValid(localPlayer)
-                && playerToRemove.playerId == localPlayer.playerId)
-            {
-                if (Utilities.IsValid(playerAudio))
-                {
-                    playerAudio.localPlayerOverrideList.RemoveOverride(this);
-                }
-            }
-            
-            _noAllocSinglePlayerArray[0] = playerToRemove;
-            if (!RemoveAffectedPlayers(_noAllocSinglePlayerArray))
+            // create a look-up list for players to be removed
+            // ReSharper disable once PossibleNullReferenceException invalid as checked with udonDebug.Assert
+
+            if (!udonDebug.Assert(Utilities.IsValid(playerAudio), "PlayerAudio invalid", this))
             {
                 return false;
             }
-            
-            if (!Utilities.IsValid(playerAudio))
-            {
-                return false;
-            }
-            
+
             // make the controller apply default settings to the player again
-            playerAudio.ClearPlayerOverride(this, playerToRemove.playerId);
-            return true;
+            return removedPlayers > 0 && playerAudio.ClearPlayerOverride(this, playerToRemove);
         }
 
         /// <summary>
@@ -356,14 +278,19 @@ namespace Guribo.UdonBetterAudio.Scripts
         /// </summary>
         /// <param name="playerId"></param>
         /// <returns>true if the player should be affected</returns>
-        public bool IsAffected(int playerId)
+        public bool IsAffected(VRCPlayerApi player)
         {
+            if (!udonDebug.Assert(Utilities.IsValid(player), "Player is invalid", this))
+            {
+                return false;
+            }
+
             if (AffectedPlayers == null || AffectedPlayers.Length == 0)
             {
                 return false;
             }
 
-            return Array.BinarySearch(AffectedPlayers, playerId) > -1;
+            return Array.BinarySearch(AffectedPlayers, player.playerId) > -1;
         }
 
         /// <summary>
@@ -398,9 +325,9 @@ namespace Guribo.UdonBetterAudio.Scripts
             var arrayLength = array.Length;
             for (var i = 0; i < arrayLength; i++)
             {
-                for (var j = 0; j < arrayLength -1; j++)
+                for (var j = 0; j < arrayLength - 1; j++)
                 {
-                    var next = j+1;
+                    var next = j + 1;
 
                     if (array[j] > array[next])
                     {
@@ -434,5 +361,25 @@ namespace Guribo.UdonBetterAudio.Scripts
         }
 
         #endregion
+
+        public bool RemoveAll()
+        {
+            if (!udonDebug.Assert(Utilities.IsValid(playerAudio), "playerAudio invalid", this))
+            {
+                return false;
+            }
+
+            if (AffectedPlayers != null)
+            {
+                foreach (var affectedPlayer in AffectedPlayers)
+                {
+                    playerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(affectedPlayer));
+                }
+
+                AffectedPlayers = new int[0];
+            }
+
+            return true;
+        }
     }
 }

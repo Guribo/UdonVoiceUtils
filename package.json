@@ -1,0 +1,7 @@
+{
+	"name" : "Guribo.BetterAudio",
+	"displayName" : "BetterAudio for Udon based VRChat worlds",
+	"version" : "0.7",
+	"unity" : "2018.4",
+	"description" : "Prefabs and examples that allow adjusting player voices and avatar audio effects. Includes setting up reverb, private voice channels and basic occlusion."
+}

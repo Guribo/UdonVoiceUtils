@@ -18,11 +18,6 @@ namespace Guribo.UdonBetterAudio.Scripts.Editor
 
         public override void OnInspectorGUI()
         {
-            // if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target))
-            // {
-            //     return;
-            // }
-
             UdonSharpGUI.DrawUtilities(target);
             UdonSharpGUI.DrawSyncSettings(target);
 

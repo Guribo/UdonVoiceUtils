@@ -5,6 +5,7 @@ using VRC.Udon;
 
 namespace Guribo.UdonBetterAudio.Scripts.Examples
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class VoiceOverrideZone : UdonSharpBehaviour
     {
         public BetterPlayerAudioOverride playerAudioOverride;

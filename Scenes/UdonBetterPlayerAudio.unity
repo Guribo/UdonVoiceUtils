@@ -842,6 +842,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BetterPlayerAudio
       objectReference: {fileID: 0}
+    - target: {fileID: 8733422487847318074, guid: c1868b9788f58fa43b0e2b57eacea7d9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1868b9788f58fa43b0e2b57eacea7d9, type: 3}
 --- !u!1 &1193653909
@@ -1140,7 +1145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   launchedFromSDKPipeline: 0
   completedSDKPipeline: 0
-  blueprintId: wrld_88079004-0ff8-4bde-b641-fee394575393
+  blueprintId: 
   contentType: 1
   assetBundleUnityVersion: 
   fallbackStatus: 0

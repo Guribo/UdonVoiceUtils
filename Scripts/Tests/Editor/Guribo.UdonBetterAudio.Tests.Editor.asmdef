@@ -4,7 +4,9 @@
         "UdonSharp.Editor",
         "UdonSharp.Runtime",
         "Guribo.UdonBetterAudio",
-        "Guribo.UdonUtils"
+        "Guribo.UdonUtils",
+        "Guribo.UdonUtils.Tests.Editor",
+        "VRC.Udon"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

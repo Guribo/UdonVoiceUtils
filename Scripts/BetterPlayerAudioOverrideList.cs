@@ -90,6 +90,10 @@ namespace Guribo.UdonBetterAudio.Scripts
             return endIndex;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns>the valid override or null if there is no valid override for the given index</returns>
         public BetterPlayerAudioOverride Get(int index)
         {
             if (index < 0
@@ -100,6 +104,16 @@ namespace Guribo.UdonBetterAudio.Scripts
                 return null;
             }
 
+            var betterPlayerAudioOverride = _betterPlayerAudioOverride[index];
+            if (Utilities.IsValid(betterPlayerAudioOverride))
+            {
+                return betterPlayerAudioOverride;
+            }
+
+            if (Consolidate(_betterPlayerAudioOverride) == 0)
+            {
+                return null;
+            }
             return _betterPlayerAudioOverride[index];
         }
 
@@ -155,6 +169,8 @@ namespace Guribo.UdonBetterAudio.Scripts
                 }
                 else
                 {
+                    // ensure that the entry no longer references an invalid object
+                    list[i] = null;
                     if (moveIndex == -1)
                     {
                         moveIndex = i;
