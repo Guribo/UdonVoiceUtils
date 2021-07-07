@@ -12,10 +12,31 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class VoiceOverrideDoor : UdonSharpBehaviour
     {
+        #region Settings
+
+        [Header("Settings")]
+        [Tooltip(
+            "Direction vector in this GameObjects local space in which the player has to pass through the trigger to leave the override zone")]
+        public Vector3 exitDirection = Vector3.forward;
+        [Tooltip(
+            "When set to true merely coming into contact with the trigger is enough to leave the zone, useful for e.g. a water surface")]
+        public bool leaveOnTouch;
+
+        #endregion
+
+        #region Mandatory references
+
+        [Header("Mandatory references")]
         public UdonDebug udonDebug;
         public OverrideZoneActivator overrideZoneActivator;
 
+        #endregion
+
         private Vector3 _enterPosition;
+
+        // used to allow proper enter/exit detection for horizontal triggers (e.g. a water surface)
+        private readonly Vector3 _playerColliderGroundOffset = new Vector3(0, 0.5f, 0);
+
 
         public void Start()
         {
@@ -23,17 +44,9 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 
             var trigger = gameObject.GetComponent<BoxCollider>();
-            if (!udonDebug.Assert(Utilities.IsValid(trigger), "Missing a box collider", this))
-            {
-                return;
-            }
-
-            if (!udonDebug.Assert(trigger.isTrigger, "Box collider must be a trigger", this))
-            {
-                return;
-            }
-
-            if (!udonDebug.Assert(trigger.center == Vector3.zero, "Box collider center must be 0,0,0", this))
+            if (!udonDebug.Assert(Utilities.IsValid(trigger), "Missing a box collider", this)
+                || !udonDebug.Assert(trigger.isTrigger, "Box collider must be a trigger", this)
+                || !udonDebug.Assert(trigger.center == Vector3.zero, "Box collider center must be 0,0,0", this))
             {
                 return;
             }
@@ -51,7 +64,21 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
                 return;
             }
 
-            _enterPosition = transform.InverseTransformPoint(player.GetPosition());
+            _enterPosition = transform.InverseTransformPoint(player.GetPosition() + _playerColliderGroundOffset);
+
+            if (leaveOnTouch)
+            {
+                if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed removing player from override",
+                    this))
+                {
+                    return;
+                }
+
+                if (overrideZoneActivator.playerList.Contains(player))
+                {
+                    overrideZoneActivator.ExitZone(player, null);
+                }
+            }
         }
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
@@ -71,13 +98,13 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
                 return;
             }
 
-            var exitPosition = transform.InverseTransformPoint(player.GetPosition());
+            var exitPosition = transform.InverseTransformPoint(player.GetPosition() + _playerColliderGroundOffset);
             var enterPosition = _enterPosition;
             _enterPosition = Vector3.zero;
 
-            if (HasEntered(enterPosition, exitPosition))
+            var enterDirection = -exitDirection;
+            if (HasEntered(enterPosition, exitPosition, enterDirection))
             {
-                Debug.Log("HasEntered");
                 if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed adding player to override",
                     this))
                 {
@@ -87,16 +114,18 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
                 overrideZoneActivator.EnterZone(player);
             }
 
-            if (HasExited(enterPosition, exitPosition))
+            if (HasExited(enterPosition, exitPosition, exitDirection))
             {
-                Debug.Log("HasExited");
                 if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed removing player from override",
                     this))
                 {
                     return;
                 }
 
-                overrideZoneActivator.ExitZone(player, null);
+                if (overrideZoneActivator.Contains(player))
+                {
+                    overrideZoneActivator.ExitZone(player, null);
+                }
             }
         }
 
@@ -120,26 +149,68 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             return _enterPosition != Vector3.zero;
         }
 
-        public bool HasEntered(Vector3 enterPosition, Vector3 exitPosition)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enterPosition"></param>
+        /// <param name="exitPosition"></param>
+        /// <param name="enterDirection">direction in local space which determines whether
+        /// the positions indicate entering.
+        /// If set to 0,0,0 false is returned.</param>
+        /// <returns></returns>
+        public bool HasEntered(Vector3 enterPosition, Vector3 exitPosition, Vector3 enterDirection)
         {
-            if (enterPosition == Vector3.zero || exitPosition == Vector3.zero)
+            if (enterPosition == Vector3.zero
+                || exitPosition == Vector3.zero
+                || enterDirection == Vector3.zero)
             {
                 return false;
             }
 
-            return enterPosition.z > 0 && exitPosition.z < 0
-                   || enterPosition.z < 0 && exitPosition.z < 0;
+            var enterDirectionNormalized = enterDirection.normalized;
+            var enterPositionNormalized = enterPosition.normalized;
+
+            var enterOutside = Vector3.Dot(enterPositionNormalized, enterDirectionNormalized) < 0;
+            var exitInside = Vector3.Dot(exitPosition, enterDirectionNormalized) > 0;
+            if (enterOutside && exitInside)
+            {
+                return true;
+            }
+
+            var enterInside = Vector3.Dot(enterPositionNormalized, enterDirectionNormalized) > 0;
+            return enterInside && exitInside;
         }
 
-        public bool HasExited(Vector3 enterPosition, Vector3 exitPosition)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enterPosition"></param>
+        /// <param name="exitPosition"></param>
+        /// <param name="leaveDirection">direction in local space which determines whether
+        /// the positions indicate exiting.
+        /// If set to 0,0,0 false is returned.</param>
+        /// <returns></returns>
+        public bool HasExited(Vector3 enterPosition, Vector3 exitPosition, Vector3 leaveDirection)
         {
-            if (enterPosition == Vector3.zero || exitPosition == Vector3.zero)
+            if (enterPosition == Vector3.zero
+                || exitPosition == Vector3.zero
+                || leaveDirection == Vector3.zero)
             {
                 return false;
             }
 
-            return enterPosition.z < 0 && exitPosition.z > 0
-                   || enterPosition.z > 0 && exitPosition.z > 0;
+            var leaveDirectionNormalized = leaveDirection.normalized;
+            var enterPositionNormalized = enterPosition.normalized;
+
+            var enterOutside = Vector3.Dot(enterPositionNormalized, leaveDirectionNormalized) > 0;
+            var exitOutside = Vector3.Dot(exitPosition.normalized, leaveDirectionNormalized) > 0;
+            if (enterOutside && exitOutside)
+            {
+                return true;
+            }
+
+            var enterInside = Vector3.Dot(enterPositionNormalized, leaveDirectionNormalized) < 0;
+            return enterInside && exitOutside;
         }
     }
 }

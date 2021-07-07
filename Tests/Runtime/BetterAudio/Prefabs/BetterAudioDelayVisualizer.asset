@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 4|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonBetterAudio.Runtime.BetterAudioSource, Guribo.UdonBetterAudio
+      Data: Guribo.UdonBetterAudio.Runtime.BetterAudioSource, Guribo.UdonBetterAudio.Runtime
     - Name: 
       Entry: 8
       Data: 

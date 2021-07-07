@@ -1,6 +1,4 @@
-﻿#if GURIBO_BPA
-
-using System;
+﻿using System;
 using Guribo.UdonUtils.Runtime.Common;
 using UdonSharp;
 using UnityEngine;
@@ -14,38 +12,23 @@ namespace Guribo.UdonBetterAudio.Runtime
     [DefaultExecutionOrder(10010)]
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
-        #region Constants
 
-        private const int EnvironmentLayerMask = 1 << 11;
-        private const int UILayerMask = 1 << 5;
-
-        #endregion
-
-        #region Libraries
-
-        [Header("Libraries")]
-        public UdonDebug udonDebug;
-
-        #endregion
-
-        #region Prefabs
-
-        [Header("Required prefabs")]
-        public GameObject overrideListPrefab;
-
-        #endregion
-
-        [Header("General Settings")] [SerializeField]
-        private UdonBehaviour uiController;
-
-        public BetterPlayerAudioOverrideList localPlayerOverrideList;
+        #region General settings
+        
+        [Header("General settings")]
 
         /// <summary>
         /// Whether ownership can be changed by any player at any time with Networking.SetOwner(...)
         /// </summary>
         [Tooltip("Whether ownership can be changed by any player at any time with Networking.SetOwner(...)")]
-        [SerializeField] protected bool allowOwnershipTransfer = false;
+        [SerializeField] protected bool allowOwnershipTransfer;
 
+        /// <summary>
+        /// When enabled the master can change the settings of all players
+        /// </summary>
+        [Tooltip("When enabled the master can change the settings of all players")]
+        public bool defaultAllowMasterControl;
+        
         /// <summary>
         /// How long to wait after start before applying changes to all players.
         /// Prevents excessive volume on joining the world because player positions might not be up to date yet.
@@ -57,25 +40,35 @@ namespace Guribo.UdonBetterAudio.Runtime
         protected float startDelay = 10f;
 
         /// <summary>
-        /// How many player updates should be performed every second (framerate independent). Example: with 60 players
-        /// in the world and playerUpdateRate = 20 it will take 60/20 = 3 seconds until every player got updated.
-        /// If set to -1 it will update ALL PLAYERS EVERY FRAME (don't use this option in worlds with up to
-        /// 80 people as this can potentially have a serious performance impact!)
+        /// How many player updates should be performed every second (at low framerate).
+        /// Independent of the value set here it will always update at least 1 player for each rendered frame.
+        /// 
+        /// Example:
+        /// With 60 players in the world, playerUpdateRate = 20 and 10 fps it will take 60/20 = 3 seconds until every
+        /// player got updated. For each rendered frame 2 players are updated. At 60 fps it will take 1 second.
+        /// 
+        /// If set to -1 it will update ALL PLAYERS EVERY FRAME
+        /// Don't use this option in worlds with up to 80 people as this can have a serious performance impact!
         /// </summary>
         [Tooltip(
-            "How many player updates should be performed every second (framerate independent). Example: with 60 players in the world and playerUpdateRate = 20 it will take 60/20 = 3 seconds until every player got updated.")]
+            "How many player updates should be performed every second (at low framerate). Example: with 60 players in the world, playerUpdateRate = 20 and 20 fps it will take 60/20 = 3 seconds until every player got updated. At 60 fps it will take 1 second.")]
         [SerializeField]
-        protected int playerUpdateRate = 60;
+        protected int playerUpdateRate = 1;
 
-        /// <summary>
-        /// The name of the function in the UI controller script that should be called when the master control
-        /// is enabled and the master changed any value
-        /// </summary>
-        [Tooltip(
-            "The name of the function in the UI controller script that should be called when the master control is enabled and the master changed any value")]
-        [SerializeField]
-        private string updateUiEventName = "UpdateUi";
+        #endregion
 
+
+        #region Occlusion settings
+        
+        #region Constants
+
+        private const int EnvironmentLayerMask = 1 << 11;
+        private const int UILayerMask = 1 << 5;
+
+        #endregion
+
+        [Header("Occlusion settings")]
+        
         /// <summary>
         /// Layers which can reduce voice and avatar sound effects when they are in between the local player (listener)
         /// and the player/avatar producing the sound
@@ -84,14 +77,6 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Tooltip(
             "Objects on these layers reduce the voice/avatar sound volume when they are in-between the local player and the player/avatar that produces the sound")]
         public LayerMask occlusionMask = EnvironmentLayerMask | UILayerMask;
-
-        #region default values for resetting
-
-        /// <summary>
-        /// When enabled the master can change the settings of all players
-        /// </summary>
-        [Tooltip("When enabled the master can change the settings of all players")]
-        public bool defaultAllowMasterControl;
 
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -114,6 +99,11 @@ namespace Guribo.UdonBetterAudio.Runtime
             "Occlusion when a player is occluded by another player. A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
         public float defaultPlayerOcclusionFactor = 0.85f;
 
+        #endregion
+
+        #region Directionality settings
+
+        [Header("Directionality settings")]
         /// <summary>
         /// Range 0.0 to 1.0.
         /// A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar
@@ -133,8 +123,11 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
         public float defaultPlayerDirectionality = 0.3f;
+        #endregion
 
-        [Header("Voice Settings")]
+        
+        #region Voice settings
+        [Header("Voice settings")]
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
         /// </summary>
@@ -168,7 +161,11 @@ namespace Guribo.UdonBetterAudio.Runtime
             "Range in which the player voice is not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed.")]
         [Range(0, 1000)] public float defaultVoiceVolumetricRadius;
 
-        [Header("Avatar Settings")]
+        #endregion
+
+        #region Avatar settings
+
+        [Header("Avatar settings")]
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudioforcespatial</remarks>
         /// </summary>
@@ -208,6 +205,36 @@ namespace Guribo.UdonBetterAudio.Runtime
         public float defaultAvatarVolumetricRadius;
 
         #endregion
+        
+        #region Mandatory references
+
+        [Header("Mandatory references")]
+        public BetterPlayerAudioOverrideList cloneablePlayerList;
+        public BetterPlayerAudioOverrideList localPlayerOverrideList;
+
+        #region Libraries
+
+        public UdonDebug udonDebug;
+
+        #endregion
+
+        #endregion
+
+        #region UI control
+
+        [Header("UI control")]
+        [SerializeField] private UdonBehaviour optionalUiController;
+        /// <summary>
+        /// The name of the function in the UI controller script that should be called when the master control
+        /// is enabled and the master changed any value
+        /// </summary>
+        [Tooltip(
+            "The name of the function in the UI controller script that should be called when the master control is enabled and the master changed any value")]
+        [SerializeField]
+        private string updateUiEventName = "UpdateUi";
+
+        #endregion
+
 
         #region currently used values
 
@@ -372,6 +399,8 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         #endregion
 
+        #region State
+
         private bool _receivedStart;
         private bool _canUpdate;
         private bool _isReallyOwner;
@@ -382,6 +411,8 @@ namespace Guribo.UdonBetterAudio.Runtime
         private BetterPlayerAudioOverrideList[] _playerOverrideLists;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         private int _serializationRequests;
+        
+        #endregion
 
 
         #region Unity Lifecycle
@@ -836,7 +867,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
                 // check how far away the hit is from the player and if it is above a certain threshold
                 // assume an object occludes the player (threshold is 1m for now)
-                // TODO find a solution that also works for bigger avatars for which the radius of the capsule can exceed 1m
+                // TODO find a solution that also works for taller avatars for which the radius of the capsule can exceed 1m
                 var minOcclusionTriggerDistance = distance - 1f;
                 var occlusionTriggered = _rayHits[0].distance < minOcclusionTriggerDistance;
                 if (!occlusionTriggered)
@@ -922,30 +953,10 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public override void OnDeserialization()
         {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] " + $"OnDeserialization called");
             if (_isReallyOwner)
             {
-                Debug.Log("[<color=#008000>BetterAudio</color>] Taking away ownership as data is received");
                 _isReallyOwner = false;
             }
-
-            Debug.Log($"[<color=#008000>BetterAudio</color>] OnDeserialization: New values received from owner " +
-                      $"in BetterPlayerAudio"
-                      + $"{masterOcclusionFactor}, "
-                      + $"{masterPlayerOcclusionFactor}, "
-                      + $"{masterListenerDirectionality}, "
-                      + $"{masterPlayerDirectionality}, "
-                      + $"{masterEnableVoiceLowpass}, "
-                      + $"{masterTargetVoiceDistanceNear}, "
-                      + $"{masterTargetVoiceDistanceFar}, "
-                      + $"{masterTargetVoiceGain}, "
-                      + $"{masterTargetVoiceVolumetricRadius}, "
-                      + $"{masterForceAvatarSpatialAudio}, "
-                      + $"{masterAllowAvatarCustomAudioCurves}, "
-                      + $"{masterTargetAvatarNearRadius}, "
-                      + $"{masterTargetAvatarFarRadius}, "
-                      + $"{masterTargetAvatarGain}, "
-                      + $"{masterTargetAvatarVolumetricRadius}");
 
             TryUseMasterValues();
         }
@@ -1003,9 +1014,9 @@ namespace Guribo.UdonBetterAudio.Runtime
         public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
             _allowMasterControl = false;
-            if (uiController)
+            if (optionalUiController)
             {
-                uiController.SendCustomEvent(updateUiEventName);
+                optionalUiController.SendCustomEvent(updateUiEventName);
             }
         }
 
@@ -1016,22 +1027,22 @@ namespace Guribo.UdonBetterAudio.Runtime
                 _allowMasterControl = false;
             }
 
-            if (uiController)
+            if (optionalUiController)
             {
-                uiController.SendCustomEvent(updateUiEventName);
+                optionalUiController.SendCustomEvent(updateUiEventName);
             }
         }
 
-        public void SetUseMasterControls(bool use)
+        public void SetUseMasterControls(bool useMasterValues)
         {
-            if (use && !_allowMasterControl)
+            if (useMasterValues && !_allowMasterControl)
             {
                 _allowMasterControl = true;
-                TryUseMasterValues();
+                udonDebug.Assert(TryUseMasterValues(),"Failed using master values",this);
             }
             else
             {
-                _allowMasterControl = use;
+                _allowMasterControl = useMasterValues;
             }
         }
 
@@ -1042,7 +1053,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         private bool TryUseMasterValues()
         {
-            if (_allowMasterControl && uiController)
+            if (_allowMasterControl && optionalUiController)
             {
                 OcclusionFactor = masterOcclusionFactor;
                 PlayerOcclusionFactor = masterPlayerOcclusionFactor;
@@ -1060,7 +1071,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                 TargetAvatarGain = masterTargetAvatarGain;
                 TargetAvatarVolumetricRadius = masterTargetAvatarVolumetricRadius;
 
-                uiController.SendCustomEvent(updateUiEventName);
+                optionalUiController.SendCustomEvent(updateUiEventName);
                 return true;
             }
 
@@ -1267,7 +1278,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                     Array.ConstrainedCopy(_playerOverrideLists, 0, tempOverrides, 0, position);
                 }
 
-                var prefabInstance = VRCInstantiate(overrideListPrefab);
+                var prefabInstance = VRCInstantiate(cloneablePlayerList.gameObject);
                 // insert the new entry for the added player
                 var betterPlayerAudioOverrideList = prefabInstance.GetComponent<BetterPlayerAudioOverrideList>();
                 if (!udonDebug.Assert(betterPlayerAudioOverrideList.AddOverride(betterPlayerAudioOverride),
@@ -1594,4 +1605,3 @@ namespace Guribo.UdonBetterAudio.Runtime
         }
     }
 }
-#endif

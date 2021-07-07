@@ -13,15 +13,9 @@ namespace Guribo.UdonBetterAudio.Runtime
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterPlayerAudioOverride : UdonSharpBehaviour
     {
-        #region Constants
+        #region Settings
 
-        private const int EnvironmentLayerMask = 1 << 11;
-        private const int UILayerMask = 1 << 5;
-
-        #endregion
-
-        public UdonDebug udonDebug;
-        public BetterPlayerAudio betterPlayerAudio;
+        [Header("General settings")]
 
         /// <summary>
         /// Determines whether it 
@@ -30,11 +24,24 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// fall back to the next lower override available.
         /// </summary>
         public int priority;
+        
+        #endregion
 
         /// <summary>
         /// Players that this override should be applied to. Must be sorted at all times to allow searching inside with binary search!
         /// </summary>
         protected int[] AffectedPlayers;
+
+        #region Occlusion settings
+        
+        #region Constants
+
+        private const int EnvironmentLayerMask = 1 << 11;
+        private const int UILayerMask = 1 << 5;
+
+        #endregion
+        
+        [Header("Occlusion settings")]
 
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.occlusionMask"/>
@@ -60,6 +67,11 @@ namespace Guribo.UdonBetterAudio.Runtime
             "Occlusion when a player is occluded by another player. A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
         public float playerOcclusionFactor = 0.85f;
 
+        #endregion
+
+        #region Directionality settings
+        
+        [Header("Directionality settings")]
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultListenerDirectionality"/>
         /// </summary>
@@ -76,7 +88,19 @@ namespace Guribo.UdonBetterAudio.Runtime
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
         public float playerDirectionality = 0.3f;
 
-        [Header("Voice Settings")]
+        #endregion
+        
+        #region Reverb settings
+
+        [Header("Reverb settings")]
+        public AudioReverbFilter optionalReverb;
+
+        #endregion
+
+
+        #region Voice settings
+
+        [Header("Voice settings")]
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultEnableVoiceLowpass"/>
         /// </summary>
@@ -108,7 +132,11 @@ namespace Guribo.UdonBetterAudio.Runtime
             "Range in which the player voice is not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed.")]
         [Range(0, 1000)] public float voiceVolumetricRadius;
 
-        [Header("Avatar Settings")]
+        #endregion
+
+        #region Avatar settings
+
+        [Header("Avatar settings")]
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultForceAvatarSpatialAudio"/>
         /// </summary>
@@ -147,13 +175,17 @@ namespace Guribo.UdonBetterAudio.Runtime
             "Range in which the player audio sources are not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed.")]
         public float targetAvatarVolumetricRadius;
 
+        #endregion
+
+        #region Privacy Settings
+
         /// <summary>
         /// Players affected by different overrides with the same privacy channel id can hear each other and can't be
         /// heard by non-affected players.
         /// If set to -1 the feature is turned off for this override component and only players affected by this
         /// override can hear each other.
         /// </summary>
-        [Header("Privacy Settings")]
+        [Header("Privacy settings")]
         [Tooltip(
             "Players affected by different overrides with the same privacy channel id can hear each other and can't be heard by non-affected players. If set to -1 the feature is turned off and all players affected by this override can be heard.")]
         public int privacyChannelId = -1;
@@ -165,6 +197,33 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Tooltip(
             "If set to true affected players also can't hear non-affected players. Only in effect in combination with a privacy channel not equal to -1.")]
         public bool muteOutsiders = true;
+        
+        #endregion
+        
+        #region Mandatory references
+
+        [Header("Mandatory references")]
+        public BetterPlayerAudio betterPlayerAudio;
+        public UdonDebug udonDebug;
+
+        #endregion
+
+        #region State
+
+        private bool _hasStarted;
+
+        #endregion
+        
+        public void Start()
+        {
+            if (_hasStarted)
+            {
+                return;
+            }
+
+            _hasStarted = true;
+            DeactivateReverb();
+        }
 
         /// <summary>
         /// Add a single player to the list of players that should make use of the here defined override values.
@@ -173,8 +232,13 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// </summary>
         /// <param name="playerToAffect"></param>
         /// <returns>true if the player was added/was already added before</returns>
-        public bool AffectPlayer(VRCPlayerApi playerToAffect)
+        public bool AddPlayer(VRCPlayerApi playerToAffect)
         {
+            if (!_hasStarted)
+            {
+                Start();
+            }
+            
             if (!Utilities.IsValid(playerToAffect))
             {
                 return false;
@@ -208,12 +272,17 @@ namespace Guribo.UdonBetterAudio.Runtime
                 Sort(AffectedPlayers);
             }
 
+            if (playerToAffect.isLocal)
+            {
+                ActivateReverb();
+            }
+            
             // have the controller affect all players that are currently added to the override
             if (!Utilities.IsValid(betterPlayerAudio))
             {
                 return false;
             }
-
+            
             return betterPlayerAudio.OverridePlayerSettings(this, playerToAffect);
         }
 
@@ -222,13 +291,12 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// </summary>
         /// <param name="playerToRemove"></param>
         /// <returns>true if the player was removed/not affected yet</returns>
-        public bool RemoveAffectedPlayer(VRCPlayerApi playerToRemove)
+        public bool RemovePlayer(VRCPlayerApi playerToRemove)
         {
             if (!udonDebug.Assert(Utilities.IsValid(playerToRemove), "Player to remove invalid", this))
             {
                 return false;
             }
-
 
             if (AffectedPlayers == null || AffectedPlayers.Length == 0)
             {
@@ -261,14 +329,17 @@ namespace Guribo.UdonBetterAudio.Runtime
             Array.ConstrainedCopy(AffectedPlayers, 0, tempArray, 0, AffectedPlayers.Length - removedPlayers);
             AffectedPlayers = tempArray;
 
-            // create a look-up list for players to be removed
-            // ReSharper disable once PossibleNullReferenceException invalid as checked with udonDebug.Assert
+            if (playerToRemove.isLocal)
+            {
+                DeactivateReverb();
+            }
 
+            // ReSharper disable once PossibleNullReferenceException invalid as checked with udonDebug.Assert
             if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "PlayerAudio invalid", this))
             {
                 return false;
             }
-
+            
             // make the controller apply default settings to the player again
             return removedPlayers > 0 && betterPlayerAudio.ClearPlayerOverride(this, playerToRemove);
         }
@@ -294,20 +365,67 @@ namespace Guribo.UdonBetterAudio.Runtime
         }
 
         /// <summary>
-        /// Returns array of affected players (can contain invalid players so make sure to check for validity with <see cref="Utilities.IsValid"/>.
+        /// Returns a copy of the array of affected players (can contain invalid players so make sure to check for validity with <see cref="Utilities.IsValid"/>.
         /// </summary>
         /// <returns>affected players or empty array if none are affected</returns>
         public int[] GetAffectedPlayers()
         {
-            if (AffectedPlayers == null)
+            if (AffectedPlayers == null || AffectedPlayers.Length == 0)
             {
-                AffectedPlayers = new int[0];
-                return AffectedPlayers;
+                return new int[0];
             }
 
-            return AffectedPlayers;
+            var tempArray = new int[AffectedPlayers.Length];
+            AffectedPlayers.CopyTo(tempArray,0);
+            return tempArray;
+        }
+        
+        public bool Clear()
+        {
+            DeactivateReverb();
+            
+            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "playerAudio invalid", this))
+            {
+                return false;
+            }
+
+            if (AffectedPlayers != null)
+            {
+                foreach (var affectedPlayer in AffectedPlayers)
+                {
+                    betterPlayerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(affectedPlayer));
+                }
+
+                AffectedPlayers = new int[0];
+            }
+            
+            return true;
+        }
+        
+        private void DeactivateReverb()
+        {
+            if (ReverbValid())
+            {
+                optionalReverb.gameObject.SetActive(false);
+            }
+        }
+        
+        private void ActivateReverb()
+        {
+            if (ReverbValid())
+            {
+                optionalReverb.gameObject.SetActive(true);
+            }
         }
 
+        private bool ReverbValid()
+        {
+            return Utilities.IsValid(optionalReverb)
+                   && udonDebug.Assert(Utilities.IsValid(optionalReverb.gameObject.GetComponent(typeof(AudioListener))),
+                       "For reverb to work an AudioListener is required on the gameobject with the Reverb Filter",
+                       this);
+        }
+        
         #region Sorting
 
         private void Sort(int[] array)
@@ -362,24 +480,5 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         #endregion
 
-        public bool RemoveAll()
-        {
-            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "playerAudio invalid", this))
-            {
-                return false;
-            }
-
-            if (AffectedPlayers != null)
-            {
-                foreach (var affectedPlayer in AffectedPlayers)
-                {
-                    betterPlayerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(affectedPlayer));
-                }
-
-                AffectedPlayers = new int[0];
-            }
-
-            return true;
-        }
     }
 }

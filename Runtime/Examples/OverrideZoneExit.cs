@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using Guribo.UdonUtils.Runtime.Common;
+using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
@@ -8,9 +9,22 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class OverrideZoneExit : UdonSharpBehaviour
     {
-        public OverrideZoneActivator overrideZoneActivator;
+        #region Teleport settings
+
+        [Header("Teleport settings")]
         public Transform optionalExitLocation;
         public bool exitZoneOnRespawn = true;
+
+        #endregion
+
+        #region Mandatory references
+
+        [Header("Mandatory references")]
+        public OverrideZoneActivator overrideZoneActivator;
+        public UdonDebug udonDebug;
+
+        #endregion
+
         public override void Interact()
         {
             ExitZone(Networking.LocalPlayer);
@@ -25,16 +39,21 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             
             ExitZone(player);
         }
+
         private void ExitZone(VRCPlayerApi playerApi)
         {
-            if (!Utilities.IsValid(overrideZoneActivator) 
-                || !Utilities.IsValid(playerApi) 
-                || !playerApi.isLocal)
+            if (!(udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "overrideZoneActivator invalid", this)
+                  && udonDebug.Assert(Utilities.IsValid(playerApi), "player invalid", this)
+                  && playerApi.isLocal))
             {
                 return;
             }
 
-            overrideZoneActivator.ExitZone(playerApi, optionalExitLocation);
+            if (overrideZoneActivator.Contains(playerApi))
+            {
+                udonDebug.Assert(overrideZoneActivator.ExitZone(playerApi, optionalExitLocation), "ExitZone failed",
+                    this);
+            }
         }
     }
 }

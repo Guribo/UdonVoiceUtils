@@ -11,14 +11,19 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
     {
         protected const int NoUser = -1;
 
-        public BetterPlayerAudioOverride betterPlayerAudioOverride;
-
+        [HideInInspector]
         public int playerId = NoUser;
-        [SerializeField] protected SyncedInteger syncedInteger;
         protected int OldMicUserId = NoUser;
 
-        public OwnershipTransfer ownershipTransfer;
+        #region Mandatory references
 
+        [Header("Mandatory references")]
+        public BetterPlayerAudioOverride betterPlayerAudioOverride;
+        public OwnershipTransfer ownershipTransfer;
+        [SerializeField] protected SyncedInteger syncedInteger;
+
+        #endregion
+        
         public override void OnPickup()
         {
             var localPlayer = Networking.LocalPlayer;
@@ -100,7 +105,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             {
                 if (Utilities.IsValid(betterPlayerAudioOverride))
                 {
-                    betterPlayerAudioOverride.RemoveAffectedPlayer(currentMicUser);
+                    betterPlayerAudioOverride.RemovePlayer(currentMicUser);
                 }
             }
         }
@@ -123,7 +128,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
             if (Utilities.IsValid(betterPlayerAudioOverride))
             {
-                betterPlayerAudioOverride.AffectPlayer(newMicUser);
+                betterPlayerAudioOverride.AddPlayer(newMicUser);
             }
         }
 

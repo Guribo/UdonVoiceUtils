@@ -10,26 +10,25 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class OverrideZoneActivator : UdonSharpBehaviour
     {
-        public UdonDebug udonDebug;
+        private bool _isInZone;
+
+        #region Teleport settings
+
+        [Header("Teleport settings")]
+        public Transform optionalEnterLocation;
+
+        #endregion
+
+
+        #region Mandatory references
+
+        [Header("Mandatory references")]
         public BetterPlayerAudioOverride playerOverride;
         public PlayerList playerList;
         public SyncedIntegerArray syncedIntegerArray;
+        public UdonDebug udonDebug;
 
-        // public bool isEntry = true;
-
-        private bool _isInZone;
-
-        public Transform optionalTeleportLocation;
-
-        public GameObject reverbObject;
-
-        private void Start()
-        {
-            if (Utilities.IsValid(reverbObject))
-            {
-                reverbObject.SetActive(false);
-            }
-        }
+        #endregion
 
         public override void Interact()
         {
@@ -38,18 +37,20 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
         public bool EnterZone(VRCPlayerApi localPlayer)
         {
-            if (!udonDebug.Assert(AddPlayerToZone(localPlayer), "Failed adding player to zone", this))
+            if (!udonDebug.Assert(AddLocalPlayerToZone(localPlayer), "Failed adding player to zone", this))
             {
                 return false;
             }
 
-            TeleportPlayer(optionalTeleportLocation);
+            TeleportPlayer(optionalEnterLocation);
             return true;
         }
 
         public bool ExitZone(VRCPlayerApi localPlayer, Transform optionTargetLocation)
         {
-            if (!udonDebug.Assert(RemovePlayerFromZone(localPlayer), "Remove player from zone failed", this))
+            if (!udonDebug.Assert(Utilities.IsValid(localPlayer), "Invalid local player", this)
+                || !udonDebug.Assert(localPlayer.isLocal, "Player is not local", this)
+                || !udonDebug.Assert(RemoveLocalPlayerFromZone(localPlayer), "Remove player from zone failed", this))
             {
                 return false;
             }
@@ -58,19 +59,11 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             return true;
         }
 
-        private bool AddPlayerToZone(VRCPlayerApi player)
+        private bool AddLocalPlayerToZone(VRCPlayerApi player)
         {
-            if (!udonDebug.Assert(Utilities.IsValid(player), "Player invalid", this))
-            {
-                return false;
-            }
-
-            if (!udonDebug.Assert(Utilities.IsValid(playerList), "Player list invalid", this))
-            {
-                return false;
-            }
-
-            if (!udonDebug.Assert(playerList.AddPlayer(player), "Adding player to player list failed", this))
+            if (!udonDebug.Assert(Utilities.IsValid(player), "Player invalid", this)
+                || !udonDebug.Assert(Utilities.IsValid(playerList), "Player list invalid", this)
+                || !udonDebug.Assert(playerList.AddPlayer(player), "Adding player to player list failed", this))
             {
                 return false;
             }
@@ -78,37 +71,22 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             _isInZone = true;
             UpdateNetwork(player);
 
-            if (Utilities.IsValid(reverbObject))
-            {
-                reverbObject.SetActive(true);
-            }
-
             return true;
         }
 
-        private bool RemovePlayerFromZone(VRCPlayerApi localPlayer)
+        private bool RemoveLocalPlayerFromZone(VRCPlayerApi localPlayer)
         {
-            if (!udonDebug.Assert(Utilities.IsValid(localPlayer), "Player invalid", this))
+            if (!udonDebug.Assert(Utilities.IsValid(localPlayer), "Player invalid", this)
+                || !udonDebug.Assert(localPlayer.isLocal, "Player is not local", this)
+                || !udonDebug.Assert(Utilities.IsValid(playerList), "Player list invalid", this)
+                || !playerList.RemovePlayer(localPlayer))
             {
                 return false;
             }
-
-            if (!udonDebug.Assert(Utilities.IsValid(playerList), "Player list invalid", this))
-            {
-                return false;
-            }
-
-            // ignore return value
-            playerList.RemovePlayer(localPlayer);
 
             _isInZone = false;
 
             UpdateNetwork(localPlayer);
-
-            if (Utilities.IsValid(reverbObject))
-            {
-                reverbObject.SetActive(false);
-            }
 
             return true;
         }
@@ -141,12 +119,8 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
         public void PlayerListChanged()
         {
-            if (!udonDebug.Assert(Utilities.IsValid(syncedIntegerArray), "Synced integer array invalid", this))
-            {
-                return;
-            }
-            
-            if (!udonDebug.Assert(Utilities.IsValid(playerOverride), "playerOverride invalid", this))
+            if (!udonDebug.Assert(Utilities.IsValid(syncedIntegerArray), "Synced integer array invalid", this)
+                || !udonDebug.Assert(Utilities.IsValid(playerOverride), "playerOverride invalid", this))
             {
                 return;
             }
@@ -155,19 +129,19 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             {
                 foreach (var i in syncedIntegerArray.oldValue)
                 {
-                    playerOverride.RemoveAffectedPlayer(VRCPlayerApi.GetPlayerById(i));
+                    playerOverride.RemovePlayer(VRCPlayerApi.GetPlayerById(i));
                 }
             }
             else
             {
-                playerOverride.RemoveAll();
+                playerOverride.Clear();
             }
 
             if (syncedIntegerArray.syncedValue != null)
             {
                 foreach (var i in syncedIntegerArray.syncedValue)
                 {
-                    playerOverride.AffectPlayer(VRCPlayerApi.GetPlayerById(i));
+                    playerOverride.AddPlayer(VRCPlayerApi.GetPlayerById(i));
                 }
             }
 
@@ -181,15 +155,21 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             {
                 if (_isInZone)
                 {
-                    AddPlayerToZone(localPlayer);
+                    AddLocalPlayerToZone(localPlayer);
                 }
                 else
                 {
-                    RemovePlayerFromZone(localPlayer);
+                    RemoveLocalPlayerFromZone(localPlayer);
                 }
 
                 UpdateNetwork(localPlayer);
             }
+        }
+
+        public bool Contains(VRCPlayerApi playerApi)
+        {
+            return udonDebug.Assert(Utilities.IsValid(playerList), "playerList invalid", this)
+                    && playerList.Contains(playerApi);
         }
     }
 }

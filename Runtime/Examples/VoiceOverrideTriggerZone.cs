@@ -1,12 +1,31 @@
-﻿using UdonSharp;
+﻿using Guribo.UdonUtils.Runtime.Common;
+using UdonSharp;
+using UnityEngine;
 using VRC.SDKBase;
+using VRC.Udon;
 
 namespace Guribo.UdonBetterAudio.Runtime.Examples
 {
+    /// <summary>
+    /// All players that are in contact with the trigger are affected. Exiting the trigger removes the player from the
+    /// associated voice override.
+    /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class VoiceOverrideZone : UdonSharpBehaviour
+    public class VoiceOverrideTriggerZone : UdonSharpBehaviour
     {
+        #region Reverb settings
+
+        [Header("Reverb settings")]
+        public AudioReverbFilter optionalReverb;
+
+        #endregion
+        
+        #region Mandatory references
+
+        [Header("Mandatory references")]
         public BetterPlayerAudioOverride playerAudioOverride;
+        
+        #endregion
         
 
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
@@ -18,7 +37,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             }
 
             // add the player to the override
-            playerAudioOverride.AffectPlayer(player);
+            playerAudioOverride.AddPlayer(player);
         }
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
@@ -30,7 +49,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             }
 
             // remove player from the override
-            playerAudioOverride.RemoveAffectedPlayer(player);
+            playerAudioOverride.RemovePlayer(player);
         }
     }
 }
