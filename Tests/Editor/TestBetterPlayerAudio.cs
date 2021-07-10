@@ -20,12 +20,17 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             var player1 = UdonTestUtils.CreatePlayer(0);
 
-            Assert.AreEqual(0, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(new int[0], voiceOverride.playerList.players);
             Assert.False(voiceOverride.IsAffected(player1));
+            LogAssert.Expect(LogType.Error, new Regex(".+player not affected.", RegexOptions.Singleline));
             Assert.False(voiceOverride.RemovePlayer(player1));
         }
 
@@ -36,6 +41,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             UdonTestUtils.CreateLocalPlayer(0);
@@ -43,15 +52,15 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             // add
             Assert.True(voiceOverride.AddPlayer(player1));
-            Assert.AreEqual(1, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(1, voiceOverride.playerList.players.Length);
             Assert.True(voiceOverride.IsAffected(player1));
-            Assert.AreEqual(player1.playerId, voiceOverride.GetAffectedPlayers()[0]);
+            Assert.AreEqual(player1.playerId, voiceOverride.playerList.players[0]);
 
             // remove
             LogAssert.Expect(LogType.Error,
                 "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             Assert.True(voiceOverride.RemovePlayer(player1));
-            Assert.AreEqual(0, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(0, voiceOverride.playerList.players.Length);
             Assert.False(voiceOverride.IsAffected(player1));
         }
 
@@ -62,6 +71,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             UdonTestUtils.CreateLocalPlayer(0);
@@ -69,36 +82,36 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             var player2 = UdonTestUtils.CreatePlayer(2);
 
             Assert.True(voiceOverride.AddPlayer(player1));
-            Assert.AreEqual(1, voiceOverride.GetAffectedPlayers().Length);
-            Assert.AreEqual(player1.playerId, voiceOverride.GetAffectedPlayers()[0]);
+            Assert.AreEqual(1, voiceOverride.playerList.players.Length);
+            Assert.AreEqual(player1.playerId, voiceOverride.playerList.players[0]);
 
             Assert.True(voiceOverride.AddPlayer(player2));
-            Assert.AreEqual(2, voiceOverride.GetAffectedPlayers().Length);
-            Assert.AreEqual(player1.playerId, voiceOverride.GetAffectedPlayers()[0]);
-            Assert.AreEqual(player2.playerId, voiceOverride.GetAffectedPlayers()[1]);
+            Assert.AreEqual(2, voiceOverride.playerList.players.Length);
+            Assert.AreEqual(player1.playerId, voiceOverride.playerList.players[0]);
+            Assert.AreEqual(player2.playerId, voiceOverride.playerList.players[1]);
 
             LogAssert.Expect(LogType.Error,
                 "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             Assert.True(voiceOverride.RemovePlayer(player1));
-            Assert.AreEqual(1, voiceOverride.GetAffectedPlayers().Length);
-            Assert.AreEqual(player2.playerId, voiceOverride.GetAffectedPlayers()[0]);
+            Assert.AreEqual(1, voiceOverride.playerList.players.Length);
+            Assert.AreEqual(player2.playerId, voiceOverride.playerList.players[0]);
 
             LogAssert.Expect(LogType.Error,
                 "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             Assert.True(voiceOverride.RemovePlayer(player2));
-            Assert.AreEqual(0, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(0, voiceOverride.playerList.players.Length);
 
             Assert.True(voiceOverride.AddPlayer(player1));
             Assert.True(voiceOverride.AddPlayer(player2));
-            Assert.AreEqual(2, voiceOverride.GetAffectedPlayers().Length);
-            Assert.AreEqual(player1.playerId, voiceOverride.GetAffectedPlayers()[0]);
-            Assert.AreEqual(player2.playerId, voiceOverride.GetAffectedPlayers()[1]);
+            Assert.AreEqual(2, voiceOverride.playerList.players.Length);
+            Assert.AreEqual(player1.playerId, voiceOverride.playerList.players[0]);
+            Assert.AreEqual(player2.playerId, voiceOverride.playerList.players[1]);
             
             LogAssert.Expect(LogType.Error, "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             Assert.True(voiceOverride.RemovePlayer(player1));
             LogAssert.Expect(LogType.Error, "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             Assert.True(voiceOverride.RemovePlayer(player2));
-            Assert.AreEqual(0, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(0, voiceOverride.playerList.players.Length);
         }
 
         [Test]
@@ -108,6 +121,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             var player0 = UdonTestUtils.CreateLocalPlayer(0);
@@ -120,17 +137,17 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.True(voiceOverride.AddPlayer(player3));
             
             
-            Assert.AreEqual(3, voiceOverride.GetAffectedPlayers().Length);
-            Assert.AreEqual(player1.playerId, voiceOverride.GetAffectedPlayers()[0]);
-            Assert.AreEqual(player2.playerId, voiceOverride.GetAffectedPlayers()[1]);
-            Assert.AreEqual(player3.playerId, voiceOverride.GetAffectedPlayers()[2]);
+            Assert.AreEqual(3, voiceOverride.playerList.players.Length);
+            Assert.AreEqual(player1.playerId, voiceOverride.playerList.players[0]);
+            Assert.AreEqual(player2.playerId, voiceOverride.playerList.players[1]);
+            Assert.AreEqual(player3.playerId, voiceOverride.playerList.players[2]);
 
             LogAssert.Expect(LogType.Error,
                 "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             Assert.True(voiceOverride.RemovePlayer(player1));
-            Assert.AreEqual(2, voiceOverride.GetAffectedPlayers().Length);
-            Assert.AreEqual(player2.playerId, voiceOverride.GetAffectedPlayers()[0]);
-            Assert.AreEqual(player3.playerId, voiceOverride.GetAffectedPlayers()[1]);
+            Assert.AreEqual(2, voiceOverride.playerList.players.Length);
+            Assert.AreEqual(player2.playerId, voiceOverride.playerList.players[0]);
+            Assert.AreEqual(player3.playerId, voiceOverride.playerList.players[1]);
         }
 
         [Test]
@@ -178,6 +195,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             UdonTestUtils.CreateLocalPlayer(0);
@@ -201,6 +222,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             UdonTestUtils.CreateLocalPlayer(0);
@@ -232,9 +257,12 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
-            UdonTestUtils.CreateLocalPlayer(0);
+            var player0 = UdonTestUtils.CreateLocalPlayer(0);
             var player1 = UdonTestUtils.CreatePlayer(1);
 
             Assert.False(betterPlayerAudio.HasVoiceOverrides(player1));
@@ -272,23 +300,23 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             var player3 = UdonTestUtils.CreatePlayer(1);
             var player2 = UdonTestUtils.CreatePlayer(2);
 
-            Assert.AreEqual(0, betterPlayerAudio.PlayersWithOverridesCount());
-            var ids = betterPlayerAudio.GetPlayersWithOverrides();
+            Assert.AreEqual(0, betterPlayerAudio.PlayersToOverride.Length);
+            var ids = betterPlayerAudio.GetNonLocalPlayersWithOverrides();
             Assert.AreEqual(0, ids.Length);
             Assert.AreEqual(1, betterPlayerAudio.CreateOverrideSlotForPlayer(player1));
-            ids = betterPlayerAudio.GetPlayersWithOverrides();
+            ids = betterPlayerAudio.GetNonLocalPlayersWithOverrides();
             Assert.AreEqual(1, ids.Length);
             Assert.AreEqual(0, ids[0]);
-            Assert.AreEqual(1, betterPlayerAudio.PlayersWithOverridesCount());
+            Assert.AreEqual(1, betterPlayerAudio.PlayersToOverride.Length);
             Assert.AreEqual(2, betterPlayerAudio.CreateOverrideSlotForPlayer(player2));
-            ids = betterPlayerAudio.GetPlayersWithOverrides();
+            ids = betterPlayerAudio.GetNonLocalPlayersWithOverrides();
             Assert.AreEqual(2, ids.Length);
             Assert.AreEqual(0, ids[0]);
             Assert.AreEqual(2, ids[1]);
-            Assert.AreEqual(2, betterPlayerAudio.PlayersWithOverridesCount());
+            Assert.AreEqual(2, betterPlayerAudio.PlayersToOverride.Length);
             Assert.AreEqual(3, betterPlayerAudio.CreateOverrideSlotForPlayer(player3));
-            Assert.AreEqual(3, betterPlayerAudio.PlayersWithOverridesCount());
-            ids = betterPlayerAudio.GetPlayersWithOverrides();
+            Assert.AreEqual(3, betterPlayerAudio.PlayersToOverride.Length);
+            ids = betterPlayerAudio.GetNonLocalPlayersWithOverrides();
             Assert.AreEqual(3, ids.Length);
             Assert.AreEqual(0, ids[0]);
             Assert.AreEqual(1, ids[1]);
@@ -320,6 +348,9 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            voiceOverride.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
+            voiceOverride.playerList.udonDebug = voiceOverride.udonDebug;
             
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
@@ -330,17 +361,17 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.IsNull(betterPlayerAudio.GetMaxPriorityOverride(player2));
             Assert.True(voiceOverride.AddPlayer(player2));
             Assert.True(voiceOverride.IsAffected(player2));
-            Assert.AreEqual(1, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(1, voiceOverride.playerList.players.Length);
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player2));
             LogAssert.Expect(LogType.Error,
                 "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             Assert.True(voiceOverride.RemovePlayer(player2));
             Assert.IsNull(betterPlayerAudio.GetMaxPriorityOverride(player2));
             Assert.False(voiceOverride.IsAffected(player2));
-            Assert.AreEqual(0, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(0, voiceOverride.playerList.players.Length);
             
             Assert.True(voiceOverride.AddPlayer(player1));
-            Assert.AreEqual(1, voiceOverride.GetAffectedPlayers().Length);
+            Assert.AreEqual(1, voiceOverride.playerList.players.Length);
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
             Assert.AreEqual(voiceOverride, betterPlayerAudio.localPlayerOverrideList.Get(0));
         }
@@ -354,6 +385,12 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             var voiceOverride1 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
             var voiceOverride2 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            voiceOverride1.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride2.udonDebug = voiceOverride1.udonDebug;
+            voiceOverride1.playerList = go.AddComponent<PlayerList>();
+            voiceOverride2.playerList = go.AddComponent<PlayerList>();
+            voiceOverride1.playerList.udonDebug = voiceOverride1.udonDebug;
+            voiceOverride2.playerList.udonDebug = voiceOverride1.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             UdonTestUtils.CreateLocalPlayer(0);
@@ -378,6 +415,16 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             var voiceOverride1 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
             var voiceOverride2 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
             var voiceOverride3 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            
+            voiceOverride1.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride1.playerList = go.AddComponent<PlayerList>();
+            voiceOverride1.playerList.udonDebug = voiceOverride1.udonDebug;
+            voiceOverride2.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride2.playerList = go.AddComponent<PlayerList>();
+            voiceOverride2.playerList.udonDebug = voiceOverride1.udonDebug;
+            voiceOverride3.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride3.playerList = go.AddComponent<PlayerList>();
+            voiceOverride3.playerList.udonDebug = voiceOverride1.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             UdonTestUtils.CreatePlayer(0);
@@ -407,6 +454,12 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             var betterPlayerAudio = CreateBetterPlayerAudio(go);
             var voiceOverride1 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
             var voiceOverride2 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            voiceOverride1.udonDebug = go.AddComponent<UdonDebug>();
+            voiceOverride2.udonDebug = voiceOverride1.udonDebug;
+            voiceOverride1.playerList = go.AddComponent<PlayerList>();
+            voiceOverride2.playerList = go.AddComponent<PlayerList>();
+            voiceOverride1.playerList.udonDebug = voiceOverride1.udonDebug;
+            voiceOverride2.playerList.udonDebug = voiceOverride1.udonDebug;
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             UdonTestUtils.CreateLocalPlayer(0);
@@ -481,9 +534,9 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             Assert.True(listObject.AddOverride(voiceOverride1));
             Assert.True(listObject.AddOverride(voiceOverride2));
-            Assert.True(listObject.AddOverride(voiceOverride1));
-            Assert.AreEqual(voiceOverride1, listObject.Get(0));
-            Assert.AreEqual(voiceOverride2, listObject.Get(1));
+            Assert.False(listObject.AddOverride(voiceOverride1));
+            Assert.AreEqual(voiceOverride1, listObject.Get(1));
+            Assert.AreEqual(voiceOverride2, listObject.Get(0));
             Assert.AreEqual(null, listObject.Get(2));
         }
 
@@ -609,7 +662,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             voiceOverride1.priority = 0;
             Assert.True(listObject.AddOverride(voiceOverride1));
-            Assert.True(listObject.AddOverride(voiceOverride1));
+            Assert.False(listObject.AddOverride(voiceOverride1));
             Assert.AreEqual(voiceOverride1, listObject.Get(0));
             Assert.AreEqual(null, listObject.Get(1));
         }
@@ -945,6 +998,24 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
         }
 
         [Test]
+        public void Refresh()
+        {
+            var go = new GameObject();
+            var listObject = go.AddComponent<BetterPlayerAudioOverrideList>();
+            var betterPlayerAudio = CreateBetterPlayerAudio(go);
+            var voiceOverride1 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+
+            VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
+            var player0 = UdonTestUtils.CreateLocalPlayer(0);
+            var player1 = UdonTestUtils.CreatePlayer(1);
+            
+            voiceOverride1.playerList.players = new[] {0, 1};
+            voiceOverride1.Refresh();
+            Assert.True(betterPlayerAudio.HasVoiceOverrides(player0));
+            Assert.True(betterPlayerAudio.HasVoiceOverrides(player1));
+        }
+
+        [Test]
         public void ListObject_RemoveOverride()
         {
             var go = new GameObject();
@@ -966,12 +1037,81 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.AreEqual(voiceOverride2, listObject.Get(0));
         }
 
+        [Test]
+        public void EnableDisableComponent()
+        {
+            var go = new GameObject();
+            var betterPlayerAudio = CreateBetterPlayerAudio(go);
+            var voiceOverride1 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            voiceOverride1.playerList.udonDebug = go.AddComponent<UdonDebug>();
+
+            VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
+            var player0 = UdonTestUtils.CreateLocalPlayer(0);
+            var player1 = UdonTestUtils.CreatePlayer(1);
+
+            voiceOverride1.AddPlayer(player0);
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player0));
+
+            voiceOverride1.enabled = false;
+            voiceOverride1.OnDisable();
+            Assert.Null( betterPlayerAudio.GetMaxPriorityOverride(player0));
+            
+            voiceOverride1.enabled = true;
+            voiceOverride1.OnEnable();
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player0));
+            
+            voiceOverride1.enabled = false;
+            voiceOverride1.OnDisable();
+            voiceOverride1.AddPlayer(player1);
+            Assert.Null( betterPlayerAudio.GetMaxPriorityOverride(player1));
+            
+            voiceOverride1.enabled = true;
+            voiceOverride1.OnEnable();
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player0));
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player1));
+        }
+        
+        [Test]
+        public void EnableDisableGameobject()
+        {
+            var go = new GameObject();
+            var betterPlayerAudio = CreateBetterPlayerAudio(go);
+            var voiceOverride1 = CreateBetterPlayerVoiceOverride(go, betterPlayerAudio);
+            voiceOverride1.playerList.udonDebug = go.AddComponent<UdonDebug>();
+
+            VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
+            var player0 = UdonTestUtils.CreateLocalPlayer(0);
+            var player1 = UdonTestUtils.CreatePlayer(1);
+
+            voiceOverride1.AddPlayer(player0);
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player0));
+
+            voiceOverride1.gameObject.SetActive(false);
+            voiceOverride1.OnDisable();
+            Assert.Null( betterPlayerAudio.GetMaxPriorityOverride(player0));
+            
+            voiceOverride1.gameObject.SetActive(true);
+            voiceOverride1.OnEnable();
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player0));
+            
+            voiceOverride1.gameObject.SetActive(false);
+            voiceOverride1.OnDisable();
+            voiceOverride1.AddPlayer(player1);
+            Assert.Null( betterPlayerAudio.GetMaxPriorityOverride(player1));
+            
+            voiceOverride1.gameObject.SetActive(true);
+            voiceOverride1.OnEnable();
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player0));
+            Assert.AreEqual(voiceOverride1, betterPlayerAudio.GetMaxPriorityOverride(player1));
+        }
+
         #region Test Utils
 
         public static BetterPlayerAudioOverride CreateBetterPlayerVoiceOverride(GameObject go,
             BetterPlayerAudio betterPlayerAudio)
         {
             var voiceOverride = go.AddComponent<BetterPlayerAudioOverride>();
+            voiceOverride.playerList = go.AddComponent<PlayerList>();
             Assert.True(Utilities.IsValid(voiceOverride));
 
             voiceOverride.betterPlayerAudio = betterPlayerAudio;
@@ -992,7 +1132,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             betterPlayerAudio.udonDebug = udonDebug;
 
             var listPrefab = new GameObject("ListPrefab");
-            betterPlayerAudio.cloneablePlayerList = listPrefab.AddComponent<BetterPlayerAudioOverrideList>();;
+            betterPlayerAudio.cloneablePlayerList = listPrefab.AddComponent<BetterPlayerAudioOverrideList>();
 
             var localList = new GameObject("LocalPlayerOverrideList");
             betterPlayerAudio.localPlayerOverrideList = localList.AddComponent<BetterPlayerAudioOverrideList>();

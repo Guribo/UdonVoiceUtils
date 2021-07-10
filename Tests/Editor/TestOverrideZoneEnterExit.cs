@@ -5,6 +5,7 @@ using Guribo.UdonUtils.Runtime.Common;
 using Guribo.UdonUtils.Runtime.Common.Networking;
 using Guribo.UdonUtils.Tests.Editor.Utils;
 using NUnit.Framework;
+using UdonSharp;
 using UdonSharpEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -38,44 +39,51 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             var overrideZoneActivator = overrideZoneActivatorGameobject.AddUdonSharpComponent<OverrideZoneActivator>();
             Assert.True(Utilities.IsValid(overrideZoneActivator));
 
-            overrideZoneActivator.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
-            overrideZoneActivator.playerList.optionalChangeListener =
-                overrideZoneActivatorGameobject.GetComponent<UdonBehaviour>();
-            overrideZoneActivator.syncedIntegerArray =
-                syncedIntegerArrayGameObject.AddUdonSharpComponent<SyncedIntegerArray>();
-            overrideZoneActivator.syncedIntegerArray.targetBehaviour =
-                playerListGameobject.GetComponent<UdonBehaviour>();
-            overrideZoneActivator.syncedIntegerArray.targetChangeEvent =
-                nameof(OverrideZoneActivator.PlayerListChanged);
+            overrideZoneActivator.playerOverride = voiceOverride;
+
+            voiceOverride.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
+            voiceOverride.playerList.optionalChangeListeners = new[]
+            {
+                (UdonSharpBehaviour) overrideZoneActivator
+            };
+            overrideZoneActivator.syncedIntegerArray = syncedIntegerArrayGameObject.AddComponent<SyncedIntegerArray>();
+            overrideZoneActivator.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
+            overrideZoneActivator.syncedIntegerArray.targetChangeEvent = nameof(OverrideZoneActivator.RefreshPlayersInZone);
             overrideZoneActivator.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
+            
             overrideZoneActivator.syncedIntegerArray.udonDebug = udonDebug.AddComponent<UdonDebug>();
             overrideZoneActivator.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
-            overrideZoneActivator.playerList.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
+            voiceOverride.playerList.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
 
-
-            Assert.False(overrideZoneActivator.playerList.Contains(player1));
+            // no player yet in zone
+            Assert.False(voiceOverride.playerList.Contains(player1));
             Assert.False(overrideZoneActivator.Contains(player1));
+            Assert.IsNull(betterPlayerAudio.GetMaxPriorityOverride(player1));
+            Assert.False(overrideZoneActivator.IsInZone);
+            
+            // local player enters
             overrideZoneActivator.Interact();
-            Assert.AreEqual(null, betterPlayerAudio.GetMaxPriorityOverride(player1));
-            Assert.True(overrideZoneActivator.playerList.Contains(player1));
+            Assert.True(overrideZoneActivator.IsInZone);
+            Assert.True(voiceOverride.playerList.Contains(player1));
             Assert.True(overrideZoneActivator.Contains(player1));
+            Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
+            Assert.AreEqual(overrideZoneActivator.syncedIntegerArray.syncedValue, voiceOverride.playerList.players);
 
-            overrideZoneActivator.playerOverride = voiceOverride;
+            // try adding player again
+            LogAssert.Expect(LogType.Error, new Regex(".+Player 0 already in list.", RegexOptions.Singleline));
+            LogAssert.Expect(LogType.Error, new Regex(".+player already affected.", RegexOptions.Singleline));
+            LogAssert.Expect(LogType.Error, new Regex(".+Adding player to player list failed.", RegexOptions.Singleline));
+            LogAssert.Expect(LogType.Error, new Regex(".+Failed adding player to zone.", RegexOptions.Singleline));
             overrideZoneActivator.Interact();
-            // TODO find fix
-            // Assert.NotNull(overrideZoneActivator.syncedIntegerArray);
-            // Assert.NotNull(overrideZoneActivator.syncedIntegerArray.syncedValue);
-            // TODO remove temp workaround
-            overrideZoneActivator.syncedIntegerArray.syncedValue =
-                new int[overrideZoneActivator.playerList.players.Length];
-            overrideZoneActivator.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.PlayerListChanged();
+            overrideZoneActivator.syncedIntegerArray.syncedValue = new int[voiceOverride.playerList.players.Length];
+            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
 
-            Assert.True(overrideZoneActivator.playerList.Contains(player1));
+            Assert.True(voiceOverride.playerList.Contains(player1));
+            Assert.True(overrideZoneActivator.IsInZone);
             Assert.True(overrideZoneActivator.Contains(player1));
             Assert.AreEqual(1, overrideZoneActivator.syncedIntegerArray.syncedValue.Length);
 
-            Assert.AreEqual(overrideZoneActivator.playerList.players,
+            Assert.AreEqual(voiceOverride.playerList.players,
                 overrideZoneActivator.syncedIntegerArray.syncedValue);
             Assert.AreEqual(player1.playerId, overrideZoneActivator.syncedIntegerArray.syncedValue[0]);
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
@@ -109,22 +117,22 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             voiceOverride.betterPlayerAudio = betterPlayerAudio;
 
-            overrideZoneActivator.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
-            overrideZoneActivator.playerList.optionalChangeListener =
-                overrideZoneActivatorGameobject.GetComponent<UdonBehaviour>();
+            voiceOverride.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
+            voiceOverride.playerList.optionalChangeListeners =
+                new[] {(UdonSharpBehaviour) overrideZoneActivator};
 
 
             overrideZoneActivator.syncedIntegerArray =
                 syncedIntegerArrayGameObject.AddUdonSharpComponent<SyncedIntegerArray>();
-            overrideZoneActivator.syncedIntegerArray.targetBehaviour =
-                playerListGameobject.GetComponent<UdonBehaviour>();
-            overrideZoneActivator.syncedIntegerArray.targetChangeEvent =
-                nameof(OverrideZoneActivator.PlayerListChanged);
+            overrideZoneActivator.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
+            overrideZoneActivator.syncedIntegerArray.targetChangeEvent = nameof(OverrideZoneActivator.RefreshPlayersInZone);
             overrideZoneActivator.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
+            
             overrideZoneActivator.syncedIntegerArray.udonDebug = udonDebug.AddComponent<UdonDebug>();
             overrideZoneActivator.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
             overrideZoneActivator.playerOverride = voiceOverride;
-            overrideZoneActivator.playerList.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
+            overrideZoneActivator.playerOverride.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
+            voiceOverride.playerList.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
 
             overrideZoneExit.overrideZoneActivator = overrideZoneActivator;
             overrideZoneExit.exitZoneOnRespawn = true;
@@ -133,14 +141,14 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             #endregion
 
             // no player override added yet
-            Assert.AreEqual(0, overrideZoneActivator.playerList.PlayerCount());
+            Assert.AreEqual(0, voiceOverride.playerList.DiscardInvalid());
             Assert.Null(betterPlayerAudio.GetMaxPriorityOverride(player1));
 
             // add single override to local player
             overrideZoneActivator.Interact();
 
             // check single player added to player list
-            Assert.True(overrideZoneActivator.playerList.Contains(player1));
+            Assert.True(voiceOverride.playerList.Contains(player1));
 
             // synced array contains player id
 
@@ -148,10 +156,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             // TODO remove temp workaround
             overrideZoneActivator.syncedIntegerArray.syncedValue =
-                new int[overrideZoneActivator.playerList.players.Length];
-            overrideZoneActivator.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.playerList.PlayerListChanged();
-            overrideZoneActivator.PlayerListChanged();
+                new int[voiceOverride.playerList.players.Length];
+            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
+            voiceOverride.playerList.NotifyChangeListeners();
+            overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion
 
@@ -174,7 +182,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             overrideZoneExit.Interact();
 
             // check single player added to player list
-            Assert.False(overrideZoneActivator.playerList.Contains(player1));
+            Assert.False(voiceOverride.playerList.Contains(player1));
 
             // synced array contains player id
 
@@ -182,10 +190,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             // TODO remove temp workaround
             overrideZoneActivator.syncedIntegerArray.syncedValue =
-                new int[overrideZoneActivator.playerList.players.Length];
-            overrideZoneActivator.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.playerList.PlayerListChanged();
-            overrideZoneActivator.PlayerListChanged();
+                new int[voiceOverride.playerList.players.Length];
+            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
+            voiceOverride.playerList.NotifyChangeListeners();
+            overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion
 
@@ -211,18 +219,19 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             // TODO remove temp workaround
             overrideZoneActivator.syncedIntegerArray.syncedValue =
-                new int[overrideZoneActivator.playerList.players.Length];
-            overrideZoneActivator.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.playerList.PlayerListChanged();
-            overrideZoneActivator.PlayerListChanged();
+                new int[voiceOverride.playerList.players.Length];
+            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
+            voiceOverride.playerList.NotifyChangeListeners();
+            overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion
 
-            Assert.AreEqual(1, overrideZoneActivator.playerList.PlayerCount());
+            Assert.AreEqual(1, voiceOverride.playerList.DiscardInvalid());
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
+            Assert.True(overrideZoneActivator.IsInZone);
 
             overrideZoneExit.OnPlayerRespawn(player1);
-            Assert.AreEqual(1, overrideZoneActivator.playerList.PlayerCount());
+            Assert.AreEqual(1, voiceOverride.playerList.DiscardInvalid());
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
 
             overrideZoneExit.exitZoneOnRespawn = true;
@@ -232,16 +241,17 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             // TODO remove temp workaround
             overrideZoneActivator.syncedIntegerArray.syncedValue =
-                new int[overrideZoneActivator.playerList.players.Length];
-            overrideZoneActivator.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.playerList.PlayerListChanged();
-            overrideZoneActivator.PlayerListChanged();
+                new int[voiceOverride.playerList.players.Length];
+            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
+            voiceOverride.playerList.NotifyChangeListeners();
+            overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion
 
-            Assert.AreEqual(0, overrideZoneActivator.playerList.PlayerCount());
+            Assert.AreEqual(0, voiceOverride.playerList.DiscardInvalid());
             Assert.Null(betterPlayerAudio.GetMaxPriorityOverride(player1));
             Assert.False(voiceOverride.IsAffected(player1));
+            Assert.False(overrideZoneActivator.IsInZone);
         }
 
         [Test]
@@ -293,19 +303,18 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             var udonDebug = door.AddComponent<UdonDebug>();
 
             var voiceOverrideDoor = frontTrigger.AddComponent<VoiceOverrideDoor>();
-
             voiceOverrideDoor.udonDebug = udonDebug;
 
-            Assert.False(voiceOverrideDoor.LocalPlayerInside());
+            Assert.False(voiceOverrideDoor.LocalPlayerInTrigger());
 
+            // enter invalid player
             LogAssert.Expect(LogType.Error, new Regex(".+Invalid player entered.", RegexOptions.Singleline));
-
             voiceOverrideDoor.OnPlayerTriggerEnter(null);
-            Assert.False(voiceOverrideDoor.LocalPlayerInside());
+            Assert.False(voiceOverrideDoor.LocalPlayerInTrigger());
 
             _localPlayerPosition = Vector3.forward;
             voiceOverrideDoor.OnPlayerTriggerEnter(player1);
-            Assert.True(voiceOverrideDoor.LocalPlayerInside());
+            Assert.True(voiceOverrideDoor.LocalPlayerInTrigger());
 
             _localPlayerPosition = Vector3.back;
             LogAssert.Expect(LogType.Error, new Regex(".+Failed adding player to override.", RegexOptions.Singleline));
@@ -314,7 +323,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             _localPlayerPosition = Vector3.back;
             voiceOverrideDoor.OnPlayerTriggerEnter(player1);
-            Assert.True(voiceOverrideDoor.LocalPlayerInside());
+            Assert.True(voiceOverrideDoor.LocalPlayerInTrigger());
 
             _localPlayerPosition = Vector3.back;
             LogAssert.Expect(LogType.Error, new Regex(".+Failed adding player to override.", RegexOptions.Singleline));
@@ -347,7 +356,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             LogAssert.Expect(LogType.Error,
                 new Regex(".+Failed removing player from override.", RegexOptions.Singleline));
             voiceOverrideDoor.OnPlayerTriggerExit(player1);
-            Assert.False(voiceOverrideDoor.LocalPlayerInside());
+            Assert.False(voiceOverrideDoor.LocalPlayerInTrigger());
 
             _localPlayerPosition = Vector3.forward;
             voiceOverrideDoor.OnPlayerTriggerEnter(player1);
@@ -409,19 +418,19 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
         public void VoiceOverrideDoor_HasExited()
         {
             var voiceOverrideDoor = new GameObject().AddComponent<VoiceOverrideDoor>();
-            
+
             var exitDirection = Vector3.zero;
-            
-            Assert.False(voiceOverrideDoor.HasExited(Vector3.zero, Vector3.zero,exitDirection));
-            Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.zero,exitDirection));
-            Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.zero,exitDirection));
-            Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.forward,exitDirection));
-            Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.back,exitDirection));
-            Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.back,exitDirection));
-            Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.forward,exitDirection));
+
+            Assert.False(voiceOverrideDoor.HasExited(Vector3.zero, Vector3.zero, exitDirection));
+            Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.zero, exitDirection));
+            Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.zero, exitDirection));
+            Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.forward, exitDirection));
+            Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.back, exitDirection));
+            Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.back, exitDirection));
+            Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.forward, exitDirection));
 
             exitDirection = Vector3.forward;
-            
+
             Assert.False(voiceOverrideDoor.HasExited(Vector3.zero, Vector3.zero, exitDirection));
             Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.zero, exitDirection));
             Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.zero, exitDirection));
@@ -429,9 +438,9 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.back, exitDirection));
             Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.back, exitDirection));
             Assert.True(voiceOverrideDoor.HasExited(Vector3.back, Vector3.forward, exitDirection));
-            
+
             exitDirection = Vector3.back;
-            
+
             Assert.False(voiceOverrideDoor.HasExited(Vector3.zero, Vector3.zero, exitDirection));
             Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.zero, exitDirection));
             Assert.False(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.zero, exitDirection));
@@ -439,7 +448,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.True(voiceOverrideDoor.HasExited(Vector3.back, Vector3.back, exitDirection));
             Assert.True(voiceOverrideDoor.HasExited(Vector3.forward, Vector3.back, exitDirection));
             Assert.False(voiceOverrideDoor.HasExited(Vector3.back, Vector3.forward, exitDirection));
-            
+
             exitDirection = Vector3.up;
 
             Assert.False(voiceOverrideDoor.HasExited(Vector3.zero, Vector3.zero, exitDirection));

@@ -5,9 +5,6 @@ using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Runtime.Examples
 {
-    /// <summary>
-    /// 
-    /// </summary>
     [RequireComponent(typeof(BoxCollider))]
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class VoiceOverrideDoor : UdonSharpBehaviour
@@ -35,8 +32,9 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
         private Vector3 _enterPosition;
 
         // used to allow proper enter/exit detection for horizontal triggers (e.g. a water surface)
-        private readonly Vector3 _playerColliderGroundOffset = new Vector3(0, 0.5f, 0);
+        private readonly Vector3 _playerColliderGroundOffset = new Vector3(0, 0.2f, 0);
 
+        #region Udon Lifecycle
 
         public void Start()
         {
@@ -51,6 +49,30 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
                 return;
             }
         }
+        
+        #endregion
+
+        #region Local Player behaviour
+
+        public override void OnPlayerRespawn(VRCPlayerApi player)
+        {
+            if (!udonDebug.Assert(Utilities.IsValid(player), "Invalid player left", this))
+            {
+                return;
+            }
+
+            if (!player.isLocal)
+            {
+                return;
+            }
+            
+            _enterPosition = Vector3.zero;
+        }
+        
+
+        #endregion
+        
+        #region Player collision detection
 
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
         {
@@ -74,7 +96,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
                     return;
                 }
 
-                if (overrideZoneActivator.playerList.Contains(player))
+                if (overrideZoneActivator.Contains(player))
                 {
                     overrideZoneActivator.ExitZone(player, null);
                 }
@@ -102,18 +124,6 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             var enterPosition = _enterPosition;
             _enterPosition = Vector3.zero;
 
-            var enterDirection = -exitDirection;
-            if (HasEntered(enterPosition, exitPosition, enterDirection))
-            {
-                if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed adding player to override",
-                    this))
-                {
-                    return;
-                }
-
-                overrideZoneActivator.EnterZone(player);
-            }
-
             if (HasExited(enterPosition, exitPosition, exitDirection))
             {
                 if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed removing player from override",
@@ -126,28 +136,34 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
                 {
                     overrideZoneActivator.ExitZone(player, null);
                 }
-            }
-        }
-
-        public override void OnPlayerRespawn(VRCPlayerApi player)
-        {
-            if (!udonDebug.Assert(Utilities.IsValid(player), "Invalid player left", this))
-            {
-                return;
-            }
-
-            if (!player.isLocal)
-            {
                 return;
             }
             
-            _enterPosition = Vector3.zero;
-        }
+            var enterDirection = -exitDirection;
+            if (HasEntered(enterPosition, exitPosition, enterDirection))
+            {
+                if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed adding player to override",
+                    this))
+                {
+                    return;
+                }
 
-        public bool LocalPlayerInside()
+                overrideZoneActivator.EnterZone(player, null);
+            }
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>true if the local player is currently in contact with the trigger</returns>
+        public bool LocalPlayerInTrigger()
         {
             return _enterPosition != Vector3.zero;
         }
+        
+        #endregion
+
+        #region internal
 
         /// <summary>
         /// 
@@ -158,7 +174,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
         /// the positions indicate entering.
         /// If set to 0,0,0 false is returned.</param>
         /// <returns></returns>
-        public bool HasEntered(Vector3 enterPosition, Vector3 exitPosition, Vector3 enterDirection)
+        internal bool HasEntered(Vector3 enterPosition, Vector3 exitPosition, Vector3 enterDirection)
         {
             if (enterPosition == Vector3.zero
                 || exitPosition == Vector3.zero
@@ -190,7 +206,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
         /// the positions indicate exiting.
         /// If set to 0,0,0 false is returned.</param>
         /// <returns></returns>
-        public bool HasExited(Vector3 enterPosition, Vector3 exitPosition, Vector3 leaveDirection)
+        internal bool HasExited(Vector3 enterPosition, Vector3 exitPosition, Vector3 leaveDirection)
         {
             if (enterPosition == Vector3.zero
                 || exitPosition == Vector3.zero
@@ -212,5 +228,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             var enterInside = Vector3.Dot(enterPositionNormalized, leaveDirectionNormalized) < 0;
             return enterInside && exitOutside;
         }
+        
+        #endregion
     }
 }

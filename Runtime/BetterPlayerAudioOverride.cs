@@ -16,7 +16,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         #region Settings
 
         [Header("General settings")]
-
+        
         /// <summary>
         /// Determines whether it 
         /// Overrides with equal or higher values can override other overrides with lower priority.
@@ -24,25 +24,19 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// fall back to the next lower override available.
         /// </summary>
         public int priority;
-        
+
         #endregion
 
-        /// <summary>
-        /// Players that this override should be applied to. Must be sorted at all times to allow searching inside with binary search!
-        /// </summary>
-        protected int[] AffectedPlayers;
-
         #region Occlusion settings
-        
+
         #region Constants
 
         private const int EnvironmentLayerMask = 1 << 11;
         private const int UILayerMask = 1 << 5;
 
         #endregion
-        
-        [Header("Occlusion settings")]
 
+        [Header("Occlusion settings")]
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.occlusionMask"/>
         /// </summary>
@@ -70,7 +64,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         #endregion
 
         #region Directionality settings
-        
+
         [Header("Directionality settings")]
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultListenerDirectionality"/>
@@ -89,7 +83,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         public float playerDirectionality = 0.3f;
 
         #endregion
-        
+
         #region Reverb settings
 
         [Header("Reverb settings")]
@@ -197,14 +191,15 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Tooltip(
             "If set to true affected players also can't hear non-affected players. Only in effect in combination with a privacy channel not equal to -1.")]
         public bool muteOutsiders = true;
-        
+
         #endregion
-        
+
         #region Mandatory references
 
         [Header("Mandatory references")]
         public BetterPlayerAudio betterPlayerAudio;
         public UdonDebug udonDebug;
+        public PlayerList playerList;
 
         #endregion
 
@@ -213,7 +208,33 @@ namespace Guribo.UdonBetterAudio.Runtime
         private bool _hasStarted;
 
         #endregion
-        
+
+        #region Udon Lifecycle
+
+        public void OnEnable()
+        {
+            if (!_hasStarted)
+            {
+                Start();
+            }
+
+            if (!udonDebug.Assert(playerList, "playerList invalid", this))
+            {
+                return;
+            }
+
+            playerList.DiscardInvalid();
+            if (playerList.players == null)
+            {
+                return;
+            }
+
+            foreach (var playerId in playerList.players)
+            {
+                betterPlayerAudio.OverridePlayerSettings(this, VRCPlayerApi.GetPlayerById(playerId));
+            }
+        }
+
         public void Start()
         {
             if (_hasStarted)
@@ -224,6 +245,29 @@ namespace Guribo.UdonBetterAudio.Runtime
             _hasStarted = true;
             DeactivateReverb();
         }
+
+        public void OnDisable()
+        {
+            if (!udonDebug.Assert(playerList, "playerList invalid", this))
+            {
+                return;
+            }
+
+            playerList.DiscardInvalid();
+            if (playerList.players == null)
+            {
+                return;
+            }
+
+            foreach (var playerId in playerList.players)
+            {
+                betterPlayerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(playerId));
+            }
+        }
+
+        #endregion
+
+        #region Public
 
         /// <summary>
         /// Add a single player to the list of players that should make use of the here defined override values.
@@ -238,53 +282,54 @@ namespace Guribo.UdonBetterAudio.Runtime
             {
                 Start();
             }
-            
-            if (!Utilities.IsValid(playerToAffect))
+
+            if (!udonDebug.Assert(playerList, "playerList invalid", this))
             {
                 return false;
             }
 
-            // if no player is affected yet simply add the player
-            var playerId = playerToAffect.playerId;
-            if (AffectedPlayers == null)
+            if (!udonDebug.Assert(Utilities.IsValid(playerToAffect), "Player to affect invalid", this))
             {
-                AffectedPlayers = new[]
-                {
-                    playerId
-                };
+                return false;
             }
-            else
+
+            if (!udonDebug.Assert(playerList.AddPlayer(playerToAffect), "player already affected", this))
             {
-                var playerAlreadyAffected = Array.BinarySearch(AffectedPlayers, playerId) > -1;
-                if (playerAlreadyAffected)
-                {
-                    // player already affected, nothing to do
-                    return true;
-                }
+                return false;
+            }
 
-                // add the player to the list 
-                var tempArray = new int[AffectedPlayers.Length + 1];
-                AffectedPlayers.CopyTo(tempArray, 0);
-                AffectedPlayers = tempArray;
-                AffectedPlayers[AffectedPlayers.Length - 1] = playerId;
-
-                // sort it afterwards to allow binary search to work again
-                Sort(AffectedPlayers);
+            if (!IsActiveAndEnabled())
+            {
+                Debug.LogWarning($"Override {gameObject.name} is not enabled for {playerToAffect.displayName}");
+                return true;
             }
 
             if (playerToAffect.isLocal)
             {
                 ActivateReverb();
             }
-            
-            // have the controller affect all players that are currently added to the override
-            if (!Utilities.IsValid(betterPlayerAudio))
+
+            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
             {
                 return false;
             }
-            
-            return betterPlayerAudio.OverridePlayerSettings(this, playerToAffect);
+
+            if (!betterPlayerAudio.OverridePlayerSettings(this, playerToAffect))
+            {
+                if (playerList.players != null)
+                {
+                    var listContainedInvalidPlayer = playerList.players.Length > playerList.DiscardInvalid();
+                    return listContainedInvalidPlayer;
+                }
+
+                return false;
+            }
+
+            return true;
         }
+
+        
+
 
         /// <summary>
         /// Remove player from the list of players that should make use of the here defined override values.
@@ -293,55 +338,39 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// <returns>true if the player was removed/not affected yet</returns>
         public bool RemovePlayer(VRCPlayerApi playerToRemove)
         {
+            if (!udonDebug.Assert(playerList, "playerList invalid", this))
+            {
+                return false;
+            }
+
             if (!udonDebug.Assert(Utilities.IsValid(playerToRemove), "Player to remove invalid", this))
             {
                 return false;
             }
 
-            if (AffectedPlayers == null || AffectedPlayers.Length == 0)
+            if (!udonDebug.Assert(playerList.RemovePlayer(playerToRemove), "player not affected", this))
             {
-                // nothing to do so player was not removed
                 return false;
             }
 
-            var removedPlayers = 0;
-
-            // remove all players
-            for (var i = 0; i < AffectedPlayers.Length; i++)
+            if (!IsActiveAndEnabled())
             {
-                // mark invalid players/players to be removed for removal
-                var affectedPlayer = VRCPlayerApi.GetPlayerById(AffectedPlayers[i]);
-                if (!Utilities.IsValid(affectedPlayer)
-                    || playerToRemove.playerId == affectedPlayer.playerId)
-                {
-                    // player should be removed, mark for disposal
-                    AffectedPlayers[i] = int.MaxValue;
-                    removedPlayers++;
-                    break;
-                }
+                Debug.LogWarning($"Override {gameObject.name} is not enabled for {playerToRemove.displayName}");
+                return true;
             }
-
-            // sort the players afterwards which moves all invalid player ids to the end of the array
-            Sort(AffectedPlayers);
-
-            // shrink the array which automatically removes the invalid player ids
-            var tempArray = new int[AffectedPlayers.Length - removedPlayers];
-            Array.ConstrainedCopy(AffectedPlayers, 0, tempArray, 0, AffectedPlayers.Length - removedPlayers);
-            AffectedPlayers = tempArray;
 
             if (playerToRemove.isLocal)
             {
                 DeactivateReverb();
             }
 
-            // ReSharper disable once PossibleNullReferenceException invalid as checked with udonDebug.Assert
             if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "PlayerAudio invalid", this))
             {
                 return false;
             }
-            
+
             // make the controller apply default settings to the player again
-            return removedPlayers > 0 && betterPlayerAudio.ClearPlayerOverride(this, playerToRemove);
+            return betterPlayerAudio.ClearPlayerOverride(this, playerToRemove);
         }
 
         /// <summary>
@@ -351,57 +380,75 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// <returns>true if the player should be affected</returns>
         public bool IsAffected(VRCPlayerApi player)
         {
-            if (!udonDebug.Assert(Utilities.IsValid(player), "Player is invalid", this))
+            if (!udonDebug.Assert(playerList, "playerList invalid", this))
             {
                 return false;
             }
 
-            if (AffectedPlayers == null || AffectedPlayers.Length == 0)
+            if (!udonDebug.Assert(Utilities.IsValid(player), "Player to remove invalid", this))
             {
                 return false;
             }
 
-            return Array.BinarySearch(AffectedPlayers, player.playerId) > -1;
+            return playerList.Contains(player);
         }
 
-        /// <summary>
-        /// Returns a copy of the array of affected players (can contain invalid players so make sure to check for validity with <see cref="Utilities.IsValid"/>.
-        /// </summary>
-        /// <returns>affected players or empty array if none are affected</returns>
-        public int[] GetAffectedPlayers()
+        public void Refresh()
         {
-            if (AffectedPlayers == null || AffectedPlayers.Length == 0)
+            var nonLocalPlayersWithOverrides = betterPlayerAudio.GetNonLocalPlayersWithOverrides();
+            foreach (var nonLocalPlayersWithOverride in nonLocalPlayersWithOverrides)
             {
-                return new int[0];
+                var vrcPlayerApi = VRCPlayerApi.GetPlayerById(nonLocalPlayersWithOverride);
+                if (!playerList.Contains(vrcPlayerApi))
+                {
+                    betterPlayerAudio.ClearPlayerOverride(this, vrcPlayerApi);
+                }
             }
 
-            var tempArray = new int[AffectedPlayers.Length];
-            AffectedPlayers.CopyTo(tempArray,0);
-            return tempArray;
+            foreach (var playerListPlayer in playerList.players)
+            {
+                betterPlayerAudio.OverridePlayerSettings(this, VRCPlayerApi.GetPlayerById(playerListPlayer));
+            }
         }
-        
+
         public bool Clear()
         {
-            DeactivateReverb();
-            
-            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "playerAudio invalid", this))
+            if (!udonDebug.Assert(Utilities.IsValid(playerList), "playerList invalid", this))
             {
                 return false;
             }
-
-            if (AffectedPlayers != null)
+            
+            if (IsActiveAndEnabled())
             {
-                foreach (var affectedPlayer in AffectedPlayers)
+                DeactivateReverb();
+
+                if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "playerAudio invalid", this))
                 {
-                    betterPlayerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(affectedPlayer));
+                    return false;
                 }
 
-                AffectedPlayers = new int[0];
+                if (playerList.players != null)
+                {
+                    foreach (var affectedPlayer in playerList.players)
+                    {
+                        betterPlayerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(affectedPlayer));
+                    }
+                }
             }
-            
+
+            playerList.Clear();
             return true;
         }
+
+        #endregion
+
+        #region internal
         
+        internal bool IsActiveAndEnabled()
+        {
+            return Utilities.IsValid(this) && enabled && gameObject.activeInHierarchy;
+        }
+
         private void DeactivateReverb()
         {
             if (ReverbValid())
@@ -409,7 +456,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                 optionalReverb.gameObject.SetActive(false);
             }
         }
-        
+
         private void ActivateReverb()
         {
             if (ReverbValid())
@@ -425,60 +472,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                        "For reverb to work an AudioListener is required on the gameobject with the Reverb Filter",
                        this);
         }
-        
-        #region Sorting
-
-        private void Sort(int[] array)
-        {
-            if (array == null || array.Length < 2)
-            {
-                return;
-            }
-
-            BubbleSort(array);
-        }
-
-        private void BubbleSort(int[] array)
-        {
-            var arrayLength = array.Length;
-            for (var i = 0; i < arrayLength; i++)
-            {
-                for (var j = 0; j < arrayLength - 1; j++)
-                {
-                    var next = j + 1;
-
-                    if (array[j] > array[next])
-                    {
-                        var tmp = array[j];
-                        array[j] = array[next];
-                        array[next] = tmp;
-                    }
-                }
-            }
-        }
-
-        public void TestSorting()
-        {
-            var array = new[] {0, 5, 3, 2, 10, 5, -1};
-            var s = "Unsorted: ";
-            foreach (var i in array)
-            {
-                s += i + ",";
-            }
-
-            Debug.Log(s);
-            Sort(array);
-
-            s = "Sorted: ";
-            foreach (var i in array)
-            {
-                s += i + ",";
-            }
-
-            Debug.Log(s);
-        }
 
         #endregion
-
     }
 }

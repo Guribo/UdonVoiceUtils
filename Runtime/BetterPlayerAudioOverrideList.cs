@@ -21,6 +21,14 @@ namespace Guribo.UdonBetterAudio.Runtime
                 _betterPlayerAudioOverride = new[] {voiceOverride};
                 return true;
             }
+            
+            foreach (var betterPlayerAudioOverride in _betterPlayerAudioOverride)
+            {
+                if (betterPlayerAudioOverride == voiceOverride)
+                {
+                    return false;
+                }
+            }
 
             Remove(_betterPlayerAudioOverride, voiceOverride);
             var slotsNeeded = Consolidate(_betterPlayerAudioOverride) + 1;

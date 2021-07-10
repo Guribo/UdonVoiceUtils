@@ -4450,7 +4450,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: _playersToOverride
+      Data: PlayersToOverride
     - Name: $v
       Entry: 7
       Data: 292|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -4471,10 +4471,10 @@ MonoBehaviour:
       Data: SystemInt32Array
     - Name: symbolOriginalName
       Entry: 1
-      Data: _playersToOverride
+      Data: PlayersToOverride
     - Name: symbolUniqueName
       Entry: 1
-      Data: _playersToOverride
+      Data: PlayersToOverride
     - Name: symbolDefaultValue
       Entry: 6
       Data: 

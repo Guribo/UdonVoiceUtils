@@ -407,7 +407,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         private int _playerIndex;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
         private int[] _playersToIgnore;
-        private int[] _playersToOverride = new int[0];
+        internal int[] PlayersToOverride = new int[0];
         private BetterPlayerAudioOverrideList[] _playerOverrideLists;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         private int _serializationRequests;
@@ -1249,7 +1249,7 @@ namespace Guribo.UdonBetterAudio.Runtime
             }
 
             // check if the player already has an override
-            var index = Array.BinarySearch(_playersToOverride, playerToAffect.playerId);
+            var index = Array.BinarySearch(PlayersToOverride, playerToAffect.playerId);
             if (index > -1)
             {
                 if (!udonDebug.Assert(Utilities.IsValid(_playerOverrideLists[index]),
@@ -1268,7 +1268,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                 var newSize = CreateOverrideSlotForPlayer(playerToAffect);
 
                 // get the index of the added player
-                var position = Array.BinarySearch(_playersToOverride, playerToAffect.playerId);
+                var position = Array.BinarySearch(PlayersToOverride, playerToAffect.playerId);
                 // create a new list of overrides
                 var tempOverrides = new BetterPlayerAudioOverrideList[newSize];
 
@@ -1307,15 +1307,15 @@ namespace Guribo.UdonBetterAudio.Runtime
         {
             // add a new override list for that player
             // add the player to the list of players that have overrides
-            var newSize = _playersToOverride.Length + 1;
+            var newSize = PlayersToOverride.Length + 1;
 
             var tempArray = new int[newSize];
-            Array.ConstrainedCopy(_playersToOverride, 0, tempArray, 0, _playersToOverride.Length);
-            _playersToOverride = tempArray;
-            _playersToOverride[_playersToOverride.Length - 1] = playerToAffect.playerId;
+            Array.ConstrainedCopy(PlayersToOverride, 0, tempArray, 0, PlayersToOverride.Length);
+            PlayersToOverride = tempArray;
+            PlayersToOverride[PlayersToOverride.Length - 1] = playerToAffect.playerId;
 
             // sort it afterwards to allow binary search to work again
-            Sort(_playersToOverride);
+            Sort(PlayersToOverride);
             return newSize;
         }
 
@@ -1338,14 +1338,14 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return true;
             }
 
-            if (!udonDebug.Assert(_playersToOverride != null && _playersToOverride.Length > 0, "_playersToOverride is empty", this))
+            if (!udonDebug.Assert(PlayersToOverride != null && PlayersToOverride.Length > 0, "_playersToOverride is empty", this))
             {
                 return false;
             }
 
             // ReSharper disable once PossibleNullReferenceException invalid as checked with udonDebug.Assert
-            var temp = new int[_playersToOverride.Length];
-            _playersToOverride.CopyTo(temp, 0);
+            var temp = new int[PlayersToOverride.Length];
+            PlayersToOverride.CopyTo(temp, 0);
 
             // remove all invalid players first
             foreach (var i in temp)
@@ -1383,14 +1383,14 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return true;
             }
 
-            if (!udonDebug.Assert(_playersToOverride.Length > 0, "_playersToOverride empty",
+            if (!udonDebug.Assert(PlayersToOverride.Length > 0, "_playersToOverride empty",
                 this))
             {
                 return false;
             }
 
             // check if the player already has an override
-            var index = Array.BinarySearch(_playersToOverride, playerId);
+            var index = Array.BinarySearch(PlayersToOverride, playerId);
             if (!udonDebug.Assert(index > -1, "player has no override", this))
             {
                 return false;
@@ -1405,13 +1405,13 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             Destroy(_playerOverrideLists[index]);
 
-            _playersToOverride[index] = int.MaxValue;
+            PlayersToOverride[index] = int.MaxValue;
 
-            var newSize = _playersToOverride.Length - 1;
-            Sort(_playersToOverride);
+            var newSize = PlayersToOverride.Length - 1;
+            Sort(PlayersToOverride);
             var tempArray = new int[newSize];
-            Array.ConstrainedCopy(_playersToOverride, 0, tempArray, 0, newSize);
-            _playersToOverride = tempArray;
+            Array.ConstrainedCopy(PlayersToOverride, 0, tempArray, 0, newSize);
+            PlayersToOverride = tempArray;
 
 
             // create a new list of overrides
@@ -1539,13 +1539,13 @@ namespace Guribo.UdonBetterAudio.Runtime
                        && Utilities.IsValid(localPlayerOverrideList.Get(0));
             }
 
-            var noOverridesAvailable = _playersToOverride == null || _playersToOverride.Length == 0;
+            var noOverridesAvailable = PlayersToOverride == null || PlayersToOverride.Length == 0;
             if (noOverridesAvailable)
             {
                 return false;
             }
 
-            return Array.BinarySearch(_playersToOverride, player.playerId) > -1;
+            return Array.BinarySearch(PlayersToOverride, player.playerId) > -1;
         }
 
         public BetterPlayerAudioOverride GetMaxPriorityOverride(VRCPlayerApi player)
@@ -1565,14 +1565,14 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return localPlayerOverrideList.Get(0);
             }
 
-            var playersWithOverride = _playersToOverride != null && _playersToOverride.Length > 0;
+            var playersWithOverride = PlayersToOverride != null && PlayersToOverride.Length > 0;
             var playerOverridesExist = _playerOverrideLists != null && _playerOverrideLists.Length > 0;
             if (!playersWithOverride || !playerOverridesExist)
             {
                 return null;
             }
 
-            var index = Array.BinarySearch(_playersToOverride, player.playerId);
+            var index = Array.BinarySearch(PlayersToOverride, player.playerId);
 
             if (index > -1 && index < _playerOverrideLists.Length && Utilities.IsValid(_playerOverrideLists[index]))
             {
@@ -1581,27 +1581,25 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             return null;
         }
+        
+        #region Public
 
-        public int PlayersWithOverridesCount()
+        /// <summary>
+        /// local player not included if it has an override
+        /// </summary>
+        /// <returns>copy of array of player ids or empty array</returns>
+        public int[] GetNonLocalPlayersWithOverrides()
         {
-            if (_playersToOverride == null)
-            {
-                return 0;
-            }
-
-            return _playersToOverride.Length;
-        }
-
-        public int[] GetPlayersWithOverrides()
-        {
-            if (_playersToOverride == null)
+            if (PlayersToOverride == null)
             {
                 return new int[0];
             }
 
-            var temp = new int[_playersToOverride.Length];
-            _playersToOverride.CopyTo(temp, 0);
+            var temp = new int[PlayersToOverride.Length];
+            PlayersToOverride.CopyTo(temp, 0);
             return temp;
         }
+
+        #endregion
     }
 }
