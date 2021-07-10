@@ -303,7 +303,11 @@ namespace Guribo.UdonBetterAudio.Runtime
                     DeactivateReverb();
                     Notify(localPlayerRemovedListeners,localPlayerRemovedEvent);
                 }
-                betterPlayerAudio.ClearPlayerOverride(this, playerToRemove);
+
+                if (!betterPlayerAudio.ClearPlayerOverride(this, playerToRemove))
+                {
+                    playerList.DiscardInvalid();
+                }
             }
         }
 
@@ -416,7 +420,13 @@ namespace Guribo.UdonBetterAudio.Runtime
             }
 
             // make the controller apply default settings to the player again
-            return betterPlayerAudio.ClearPlayerOverride(this, playerToRemove);
+            if (!betterPlayerAudio.ClearPlayerOverride(this, playerToRemove))
+            {
+                var oldLength = playerList.players.Length;
+                return oldLength > playerList.DiscardInvalid();
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -441,6 +451,18 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public void Refresh()
         {
+            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
+            {
+                return;
+            }
+            
+            if (!udonDebug.Assert(Utilities.IsValid(playerList), "playerList invalid", this))
+            {
+                return;
+            }
+            
+            playerList.DiscardInvalid();
+            
             var nonLocalPlayersWithOverrides = betterPlayerAudio.GetNonLocalPlayersWithOverrides();
             foreach (var nonLocalPlayersWithOverride in nonLocalPlayersWithOverrides)
             {
@@ -463,6 +485,8 @@ namespace Guribo.UdonBetterAudio.Runtime
             {
                 return false;
             }
+
+            playerList.DiscardInvalid();
             
             if (IsActiveAndEnabled())
             {

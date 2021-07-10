@@ -12,11 +12,9 @@ namespace Guribo.UdonBetterAudio.Runtime
     [DefaultExecutionOrder(10010)]
     public class BetterPlayerAudio : UdonSharpBehaviour
     {
-
         #region General settings
-        
-        [Header("General settings")]
 
+        [Header("General settings")]
         /// <summary>
         /// Whether ownership can be changed by any player at any time with Networking.SetOwner(...)
         /// </summary>
@@ -28,7 +26,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// </summary>
         [Tooltip("When enabled the master can change the settings of all players")]
         public bool defaultAllowMasterControl;
-        
+
         /// <summary>
         /// How long to wait after start before applying changes to all players.
         /// Prevents excessive volume on joining the world because player positions might not be up to date yet.
@@ -59,7 +57,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
 
         #region Occlusion settings
-        
+
         #region Constants
 
         private const int EnvironmentLayerMask = 1 << 11;
@@ -68,7 +66,6 @@ namespace Guribo.UdonBetterAudio.Runtime
         #endregion
 
         [Header("Occlusion settings")]
-        
         /// <summary>
         /// Layers which can reduce voice and avatar sound effects when they are in between the local player (listener)
         /// and the player/avatar producing the sound
@@ -123,10 +120,12 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
         public float defaultPlayerDirectionality = 0.3f;
+
         #endregion
 
-        
+
         #region Voice settings
+
         [Header("Voice settings")]
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
@@ -205,7 +204,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         public float defaultAvatarVolumetricRadius;
 
         #endregion
-        
+
         #region Mandatory references
 
         [Header("Mandatory references")]
@@ -411,7 +410,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         private BetterPlayerAudioOverrideList[] _playerOverrideLists;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         private int _serializationRequests;
-        
+
         #endregion
 
 
@@ -518,18 +517,20 @@ namespace Guribo.UdonBetterAudio.Runtime
             var localPlayerOverride = localPlayerOverrideList.Get(0);
             var privacyChannelId = -1;
             var muteOutsiders = false;
+            var disallowListeningToChannel = false;
 
             if (Utilities.IsValid(localPlayerOverride))
             {
                 privacyChannelId = localPlayerOverride.privacyChannelId;
                 muteOutsiders = localPlayerOverride.muteOutsiders;
+                disallowListeningToChannel = localPlayerOverride.disallowListeningToChannel;
             }
 
             var localPlayerInPrivateChannel = privacyChannelId != -1;
             if (Utilities.IsValid(playerOverride))
             {
                 if (OtherPlayerWithOverrideCanBeHeard(playerOverride, localPlayerInPrivateChannel, privacyChannelId,
-                    muteOutsiders, localPlayerOverride.disallowListeningToChannel))
+                    muteOutsiders, disallowListeningToChannel))
                 {
                     ApplyAudioOverrides(otherPlayer,
                         listenerHead,
@@ -558,11 +559,13 @@ namespace Guribo.UdonBetterAudio.Runtime
         }
 
         public bool OtherPlayerWithOverrideCanBeHeard(BetterPlayerAudioOverride playerOverride,
-            bool localPlayerInPrivateChannel, int currentPrivacyChannel, bool muteOutsiders, bool disallowLocalPlayerListening)
+            bool localPlayerInPrivateChannel, int currentPrivacyChannel, bool muteOutsiders,
+            bool disallowLocalPlayerListening)
         {
             // ReSharper disable once PossibleNullReferenceException (invalid warning because of IsValid check)
             var playerInSamePrivateChannel = playerOverride.privacyChannelId == currentPrivacyChannel;
-            var playerInSamePrivateChannelAllowedToBeHeard = playerInSamePrivateChannel && !disallowLocalPlayerListening;
+            var playerInSamePrivateChannelAllowedToBeHeard =
+                playerInSamePrivateChannel && !disallowLocalPlayerListening;
             var otherPlayerNotInAnyPrivateChannel = playerOverride.privacyChannelId == -1;
             var isOutsiderAndCanBeHeard = localPlayerInPrivateChannel
                                           && otherPlayerNotInAnyPrivateChannel
@@ -1039,7 +1042,7 @@ namespace Guribo.UdonBetterAudio.Runtime
             if (useMasterValues && !_allowMasterControl)
             {
                 _allowMasterControl = true;
-                udonDebug.Assert(TryUseMasterValues(),"Failed using master values",this);
+                udonDebug.Assert(TryUseMasterValues(), "Failed using master values", this);
             }
             else
             {
@@ -1339,7 +1342,8 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return true;
             }
 
-            if (!udonDebug.Assert(PlayersToOverride != null && PlayersToOverride.Length > 0, "_playersToOverride is empty", this))
+            if (!udonDebug.Assert(PlayersToOverride != null && PlayersToOverride.Length > 0,
+                "_playersToOverride is empty", this))
             {
                 return false;
             }
@@ -1582,7 +1586,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             return null;
         }
-        
+
         #region Public
 
         /// <summary>
