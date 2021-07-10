@@ -42,12 +42,11 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             overrideZoneActivator.playerOverride = voiceOverride;
 
             voiceOverride.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
-            voiceOverride.playerList.optionalChangeListeners = new[]
-            {
-                (UdonSharpBehaviour) overrideZoneActivator
-            };
+           
+
             overrideZoneActivator.syncedIntegerArray = syncedIntegerArrayGameObject.AddComponent<SyncedIntegerArray>();
             overrideZoneActivator.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
+            overrideZoneActivator.syncedIntegerArray.changeEventListeners = new[] {(UdonSharpBehaviour)overrideZoneActivator};
             overrideZoneActivator.syncedIntegerArray.targetChangeEvent = nameof(OverrideZoneActivator.RefreshPlayersInZone);
             overrideZoneActivator.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
             
@@ -118,13 +117,11 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             voiceOverride.betterPlayerAudio = betterPlayerAudio;
 
             voiceOverride.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
-            voiceOverride.playerList.optionalChangeListeners =
-                new[] {(UdonSharpBehaviour) overrideZoneActivator};
-
 
             overrideZoneActivator.syncedIntegerArray =
                 syncedIntegerArrayGameObject.AddUdonSharpComponent<SyncedIntegerArray>();
             overrideZoneActivator.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
+            overrideZoneActivator.syncedIntegerArray.changeEventListeners = new[] {(UdonSharpBehaviour)overrideZoneActivator};
             overrideZoneActivator.syncedIntegerArray.targetChangeEvent = nameof(OverrideZoneActivator.RefreshPlayersInZone);
             overrideZoneActivator.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
             
@@ -158,7 +155,6 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             overrideZoneActivator.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
             voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            voiceOverride.playerList.NotifyChangeListeners();
             overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion
@@ -192,7 +188,6 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             overrideZoneActivator.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
             voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            voiceOverride.playerList.NotifyChangeListeners();
             overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion
@@ -221,7 +216,6 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             overrideZoneActivator.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
             voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            voiceOverride.playerList.NotifyChangeListeners();
             overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion
@@ -243,7 +237,6 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             overrideZoneActivator.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
             voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            voiceOverride.playerList.NotifyChangeListeners();
             overrideZoneActivator.RefreshPlayersInZone();
 
             #endregion

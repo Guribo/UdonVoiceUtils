@@ -529,7 +529,7 @@ namespace Guribo.UdonBetterAudio.Runtime
             if (Utilities.IsValid(playerOverride))
             {
                 if (OtherPlayerWithOverrideCanBeHeard(playerOverride, localPlayerInPrivateChannel, privacyChannelId,
-                    muteOutsiders))
+                    muteOutsiders, localPlayerOverride.disallowListeningToChannel))
                 {
                     ApplyAudioOverrides(otherPlayer,
                         listenerHead,
@@ -558,16 +558,17 @@ namespace Guribo.UdonBetterAudio.Runtime
         }
 
         public bool OtherPlayerWithOverrideCanBeHeard(BetterPlayerAudioOverride playerOverride,
-            bool localPlayerInPrivateChannel, int currentPrivacyChannel, bool muteOutsiders)
+            bool localPlayerInPrivateChannel, int currentPrivacyChannel, bool muteOutsiders, bool disallowLocalPlayerListening)
         {
             // ReSharper disable once PossibleNullReferenceException (invalid warning because of IsValid check)
             var playerInSamePrivateChannel = playerOverride.privacyChannelId == currentPrivacyChannel;
+            var playerInSamePrivateChannelAllowedToBeHeard = playerInSamePrivateChannel && !disallowLocalPlayerListening;
             var otherPlayerNotInAnyPrivateChannel = playerOverride.privacyChannelId == -1;
             var isOutsiderAndCanBeHeard = localPlayerInPrivateChannel
                                           && otherPlayerNotInAnyPrivateChannel
                                           && !muteOutsiders;
 
-            return playerInSamePrivateChannel || isOutsiderAndCanBeHeard;
+            return playerInSamePrivateChannelAllowedToBeHeard || isOutsiderAndCanBeHeard;
         }
 
         private void ApplyGlobalAudioSettings(VRCPlayerApi otherPlayer, VRCPlayerApi.TrackingData listenerHead,

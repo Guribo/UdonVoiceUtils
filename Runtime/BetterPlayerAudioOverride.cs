@@ -191,7 +191,26 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Tooltip(
             "If set to true affected players also can't hear non-affected players. Only in effect in combination with a privacy channel not equal to -1.")]
         public bool muteOutsiders = true;
+        
+        /// <summary>
+        /// prevents the local player from listening to any other player in the same channel, can be used to talk to
+        /// players in a private room without being able to hear what is going on inside
+        /// </summary>
+        public bool disallowListeningToChannel;
 
+        #endregion
+        #region Optional listeners
+        
+        [Header("Optional Listeners")]
+        
+        [Tooltip("Behaviours to notify when the local player has been added (does not mean the override is active e.g. when another override with higher priority is already active)")]
+        public UdonSharpBehaviour[] localPlayerAddedListeners;
+        public string localPlayerAddedEvent = "LocalPlayerAdded";
+        
+        [Tooltip("Behaviours to notify when the local player has been removed (does not mean the override was active e.g. when another override with higher priority was already active)")]
+        public UdonSharpBehaviour[] localPlayerRemovedListeners;
+        public string localPlayerRemovedEvent = "LocalPlayerRemoved";
+        
         #endregion
 
         #region Mandatory references
@@ -231,7 +250,19 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             foreach (var playerId in playerList.players)
             {
-                betterPlayerAudio.OverridePlayerSettings(this, VRCPlayerApi.GetPlayerById(playerId));
+                var playerToAffect = VRCPlayerApi.GetPlayerById(playerId);
+                if (!Utilities.IsValid(playerToAffect))
+                {
+                    continue;
+                }
+
+                if (playerToAffect.isLocal)
+                {
+                    ActivateReverb();
+                    Notify(localPlayerAddedListeners,localPlayerAddedEvent);
+                }
+                
+                betterPlayerAudio.OverridePlayerSettings(this, playerToAffect);
             }
         }
 
@@ -261,7 +292,18 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             foreach (var playerId in playerList.players)
             {
-                betterPlayerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(playerId));
+                var playerToRemove = VRCPlayerApi.GetPlayerById(playerId);
+                if (!Utilities.IsValid(playerToRemove))
+                {
+                    continue;
+                }
+
+                if (playerToRemove.isLocal)
+                {
+                    DeactivateReverb();
+                    Notify(localPlayerRemovedListeners,localPlayerRemovedEvent);
+                }
+                betterPlayerAudio.ClearPlayerOverride(this, playerToRemove);
             }
         }
 
@@ -297,7 +339,7 @@ namespace Guribo.UdonBetterAudio.Runtime
             {
                 return false;
             }
-
+            
             if (!IsActiveAndEnabled())
             {
                 Debug.LogWarning($"Override {gameObject.name} is not enabled for {playerToAffect.displayName}");
@@ -307,6 +349,8 @@ namespace Guribo.UdonBetterAudio.Runtime
             if (playerToAffect.isLocal)
             {
                 ActivateReverb();
+                
+                Notify(localPlayerAddedListeners, localPlayerAddedEvent);
             }
 
             if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
@@ -362,6 +406,8 @@ namespace Guribo.UdonBetterAudio.Runtime
             if (playerToRemove.isLocal)
             {
                 DeactivateReverb();
+                
+                Notify(localPlayerRemovedListeners, localPlayerRemovedEvent);
             }
 
             if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "PlayerAudio invalid", this))
@@ -471,6 +517,20 @@ namespace Guribo.UdonBetterAudio.Runtime
                    && udonDebug.Assert(Utilities.IsValid(optionalReverb.gameObject.GetComponent(typeof(AudioListener))),
                        "For reverb to work an AudioListener is required on the gameobject with the Reverb Filter",
                        this);
+        }
+        
+        internal void Notify(UdonSharpBehaviour[] listeners, string eventName)
+        {
+            if (listeners != null && !string.IsNullOrEmpty(eventName))
+            {
+                foreach (var preSerializationEventListener in listeners)
+                {
+                    if (Utilities.IsValid(preSerializationEventListener))
+                    {
+                        preSerializationEventListener.SendCustomEvent(eventName);
+                    }
+                }
+            }
         }
 
         #endregion
