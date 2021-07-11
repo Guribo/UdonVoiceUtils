@@ -7,7 +7,7 @@ using VRC.Udon;
 namespace Guribo.UdonBetterAudio.Runtime.Examples
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class OverrideZoneExit : UdonSharpBehaviour
+    public class VoiceOverrideRoomExitButton : UdonSharpBehaviour
     {
         #region Teleport settings
 
@@ -20,14 +20,14 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
         #region Mandatory references
 
         [Header("Mandatory references")]
-        public OverrideZoneActivator overrideZoneActivator;
+        public VoiceOverrideRoom voiceOverrideRoom;
         public UdonDebug udonDebug;
 
         #endregion
 
         public override void Interact()
         {
-            ExitZone(Networking.LocalPlayer);
+            ExitRoom(Networking.LocalPlayer);
         }
 
         public override void OnPlayerRespawn(VRCPlayerApi player)
@@ -36,22 +36,32 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             {
                 return;
             }
+
+            if (!udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "overrideZoneActivator invalid", this))
+            {
+                return;
+            }
             
-            ExitZone(player);
+            if (voiceOverrideRoom.exitZoneOnRespawn)
+            {
+                return;
+            }
+            
+            ExitRoom(player);
         }
 
-        private void ExitZone(VRCPlayerApi playerApi)
+        private void ExitRoom(VRCPlayerApi playerApi)
         {
-            if (!(udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "overrideZoneActivator invalid", this)
+            if (!(udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "overrideZoneActivator invalid", this)
                   && udonDebug.Assert(Utilities.IsValid(playerApi), "player invalid", this)
                   && playerApi.isLocal))
             {
                 return;
             }
 
-            if (overrideZoneActivator.Contains(playerApi))
+            if (voiceOverrideRoom.Contains(playerApi))
             {
-                udonDebug.Assert(overrideZoneActivator.ExitZone(playerApi, optionalExitLocation), "ExitZone failed",
+                udonDebug.Assert(voiceOverrideRoom.ExitRoom(playerApi, optionalExitLocation), "ExitRoom failed",
                     this);
             }
         }

@@ -25,7 +25,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
         [Header("Mandatory references")]
         public UdonDebug udonDebug;
-        public OverrideZoneActivator overrideZoneActivator;
+        public VoiceOverrideRoom voiceOverrideRoom;
 
         #endregion
 
@@ -90,15 +90,15 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
             if (leaveOnTouch)
             {
-                if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed removing player from override",
+                if (!udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "Failed removing player from override",
                     this))
                 {
                     return;
                 }
 
-                if (overrideZoneActivator.Contains(player))
+                if (voiceOverrideRoom.Contains(player))
                 {
-                    overrideZoneActivator.ExitZone(player, null);
+                    voiceOverrideRoom.ExitRoom(player, null);
                 }
             }
         }
@@ -126,15 +126,15 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
             if (HasExited(enterPosition, exitPosition, exitDirection))
             {
-                if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed removing player from override",
+                if (!udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "Failed removing player from override",
                     this))
                 {
                     return;
                 }
 
-                if (overrideZoneActivator.Contains(player))
+                if (voiceOverrideRoom.Contains(player))
                 {
-                    overrideZoneActivator.ExitZone(player, null);
+                    voiceOverrideRoom.ExitRoom(player, null);
                 }
                 return;
             }
@@ -142,13 +142,13 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             var enterDirection = -exitDirection;
             if (HasEntered(enterPosition, exitPosition, enterDirection))
             {
-                if (!udonDebug.Assert(Utilities.IsValid(overrideZoneActivator), "Failed adding player to override",
+                if (!udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "Failed adding player to override",
                     this))
                 {
                     return;
                 }
 
-                overrideZoneActivator.EnterZone(player, null);
+                voiceOverrideRoom.EnterRoom(player, null);
             }
         }
         

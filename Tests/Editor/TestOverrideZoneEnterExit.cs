@@ -29,6 +29,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             var betterPlayerAudioGameobject = new GameObject();
             var betterPlayerVoiceOverrideGameobject = new GameObject();
             var udonDebug = new GameObject();
+            var enterButtonGo = new GameObject();
 
             var betterPlayerAudio = TestBetterPlayerAudio.CreateBetterPlayerAudio(betterPlayerAudioGameobject);
             var voiceOverride =
@@ -36,55 +37,61 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
                     betterPlayerAudio);
             voiceOverride.betterPlayerAudio = betterPlayerAudio;
 
-            var overrideZoneActivator = overrideZoneActivatorGameobject.AddUdonSharpComponent<OverrideZoneActivator>();
-            Assert.True(Utilities.IsValid(overrideZoneActivator));
+            var voiceOverrideRoom = overrideZoneActivatorGameobject.AddUdonSharpComponent<VoiceOverrideRoom>();
+            Assert.True(Utilities.IsValid(voiceOverrideRoom));
 
-            overrideZoneActivator.playerOverride = voiceOverride;
+            voiceOverrideRoom.playerOverride = voiceOverride;
 
             voiceOverride.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
            
 
-            overrideZoneActivator.syncedIntegerArray = syncedIntegerArrayGameObject.AddComponent<SyncedIntegerArray>();
-            overrideZoneActivator.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
-            overrideZoneActivator.syncedIntegerArray.changeEventListeners = new[] {(UdonSharpBehaviour)overrideZoneActivator};
-            overrideZoneActivator.syncedIntegerArray.targetChangeEvent = nameof(OverrideZoneActivator.RefreshPlayersInZone);
-            overrideZoneActivator.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
+            voiceOverrideRoom.syncedIntegerArray = syncedIntegerArrayGameObject.AddComponent<SyncedIntegerArray>();
+            voiceOverrideRoom.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
+            voiceOverrideRoom.syncedIntegerArray.changeEventListeners = new[] {(UdonSharpBehaviour)voiceOverrideRoom};
+            voiceOverrideRoom.syncedIntegerArray.targetChangeEvent = nameof(VoiceOverrideRoom.RefreshPlayersInZone);
+            voiceOverrideRoom.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
             
-            overrideZoneActivator.syncedIntegerArray.udonDebug = udonDebug.AddComponent<UdonDebug>();
-            overrideZoneActivator.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
-            voiceOverride.playerList.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
+            voiceOverrideRoom.syncedIntegerArray.udonDebug = udonDebug.AddComponent<UdonDebug>();
+            voiceOverrideRoom.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
+            voiceOverride.playerList.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
+            
+            var enterButton = enterButtonGo.AddComponent<VoiceOverrideRoomEnterButton>();
+            enterButton.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
+            enterButton.voiceOverrideRoom = voiceOverrideRoom;
 
             // no player yet in zone
             Assert.False(voiceOverride.playerList.Contains(player1));
-            Assert.False(overrideZoneActivator.Contains(player1));
+            Assert.False(voiceOverrideRoom.Contains(player1));
             Assert.IsNull(betterPlayerAudio.GetMaxPriorityOverride(player1));
-            Assert.False(overrideZoneActivator.IsInZone);
+            Assert.False(voiceOverrideRoom.IsInZone);
+
             
             // local player enters
-            overrideZoneActivator.Interact();
-            Assert.True(overrideZoneActivator.IsInZone);
+            enterButton.Interact();
+            Assert.True(voiceOverrideRoom.IsInZone);
             Assert.True(voiceOverride.playerList.Contains(player1));
-            Assert.True(overrideZoneActivator.Contains(player1));
+            Assert.True(voiceOverrideRoom.Contains(player1));
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
-            Assert.AreEqual(overrideZoneActivator.syncedIntegerArray.syncedValue, voiceOverride.playerList.players);
+            Assert.AreEqual(voiceOverrideRoom.syncedIntegerArray.syncedValue, voiceOverride.playerList.players);
 
             // try adding player again
             LogAssert.Expect(LogType.Error, new Regex(".+Player 0 already in list.", RegexOptions.Singleline));
             LogAssert.Expect(LogType.Error, new Regex(".+player already affected.", RegexOptions.Singleline));
             LogAssert.Expect(LogType.Error, new Regex(".+Adding player to player list failed.", RegexOptions.Singleline));
             LogAssert.Expect(LogType.Error, new Regex(".+Failed adding player to zone.", RegexOptions.Singleline));
-            overrideZoneActivator.Interact();
-            overrideZoneActivator.syncedIntegerArray.syncedValue = new int[voiceOverride.playerList.players.Length];
-            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
+            voiceOverrideRoom.EnterRoom(Networking.LocalPlayer, null);
+            enterButton.Interact();
+            voiceOverrideRoom.syncedIntegerArray.syncedValue = new int[voiceOverride.playerList.players.Length];
+            voiceOverride.playerList.players.CopyTo(voiceOverrideRoom.syncedIntegerArray.syncedValue, 0);
 
             Assert.True(voiceOverride.playerList.Contains(player1));
-            Assert.True(overrideZoneActivator.IsInZone);
-            Assert.True(overrideZoneActivator.Contains(player1));
-            Assert.AreEqual(1, overrideZoneActivator.syncedIntegerArray.syncedValue.Length);
+            Assert.True(voiceOverrideRoom.IsInZone);
+            Assert.True(voiceOverrideRoom.Contains(player1));
+            Assert.AreEqual(1, voiceOverrideRoom.syncedIntegerArray.syncedValue.Length);
 
             Assert.AreEqual(voiceOverride.playerList.players,
-                overrideZoneActivator.syncedIntegerArray.syncedValue);
-            Assert.AreEqual(player1.playerId, overrideZoneActivator.syncedIntegerArray.syncedValue[0]);
+                voiceOverrideRoom.syncedIntegerArray.syncedValue);
+            Assert.AreEqual(player1.playerId, voiceOverrideRoom.syncedIntegerArray.syncedValue[0]);
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
             Assert.AreEqual(voiceOverride, betterPlayerAudio.localPlayerOverrideList.Get(0));
         }
@@ -111,29 +118,34 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
                 TestBetterPlayerAudio.CreateBetterPlayerVoiceOverride(betterPlayerVoiceOverrideGameobject,
                     betterPlayerAudio);
 
-            var overrideZoneActivator = overrideZoneActivatorGameobject.AddUdonSharpComponent<OverrideZoneActivator>();
-            var overrideZoneExit = overrideZoneExitGameobject.AddUdonSharpComponent<OverrideZoneExit>();
+            var voiceOverrideRoom = overrideZoneActivatorGameobject.AddUdonSharpComponent<VoiceOverrideRoom>();
+            var overrideZoneExit = overrideZoneExitGameobject.AddUdonSharpComponent<VoiceOverrideRoomExitButton>();
 
             voiceOverride.betterPlayerAudio = betterPlayerAudio;
 
             voiceOverride.playerList = playerListGameobject.AddUdonSharpComponent<PlayerList>();
 
-            overrideZoneActivator.syncedIntegerArray =
+            voiceOverrideRoom.syncedIntegerArray =
                 syncedIntegerArrayGameObject.AddUdonSharpComponent<SyncedIntegerArray>();
-            overrideZoneActivator.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
-            overrideZoneActivator.syncedIntegerArray.changeEventListeners = new[] {(UdonSharpBehaviour)overrideZoneActivator};
-            overrideZoneActivator.syncedIntegerArray.targetChangeEvent = nameof(OverrideZoneActivator.RefreshPlayersInZone);
-            overrideZoneActivator.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
+            voiceOverrideRoom.syncedIntegerArray.targetBehaviour = voiceOverride.playerList;
+            voiceOverrideRoom.syncedIntegerArray.changeEventListeners = new[] {(UdonSharpBehaviour)voiceOverrideRoom};
+            voiceOverrideRoom.syncedIntegerArray.targetChangeEvent = nameof(VoiceOverrideRoom.RefreshPlayersInZone);
+            voiceOverrideRoom.syncedIntegerArray.targetVariable = nameof(PlayerList.players);
             
-            overrideZoneActivator.syncedIntegerArray.udonDebug = udonDebug.AddComponent<UdonDebug>();
-            overrideZoneActivator.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
-            overrideZoneActivator.playerOverride = voiceOverride;
-            overrideZoneActivator.playerOverride.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
-            voiceOverride.playerList.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
+            voiceOverrideRoom.syncedIntegerArray.udonDebug = udonDebug.AddComponent<UdonDebug>();
+            voiceOverrideRoom.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
+            voiceOverrideRoom.playerOverride = voiceOverride;
+            voiceOverrideRoom.playerOverride.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
+            voiceOverride.playerList.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
 
-            overrideZoneExit.overrideZoneActivator = overrideZoneActivator;
+            overrideZoneExit.voiceOverrideRoom = voiceOverrideRoom;
             overrideZoneExit.exitZoneOnRespawn = true;
-            overrideZoneExit.udonDebug = overrideZoneActivator.syncedIntegerArray.udonDebug;
+            overrideZoneExit.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
+            
+            var enterButtonGo = new GameObject();
+            var enterButton = enterButtonGo.AddComponent<VoiceOverrideRoomEnterButton>();
+            enterButton.udonDebug = voiceOverrideRoom.syncedIntegerArray.udonDebug;
+            enterButton.voiceOverrideRoom = voiceOverrideRoom;
 
             #endregion
 
@@ -142,7 +154,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.Null(betterPlayerAudio.GetMaxPriorityOverride(player1));
 
             // add single override to local player
-            overrideZoneActivator.Interact();
+            enterButton.Interact();
 
             // check single player added to player list
             Assert.True(voiceOverride.playerList.Contains(player1));
@@ -152,17 +164,17 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             #region TEMP
 
             // TODO remove temp workaround
-            overrideZoneActivator.syncedIntegerArray.syncedValue =
+            voiceOverrideRoom.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
-            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.RefreshPlayersInZone();
+            voiceOverride.playerList.players.CopyTo(voiceOverrideRoom.syncedIntegerArray.syncedValue, 0);
+            voiceOverrideRoom.RefreshPlayersInZone();
 
             #endregion
 
-            Assert.NotNull(overrideZoneActivator.syncedIntegerArray);
-            Assert.NotNull(overrideZoneActivator.syncedIntegerArray.syncedValue);
-            Assert.AreEqual(1, overrideZoneActivator.syncedIntegerArray.syncedValue.Length);
-            Assert.AreEqual(player1.playerId, overrideZoneActivator.syncedIntegerArray.syncedValue[0]);
+            Assert.NotNull(voiceOverrideRoom.syncedIntegerArray);
+            Assert.NotNull(voiceOverrideRoom.syncedIntegerArray.syncedValue);
+            Assert.AreEqual(1, voiceOverrideRoom.syncedIntegerArray.syncedValue.Length);
+            Assert.AreEqual(player1.playerId, voiceOverrideRoom.syncedIntegerArray.syncedValue[0]);
 
             // check single player added to override
             Assert.True(voiceOverride.IsAffected(player1));
@@ -185,16 +197,16 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             #region TEMP
 
             // TODO remove temp workaround
-            overrideZoneActivator.syncedIntegerArray.syncedValue =
+            voiceOverrideRoom.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
-            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.RefreshPlayersInZone();
+            voiceOverride.playerList.players.CopyTo(voiceOverrideRoom.syncedIntegerArray.syncedValue, 0);
+            voiceOverrideRoom.RefreshPlayersInZone();
 
             #endregion
 
-            Assert.NotNull(overrideZoneActivator.syncedIntegerArray);
-            Assert.NotNull(overrideZoneActivator.syncedIntegerArray.syncedValue);
-            Assert.AreEqual(0, overrideZoneActivator.syncedIntegerArray.syncedValue.Length);
+            Assert.NotNull(voiceOverrideRoom.syncedIntegerArray);
+            Assert.NotNull(voiceOverrideRoom.syncedIntegerArray.syncedValue);
+            Assert.AreEqual(0, voiceOverrideRoom.syncedIntegerArray.syncedValue.Length);
 
             // check single player added to override
             Assert.False(voiceOverride.IsAffected(player1));
@@ -208,43 +220,46 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             overrideZoneExit.exitZoneOnRespawn = false;
 
-            overrideZoneActivator.Interact();
+            enterButton.Interact();
 
             #region TEMP
 
             // TODO remove temp workaround
-            overrideZoneActivator.syncedIntegerArray.syncedValue =
+            voiceOverrideRoom.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
-            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.RefreshPlayersInZone();
+            voiceOverride.playerList.players.CopyTo(voiceOverrideRoom.syncedIntegerArray.syncedValue, 0);
+            voiceOverrideRoom.RefreshPlayersInZone();
 
             #endregion
 
             Assert.AreEqual(1, voiceOverride.playerList.DiscardInvalid());
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
-            Assert.True(overrideZoneActivator.IsInZone);
+            Assert.True(voiceOverrideRoom.IsInZone);
 
             overrideZoneExit.OnPlayerRespawn(player1);
             Assert.AreEqual(1, voiceOverride.playerList.DiscardInvalid());
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
 
             overrideZoneExit.exitZoneOnRespawn = true;
+
+            voiceOverrideRoom.exitZoneOnRespawn = false;
+            overrideZoneExit.exitZoneOnRespawn = true;
             overrideZoneExit.OnPlayerRespawn(player1);
 
             #region TEMP
 
             // TODO remove temp workaround
-            overrideZoneActivator.syncedIntegerArray.syncedValue =
+            voiceOverrideRoom.syncedIntegerArray.syncedValue =
                 new int[voiceOverride.playerList.players.Length];
-            voiceOverride.playerList.players.CopyTo(overrideZoneActivator.syncedIntegerArray.syncedValue, 0);
-            overrideZoneActivator.RefreshPlayersInZone();
+            voiceOverride.playerList.players.CopyTo(voiceOverrideRoom.syncedIntegerArray.syncedValue, 0);
+            voiceOverrideRoom.RefreshPlayersInZone();
 
             #endregion
 
             Assert.AreEqual(0, voiceOverride.playerList.DiscardInvalid());
             Assert.Null(betterPlayerAudio.GetMaxPriorityOverride(player1));
             Assert.False(voiceOverride.IsAffected(player1));
-            Assert.False(overrideZoneActivator.IsInZone);
+            Assert.False(voiceOverrideRoom.IsInZone);
         }
 
         [Test]

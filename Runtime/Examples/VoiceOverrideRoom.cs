@@ -9,19 +9,19 @@ using VRC.Udon;
 namespace Guribo.UdonBetterAudio.Runtime.Examples
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class OverrideZoneActivator : UdonSharpBehaviour
+    public class VoiceOverrideRoom : UdonSharpBehaviour
     {
         internal bool IsInZone;
-
+        
+        #region Mandatory references
+        
         #region Teleport settings
 
         [Header("Teleport settings")]
-        [Tooltip("Location the player can get teleported to as soon as they are affected by the voice override")]
-        public Transform optionalEnterTeleportLocation;
+        public Transform optionalRespawnLocation;
+        public bool exitZoneOnRespawn = true;
 
         #endregion
-
-        #region Mandatory references
 
         [Header("Mandatory references")]
         public BetterPlayerAudioOverride playerOverride;
@@ -29,16 +29,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
         public UdonDebug udonDebug;
 
         #endregion
-
-        #region Local player behaviour
-
-        public override void Interact()
-        {
-            EnterZone(Networking.LocalPlayer, optionalEnterTeleportLocation);
-        }
-
-        #endregion
-
+        
         #region Internal
 
         internal bool AddLocalPlayerToZone(VRCPlayerApi localPlayer)
@@ -116,8 +107,29 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
         #endregion
 
         #region Public
+        
+        public override void OnPlayerRespawn(VRCPlayerApi player)
+        {
+            if (!exitZoneOnRespawn)
+            {
+                return;
+            }
 
-        public bool EnterZone(VRCPlayerApi localPlayer, Transform optionTeleportLocation)
+            if (!Contains(player))
+            {
+                return;
+            }
+            
+            if (!udonDebug.Assert(Utilities.IsValid(player), "player invalid", this)
+                  ||  !player.isLocal)
+            {
+                return;
+            }
+
+            ExitRoom(player, optionalRespawnLocation);
+        }
+
+        public bool EnterRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation)
         {
             if (!udonDebug.Assert(Utilities.IsValid(localPlayer), "Invalid local player", this))
             {
@@ -138,7 +150,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             return true;
         }
 
-        public bool ExitZone(VRCPlayerApi localPlayer, Transform optionTeleportLocation)
+        public bool ExitRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation)
         {
             if (!udonDebug.Assert(Utilities.IsValid(localPlayer), "Invalid local player", this)
                 || !udonDebug.Assert(localPlayer.isLocal, "Player is not local", this)

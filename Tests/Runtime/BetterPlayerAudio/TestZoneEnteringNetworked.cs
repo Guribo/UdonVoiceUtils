@@ -71,7 +71,8 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
         public Transform enter;
         public Transform exit;
 
-        public OverrideZoneActivator overrideZoneActivator;
+        public VoiceOverrideRoom voiceOverrideRoom;
+        public VoiceOverrideRoom[] allRooms;
 
         [UdonSynced]
         public int teleportTime;
@@ -87,7 +88,7 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
 
             teleportTime = Networking.GetServerTimeInMilliseconds() + 10000;
             RequestSerialization();
-            PrepareLocalPlayer();
+            SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PrepareLocalPlayer));
 
             // whenever the test is ready to be started call TestController.TestInitialized,
             // can be later in update or whenever but MUST be called at some point
@@ -99,7 +100,7 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
             PrepareLocalPlayer();
         }
 
-        private void PrepareLocalPlayer()
+        public void PrepareLocalPlayer()
         {
             var enterTime = teleportTime - Networking.GetServerTimeInMilliseconds();
             if (enterTime < 0)
@@ -107,15 +108,25 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
                 return;
             }
 
-            Networking.LocalPlayer.TeleportTo(Vector3.down * 100f,  exit.rotation,
+            foreach (var overrideRoom in allRooms)
+            {
+                if (overrideRoom.Contains(Networking.LocalPlayer))
+                {
+                    overrideRoom.ExitRoom(Networking.LocalPlayer, null);
+                }
+            }
+            
+            Networking.LocalPlayer.TeleportTo(Vector3.down * 10f,  exit.rotation,
                 VRC_SceneDescriptor.SpawnOrientation.Default, false);
             
             Networking.LocalPlayer.Immobilize(true);
 
+
+            
             while (true)
             {
                 var betterPlayerAudioOverride =
-                    overrideZoneActivator.playerOverride.betterPlayerAudio.GetMaxPriorityOverride(
+                    voiceOverrideRoom.playerOverride.betterPlayerAudio.GetMaxPriorityOverride(
                         Networking.LocalPlayer);
                 if (Utilities.IsValid(betterPlayerAudioOverride))
                 {
@@ -132,7 +143,7 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
 
         public void Enter()
         {
-            overrideZoneActivator.EnterZone(Networking.LocalPlayer, enter);
+            voiceOverrideRoom.EnterRoom(Networking.LocalPlayer, enter);
         }
 
         private void RunTest()
@@ -158,8 +169,8 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
                 if (Utilities.IsValid(vrcPlayerApi))
                 {
                     successCount +=
-                        overrideZoneActivator.playerOverride.betterPlayerAudio.GetMaxPriorityOverride(vrcPlayerApi) ==
-                        overrideZoneActivator.playerOverride
+                        voiceOverrideRoom.playerOverride.betterPlayerAudio.GetMaxPriorityOverride(vrcPlayerApi) ==
+                        voiceOverrideRoom.playerOverride
                             ? 1
                             : 0;
                 }
@@ -184,7 +195,7 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
 
         public void LeaveZone()
         {
-            overrideZoneActivator.ExitZone(Networking.LocalPlayer, exit);
+            voiceOverrideRoom.ExitRoom(Networking.LocalPlayer, exit);
             Networking.LocalPlayer.Immobilize(false);
         }
 

@@ -278,7 +278,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: overrideZoneActivator
+      Data: voiceOverrideRoom
     - Name: $v
       Entry: 7
       Data: 18|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -290,7 +290,7 @@ MonoBehaviour:
       Data: 20|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Guribo.UdonBetterAudio.Runtime.Examples.OverrideZoneActivator, Guribo.UdonBetterAudio.Runtime
+      Data: Guribo.UdonBetterAudio.Runtime.Examples.VoiceOverrideRoom, Guribo.UdonBetterAudio.Runtime
     - Name: 
       Entry: 8
       Data: 
@@ -305,10 +305,10 @@ MonoBehaviour:
       Data: VRCUdonUdonBehaviour
     - Name: symbolOriginalName
       Entry: 1
-      Data: overrideZoneActivator
+      Data: voiceOverrideRoom
     - Name: symbolUniqueName
       Entry: 1
-      Data: overrideZoneActivator
+      Data: voiceOverrideRoom
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
