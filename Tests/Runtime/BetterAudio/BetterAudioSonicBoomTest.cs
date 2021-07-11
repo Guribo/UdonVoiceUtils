@@ -1,5 +1,5 @@
 ﻿using Guribo.UdonBetterAudio.Runtime;
-using Guribo.UdonUtils.Scripts.Testing;
+using Guribo.UdonUtils.Runtime.Testing;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;

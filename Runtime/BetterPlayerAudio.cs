@@ -1236,20 +1236,34 @@ namespace Guribo.UdonBetterAudio.Runtime
         public bool OverridePlayerSettings(BetterPlayerAudioOverride betterPlayerAudioOverride,
             VRCPlayerApi playerToAffect)
         {
-            if (!(Utilities.IsValid(betterPlayerAudioOverride)
-                  && Utilities.IsValid(playerToAffect)))
+            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudioOverride),
+                "betterPlayerAudioOverride invalid", this))
+            {
+                return false;
+            }
+
+            if (!udonDebug.Assert(Utilities.IsValid(playerToAffect),
+                "playerToAffect invalid", this))
             {
                 return false;
             }
 
             if (playerToAffect.isLocal)
             {
-                if (!Utilities.IsValid(localPlayerOverrideList))
+                if (!udonDebug.Assert(Utilities.IsValid(localPlayerOverrideList),
+                    "localPlayerOverrideList invalid", this))
                 {
                     return false;
                 }
 
-                return localPlayerOverrideList.AddOverride(betterPlayerAudioOverride);
+                var playerAdded = localPlayerOverrideList.AddOverride(betterPlayerAudioOverride);
+                if (!playerAdded)
+                {
+                    Debug.LogWarning(
+                        $"Local player {playerToAffect.displayName} already has the override {betterPlayerAudioOverride.gameObject.name} in the priority list");
+                }
+
+                return playerAdded;
             }
 
             // check if the player already has an override
@@ -1263,46 +1277,49 @@ namespace Guribo.UdonBetterAudio.Runtime
                 }
 
                 // add the new override
-                _playerOverrideLists[index].AddOverride(betterPlayerAudioOverride);
-                Debug.Log($"[<color=#008000>BetterAudio</color>] " +
-                          $"OverridePlayerSettings: added override");
+                var playerAdded = _playerOverrideLists[index].AddOverride(betterPlayerAudioOverride);
+                if (!playerAdded)
+                {
+                    Debug.LogWarning(
+                        $"Player {playerToAffect.displayName} already has the override {betterPlayerAudioOverride.gameObject.name} in the priority list");
+                }
+
+                return playerAdded;
             }
-            else
+
+            var newSize = CreateOverrideSlotForPlayer(playerToAffect);
+
+            // get the index of the added player
+            var position = Array.BinarySearch(PlayersToOverride, playerToAffect.playerId);
+            // create a new list of overrides
+            var tempOverrides = new BetterPlayerAudioOverrideList[newSize];
+
+            // copy the first half up to the added player into a the new list
+            if (position > 0)
             {
-                var newSize = CreateOverrideSlotForPlayer(playerToAffect);
-
-                // get the index of the added player
-                var position = Array.BinarySearch(PlayersToOverride, playerToAffect.playerId);
-                // create a new list of overrides
-                var tempOverrides = new BetterPlayerAudioOverrideList[newSize];
-
-                // copy the first half up to the added player into a the new list
-                if (position > 0)
-                {
-                    Array.ConstrainedCopy(_playerOverrideLists, 0, tempOverrides, 0, position);
-                }
-
-                var prefabInstance = VRCInstantiate(cloneablePlayerList.gameObject);
-                // insert the new entry for the added player
-                var betterPlayerAudioOverrideList = prefabInstance.GetComponent<BetterPlayerAudioOverrideList>();
-                if (!udonDebug.Assert(betterPlayerAudioOverrideList.AddOverride(betterPlayerAudioOverride),
-                    "Failed adding override to instantiated list prefab", this))
-                {
-                    return false;
-                }
-
-                tempOverrides[position] = betterPlayerAudioOverrideList;
-
-                // copy the remaining overrides for the unchanged second half of overriden players
-                Array.ConstrainedCopy(_playerOverrideLists,
-                    position,
-                    tempOverrides,
-                    position + 1,
-                    _playerOverrideLists.Length - position);
-
-                // replace the overrides with the new list of overrides
-                _playerOverrideLists = tempOverrides;
+                Array.ConstrainedCopy(_playerOverrideLists, 0, tempOverrides, 0, position);
             }
+
+            var prefabInstance = VRCInstantiate(cloneablePlayerList.gameObject);
+            // insert the new entry for the added player
+            var betterPlayerAudioOverrideList = prefabInstance.GetComponent<BetterPlayerAudioOverrideList>();
+            if (!udonDebug.Assert(betterPlayerAudioOverrideList.AddOverride(betterPlayerAudioOverride),
+                "Failed adding override to instantiated list prefab", this))
+            {
+                return false;
+            }
+
+            tempOverrides[position] = betterPlayerAudioOverrideList;
+
+            // copy the remaining overrides for the unchanged second half of overriden players
+            Array.ConstrainedCopy(_playerOverrideLists,
+                position,
+                tempOverrides,
+                position + 1,
+                _playerOverrideLists.Length - position);
+
+            // replace the overrides with the new list of overrides
+            _playerOverrideLists = tempOverrides;
 
             return true;
         }

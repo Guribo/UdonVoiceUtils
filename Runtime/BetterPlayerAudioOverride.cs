@@ -367,9 +367,13 @@ namespace Guribo.UdonBetterAudio.Runtime
                 if (playerList.players != null)
                 {
                     var listContainedInvalidPlayer = playerList.players.Length > playerList.DiscardInvalid();
+                    if (listContainedInvalidPlayer)
+                    {
+                        Debug.LogWarning("Player list contained invalid player (has left the world)");
+                    }
                     return listContainedInvalidPlayer;
                 }
-
+                Debug.LogWarning($"Player {playerToAffect.displayName} already affected by {gameObject.name} (caused by ownership race)");
                 return false;
             }
 
