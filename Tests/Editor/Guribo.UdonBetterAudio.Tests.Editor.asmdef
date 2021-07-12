@@ -10,7 +10,9 @@
         "Guribo.UdonUtils.Editor",
         "Guribo.UdonUtils.Tests.Runtime"
     ],
-    "optionalUnityReferences": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
     "includePlatforms": [
         "Editor"
     ],
