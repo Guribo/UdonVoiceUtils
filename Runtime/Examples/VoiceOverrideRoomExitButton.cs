@@ -13,7 +13,6 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
         [Header("Teleport settings")]
         public Transform optionalExitLocation;
-        public bool exitZoneOnRespawn = true;
 
         #endregion
 
@@ -28,26 +27,6 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
         public override void Interact()
         {
             ExitRoom(Networking.LocalPlayer);
-        }
-
-        public override void OnPlayerRespawn(VRCPlayerApi player)
-        {
-            if (!exitZoneOnRespawn)
-            {
-                return;
-            }
-
-            if (!udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "overrideZoneActivator invalid", this))
-            {
-                return;
-            }
-            
-            if (voiceOverrideRoom.exitZoneOnRespawn)
-            {
-                return;
-            }
-            
-            ExitRoom(player);
         }
 
         private void ExitRoom(VRCPlayerApi playerApi)

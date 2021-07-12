@@ -31,7 +31,9 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             Assert.AreEqual(new int[0], voiceOverride.playerList.players);
             Assert.False(voiceOverride.IsAffected(player1));
+#if GURIBO_DEBUG
             LogAssert.Expect(LogType.Error, new Regex(".+player not affected.", RegexOptions.Singleline));
+#endif
             Assert.False(voiceOverride.RemovePlayer(player1));
         }
 
@@ -58,8 +60,10 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.AreEqual(player1.playerId, voiceOverride.playerList.players[0]);
 
             // remove
+
             LogAssert.Expect(LogType.Error,
                 "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
+
             Assert.True(voiceOverride.RemovePlayer(player1));
             Assert.AreEqual(0, voiceOverride.playerList.players.Length);
             Assert.False(voiceOverride.IsAffected(player1));
@@ -234,13 +238,17 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             UdonTestUtils.CreateLocalPlayer(0);
             var player1 = UdonTestUtils.CreatePlayer(1);
 
+#if GURIBO_DEBUG
             LogAssert.Expect(LogType.Error, new Regex(".+Player invalid.", RegexOptions.Singleline));
+#endif
             Assert.False(betterPlayerAudio.HasVoiceOverrides(null));
             Assert.False(betterPlayerAudio.HasVoiceOverrides(player1));
 
             voiceOverride.AddPlayer(player1);
 
+#if GURIBO_DEBUG
             LogAssert.Expect(LogType.Error, new Regex(".+Player invalid.", RegexOptions.Singleline));
+#endif
             Assert.False(betterPlayerAudio.HasVoiceOverrides(null));
             Assert.True(betterPlayerAudio.HasVoiceOverrides(player1));
 
@@ -248,7 +256,9 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
                 "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nAlso think twice if you really want to destroy something in edit mode. Since this will destroy objects permanently.");
             voiceOverride.RemovePlayer(player1);
 
+#if GURIBO_DEBUG
             LogAssert.Expect(LogType.Error, new Regex(".+Player invalid.", RegexOptions.Singleline));
+#endif
             Assert.False(betterPlayerAudio.HasVoiceOverrides(null));
             Assert.False(betterPlayerAudio.HasVoiceOverrides(player1));
         }
@@ -336,13 +346,18 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
 
             VRCPlayerApi.sPlayers = new List<VRCPlayerApi>();
             var player1 = UdonTestUtils.CreatePlayer(0);
-
+#if GURIBO_DEBUG
             LogAssert.Expect(LogType.Error, new Regex(".+betterPlayerAudioOverride invalid.", RegexOptions.Singleline));
+#endif
             Assert.False(betterPlayerAudio.OverridePlayerSettings(null, null));
+#if GURIBO_DEBUG
             LogAssert.Expect(LogType.Error, new Regex(".+playerToAffect invalid.", RegexOptions.Singleline));
+#endif
             Assert.False(betterPlayerAudio.OverridePlayerSettings(voiceOverride, null));
-            LogAssert.Expect(LogType.Error, new Regex(".+betterPlayerAudioOverride invalid.", RegexOptions.Singleline));
 
+#if GURIBO_DEBUG
+            LogAssert.Expect(LogType.Error, new Regex(".+betterPlayerAudioOverride invalid.", RegexOptions.Singleline));
+#endif
             Assert.False(betterPlayerAudio.OverridePlayerSettings(null, player1));
 
             Assert.True(betterPlayerAudio.OverridePlayerSettings(voiceOverride, player1));

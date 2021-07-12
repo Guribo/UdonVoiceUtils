@@ -154,7 +154,7 @@ namespace Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio
             // whenever the test is completed call TestController.TestCompleted,
             // can be later in update or whenever but MUST be called at some point
 
-            SendCustomEventDelayedSeconds(nameof(CheckDelayed), 20f);
+            SendCustomEventDelayedSeconds(nameof(CheckDelayed), 70f);
         }
 
         public void CheckDelayed()
