@@ -9,7 +9,7 @@ You can find the v0.7_beta release here: https://github.com/Guribo/BetterAudio/r
 >*In order to use it you need the VRChat Udon SDK, [UdonSharp by Merlin](https://github.com/MerlinVR/UdonSharp/wiki/setup) and Unity 2018.4 (soon Unity 2019 as VRChat is about to update).*
 >*Afterwards simply import the v0.7_beta unitypackage and have a look at the example scene `Assets/Guribo/UdonBetterAudio/Tutorials/PrivateZones/PrivateZones.unity`.*
 
-**Please check out the [Wiki]() for additional information on the available components, features and prefabs.**
+**Please check out the [Wiki](https://github.com/Guribo/BetterAudio/wiki) for additional information on the available components, features and prefabs.**
 
 It contains:
 - player voice control
