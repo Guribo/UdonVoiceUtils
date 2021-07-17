@@ -210,6 +210,9 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Header("Mandatory references")]
         public BetterPlayerAudioOverrideList cloneablePlayerList;
         public BetterPlayerAudioOverrideList localPlayerOverrideList;
+        
+        [SerializeField] 
+        internal AudioReverbFilter mainAudioReverbFilter;
 
         #region Libraries
 
@@ -1620,6 +1623,49 @@ namespace Guribo.UdonBetterAudio.Runtime
             var temp = new int[PlayersToOverride.Length];
             PlayersToOverride.CopyTo(temp, 0);
             return temp;
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="audioReverbFilter">Clears the reverb settings when null, otherwise copies and applies the values</param>
+        public void UseReverbSettings(AudioReverbFilter audioReverbFilter)
+        {
+            if (!udonDebug.Assert(Utilities.IsValid(mainAudioReverbFilter), "mainAudioReverbFilter invalid", this))
+            {
+                return;
+            }
+
+            var clearSettings = !Utilities.IsValid(audioReverbFilter);
+            if (clearSettings)
+            {
+                mainAudioReverbFilter.reverbPreset = AudioReverbPreset.Off;
+                return;
+            }
+
+
+            var newPreset = audioReverbFilter.reverbPreset;
+            mainAudioReverbFilter.reverbPreset = newPreset;
+            var doesNotNeedToCopyCustomSettings = newPreset != AudioReverbPreset.User;
+            if (doesNotNeedToCopyCustomSettings)
+            {
+                return;
+            }
+            
+            mainAudioReverbFilter.density = audioReverbFilter.density;
+            mainAudioReverbFilter.diffusion = audioReverbFilter.diffusion;
+            mainAudioReverbFilter.room = audioReverbFilter.room;
+            mainAudioReverbFilter.roomHF = audioReverbFilter.roomHF;
+            mainAudioReverbFilter.roomLF = audioReverbFilter.roomLF;
+            mainAudioReverbFilter.decayTime = audioReverbFilter.decayTime;
+            mainAudioReverbFilter.dryLevel = audioReverbFilter.dryLevel;
+            mainAudioReverbFilter.hfReference = audioReverbFilter.hfReference;
+            mainAudioReverbFilter.lfReference = audioReverbFilter.lfReference;
+            mainAudioReverbFilter.reflectionsDelay = audioReverbFilter.reflectionsDelay;
+            mainAudioReverbFilter.reflectionsLevel = audioReverbFilter.reflectionsLevel;
+            mainAudioReverbFilter.reverbDelay = audioReverbFilter.reverbDelay;
+            mainAudioReverbFilter.reverbLevel = audioReverbFilter.reverbLevel;
+            mainAudioReverbFilter.decayHFRatio = audioReverbFilter.decayHFRatio;
         }
 
         #endregion

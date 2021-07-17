@@ -274,6 +274,10 @@ namespace Guribo.UdonBetterAudio.Runtime
             }
 
             _hasStarted = true;
+            if (Utilities.IsValid(optionalReverb))
+            {
+                optionalReverb.gameObject.SetActive(false);
+            }
             DeactivateReverb();
         }
 
@@ -525,28 +529,32 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         private void DeactivateReverb()
         {
-            if (ReverbValid())
+            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
             {
-                optionalReverb.gameObject.SetActive(false);
+                return;
+            }
+            var activeOverride = betterPlayerAudio.GetMaxPriorityOverride(Networking.LocalPlayer);
+            if (activeOverride == null
+                || activeOverride == this)
+            {
+                betterPlayerAudio.UseReverbSettings(null);
             }
         }
 
         private void ActivateReverb()
         {
-            if (ReverbValid())
+            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
             {
-                optionalReverb.gameObject.SetActive(true);
+                return;
+            }
+            var activeOverride = betterPlayerAudio.GetMaxPriorityOverride(Networking.LocalPlayer);
+            if (activeOverride == null
+                || activeOverride == this)
+            {
+                betterPlayerAudio.UseReverbSettings(optionalReverb);
             }
         }
 
-        private bool ReverbValid()
-        {
-            return Utilities.IsValid(optionalReverb)
-                   && udonDebug.Assert(Utilities.IsValid(optionalReverb.gameObject.GetComponent(typeof(AudioListener))),
-                       "For reverb to work an AudioListener is required on the gameobject with the Reverb Filter",
-                       this);
-        }
-        
         internal void Notify(UdonSharpBehaviour[] listeners, string eventName)
         {
             if (listeners != null && !string.IsNullOrEmpty(eventName))

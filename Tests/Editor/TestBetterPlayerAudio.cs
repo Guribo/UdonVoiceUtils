@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+#if GURIBO_DEBUG
 using System.Text.RegularExpressions;
+#endif
 using Guribo.UdonBetterAudio.Runtime;
 using Guribo.UdonUtils.Runtime.Common;
-using Guribo.UdonUtils.Tests.Editor;
 using Guribo.UdonUtils.Tests.Editor.Utils;
 using NUnit.Framework;
 using UdonSharp;
@@ -1206,6 +1207,98 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.True(changeListener.added);
         }
 
+        [Test]
+        public void ClearReverb()
+        {
+            var go = new GameObject();
+            var betterPlayerAudio = CreateBetterPlayerAudio(go);
+            betterPlayerAudio.udonDebug = go.AddComponent<UdonDebug>();
+
+            betterPlayerAudio.mainAudioReverbFilter = null;
+#if GURIBO_DEBUG
+            LogAssert.Expect(LogType.Error, new Regex(".+mainAudioReverbFilter invalid.", RegexOptions.Singleline));
+#endif
+            betterPlayerAudio.UseReverbSettings(null);
+            
+            // add the reverb filter (usually done by user in editor)
+            var audioReverbObject = new GameObject();
+            audioReverbObject.AddComponent<AudioListener>();
+            betterPlayerAudio.mainAudioReverbFilter = audioReverbObject.AddComponent<AudioReverbFilter>();
+            Assert.True(betterPlayerAudio.enabled);
+            
+            // test clearing the reverb settings
+            betterPlayerAudio.mainAudioReverbFilter.reverbPreset = AudioReverbPreset.Alley;
+            betterPlayerAudio.UseReverbSettings(null);
+            Assert.NotNull(betterPlayerAudio.mainAudioReverbFilter);
+            Assert.True(betterPlayerAudio.mainAudioReverbFilter.enabled);
+            Assert.AreEqual(AudioReverbPreset.Off, betterPlayerAudio.mainAudioReverbFilter.reverbPreset);
+        }
+        
+        [Test]
+        public void ApplyReverbSettings()
+        {
+            var go = new GameObject();
+            var betterPlayerAudio = CreateBetterPlayerAudio(go);
+            betterPlayerAudio.udonDebug = go.AddComponent<UdonDebug>();
+
+            betterPlayerAudio.mainAudioReverbFilter = null;
+#if GURIBO_DEBUG
+            LogAssert.Expect(LogType.Error, new Regex(".+mainAudioReverbFilter invalid.", RegexOptions.Singleline));
+#endif
+            betterPlayerAudio.UseReverbSettings(null);
+            
+            // add the reverb filter (usually done by user in editor)
+            var audioReverbObject = new GameObject();
+            var audioReverbObject2 = new GameObject();
+            audioReverbObject.AddComponent<AudioListener>();
+            betterPlayerAudio.mainAudioReverbFilter = audioReverbObject.AddComponent<AudioReverbFilter>();
+            
+            audioReverbObject2.AddComponent<AudioListener>();
+            var toCopyFrom = audioReverbObject2.AddComponent<AudioReverbFilter>();
+            toCopyFrom.reverbPreset = AudioReverbPreset.Arena;
+            
+            // "old" settings
+            betterPlayerAudio.mainAudioReverbFilter.reverbPreset = AudioReverbPreset.Alley;
+            
+           // copy the reverb settings from the provided component
+           betterPlayerAudio.UseReverbSettings(toCopyFrom);
+           Assert.AreEqual(AudioReverbPreset.Arena, betterPlayerAudio.mainAudioReverbFilter.reverbPreset);
+           
+           // copy custom preset
+           toCopyFrom.reverbPreset = AudioReverbPreset.User;
+           toCopyFrom.density = 0;
+           toCopyFrom.diffusion = 0;
+           toCopyFrom.room = 0;
+           toCopyFrom.roomHF = 0;
+           toCopyFrom.roomLF = 0;
+           toCopyFrom.decayTime = 0;
+           toCopyFrom.dryLevel = 0;
+           toCopyFrom.hfReference = 0;
+           toCopyFrom.lfReference = 0;
+           toCopyFrom.reflectionsDelay = 0;
+           toCopyFrom.reflectionsLevel = 0;
+           toCopyFrom.reverbDelay = 0;
+           toCopyFrom.reverbLevel = 0;
+           toCopyFrom.decayHFRatio = 0;
+           
+           betterPlayerAudio.UseReverbSettings(toCopyFrom);
+           Assert.AreEqual(AudioReverbPreset.User, betterPlayerAudio.mainAudioReverbFilter.reverbPreset);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.density);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.diffusion);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.room);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.roomHF);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.roomLF);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.decayTime);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.dryLevel);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.hfReference);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.lfReference);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.reflectionsDelay);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.reflectionsLevel);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.reverbDelay);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.reverbLevel);
+          Assert.AreEqual(0, betterPlayerAudio.mainAudioReverbFilter.decayHFRatio);
+        }
+
         #region Test Utils
 
         public static BetterPlayerAudioOverride CreateBetterPlayerVoiceOverride(GameObject go,
@@ -1227,6 +1320,9 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
         {
             var betterPlayerAudio = go.AddComponent<BetterPlayerAudio>();
             Assert.True(Utilities.IsValid(betterPlayerAudio));
+            
+            go.AddComponent<AudioListener>();
+            betterPlayerAudio.mainAudioReverbFilter = go.AddComponent<AudioReverbFilter>();
 
             var udonDebug = go.AddComponent<UdonDebug>();
             Assert.True(Utilities.IsValid(betterPlayerAudio));

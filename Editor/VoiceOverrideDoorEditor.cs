@@ -10,6 +10,13 @@ namespace Guribo.UdonBetterAudio.Editor
     [CustomEditor(typeof(VoiceOverrideDoor))]
     public class VoiceOverrideDoorEditor : UnityEditor.Editor
     {
+
+        public override void OnInspectorGUI()
+        {
+            UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target);
+            DrawDefaultInspector();
+        }
+        
         public void OnSceneGUI()
         {
             var voiceOverrideDoor = (VoiceOverrideDoor) target;
