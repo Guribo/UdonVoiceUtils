@@ -95,7 +95,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
                 voiceOverrideRoom.syncedIntegerArray.syncedValue);
             Assert.AreEqual(player1.playerId, voiceOverrideRoom.syncedIntegerArray.syncedValue[0]);
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
-            Assert.AreEqual(voiceOverride, betterPlayerAudio.localPlayerOverrideList.Get(0));
+            Assert.AreEqual(voiceOverride, betterPlayerAudio.localPlayerOverrideList.GetMaxPriority());
         }
 
         [Test]
@@ -181,7 +181,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.True(voiceOverride.IsAffected(player1));
 
             // better player audio contains local player in local override list
-            Assert.AreEqual(voiceOverride, betterPlayerAudio.localPlayerOverrideList.Get(0));
+            Assert.AreEqual(voiceOverride, betterPlayerAudio.localPlayerOverrideList.GetMaxPriority());
 
             // better player audio returns override for local player
             Assert.AreEqual(voiceOverride, betterPlayerAudio.GetMaxPriorityOverride(player1));
@@ -213,7 +213,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.False(voiceOverride.IsAffected(player1));
 
             // better player audio contains local player in local override list
-            Assert.Null(betterPlayerAudio.localPlayerOverrideList.Get(0));
+            Assert.Null(betterPlayerAudio.localPlayerOverrideList.GetMaxPriority());
 
             // better player audio returns override for local player
             Assert.Null(betterPlayerAudio.GetMaxPriorityOverride(player1));

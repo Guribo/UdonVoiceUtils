@@ -7,7 +7,8 @@ namespace Guribo.UdonBetterAudio.Runtime
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterPlayerAudioOverrideList : UdonSharpBehaviour
     {
-        private BetterPlayerAudioOverride[] _betterPlayerAudioOverride;
+        internal BetterPlayerAudioOverride[] _betterPlayerAudioOverride;
+        internal BetterPlayerAudioOverride _topPriority;
 
         public bool AddOverride(BetterPlayerAudioOverride voiceOverride)
         {
@@ -95,6 +96,11 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             return endIndex;
         }
+        
+        public BetterPlayerAudioOverride GetMaxPriority()
+        {
+            return Get(0);
+        }
 
         /// <summary>
         /// </summary>
@@ -116,11 +122,13 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return betterPlayerAudioOverride;
             }
 
-            if (Consolidate(_betterPlayerAudioOverride) == 0)
+            var remaining = Consolidate(_betterPlayerAudioOverride);
+            if (index < remaining)
             {
-                return null;
+                return _betterPlayerAudioOverride[index];
             }
-            return _betterPlayerAudioOverride[index];
+
+            return null;
         }
 
         public int GetInsertIndex(BetterPlayerAudioOverride[] betterPlayerAudioOverrides,
