@@ -1,5 +1,6 @@
 ﻿using System;
 using UdonSharp;
+using UnityEngine;
 using VRC.SDKBase;
 
 namespace Guribo.UdonBetterAudio.Runtime
@@ -7,8 +8,7 @@ namespace Guribo.UdonBetterAudio.Runtime
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BetterPlayerAudioOverrideList : UdonSharpBehaviour
     {
-        internal BetterPlayerAudioOverride[] _betterPlayerAudioOverride;
-        internal BetterPlayerAudioOverride _topPriority;
+        internal BetterPlayerAudioOverride[] BetterPlayerAudioOverrides;
 
         public bool AddOverride(BetterPlayerAudioOverride voiceOverride)
         {
@@ -17,13 +17,13 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return false;
             }
 
-            if (_betterPlayerAudioOverride == null || _betterPlayerAudioOverride.Length == 0)
+            if (BetterPlayerAudioOverrides == null || BetterPlayerAudioOverrides.Length == 0)
             {
-                _betterPlayerAudioOverride = new[] {voiceOverride};
+                BetterPlayerAudioOverrides = new[] {voiceOverride};
                 return true;
             }
             
-            foreach (var betterPlayerAudioOverride in _betterPlayerAudioOverride)
+            foreach (var betterPlayerAudioOverride in BetterPlayerAudioOverrides)
             {
                 if (betterPlayerAudioOverride == voiceOverride)
                 {
@@ -31,26 +31,26 @@ namespace Guribo.UdonBetterAudio.Runtime
                 }
             }
 
-            Remove(_betterPlayerAudioOverride, voiceOverride);
-            var slotsNeeded = Consolidate(_betterPlayerAudioOverride) + 1;
-            var insertIndex = GetInsertIndex(_betterPlayerAudioOverride, voiceOverride);
+            Remove(BetterPlayerAudioOverrides, voiceOverride);
+            var slotsNeeded = Consolidate(BetterPlayerAudioOverrides) + 1;
+            var insertIndex = GetInsertIndex(BetterPlayerAudioOverrides, voiceOverride);
             var tempList = new BetterPlayerAudioOverride[slotsNeeded];
             if (insertIndex > 0)
             {
-                Array.ConstrainedCopy(_betterPlayerAudioOverride, 0, tempList, 0, insertIndex);
+                Array.ConstrainedCopy(BetterPlayerAudioOverrides, 0, tempList, 0, insertIndex);
             }
 
             tempList[insertIndex] = voiceOverride;
             if (slotsNeeded - insertIndex > 1)
             {
-                Array.ConstrainedCopy(_betterPlayerAudioOverride, 
+                Array.ConstrainedCopy(BetterPlayerAudioOverrides, 
                     insertIndex, 
                     tempList, 
                     insertIndex +1, 
                     slotsNeeded - insertIndex - 1);
             }
 
-            _betterPlayerAudioOverride = tempList;
+            BetterPlayerAudioOverrides = tempList;
             
             return true;
         }
@@ -73,30 +73,6 @@ namespace Guribo.UdonBetterAudio.Runtime
             return tempList;
         }
 
-        public int CopyHighPriorityOverridesToNewList(BetterPlayerAudioOverride[] betterPlayerAudioOverrides,
-            BetterPlayerAudioOverride[] tempList,
-            int insertIndex)
-        {
-            var copied = 0;
-            var endIndex = 0;
-            foreach (var betterPlayerAudioOverride in betterPlayerAudioOverrides)
-            {
-                endIndex++;
-                if (copied == insertIndex)
-                {
-                    break;
-                }
-
-                if (Utilities.IsValid(betterPlayerAudioOverride))
-                {
-                    tempList[copied] = betterPlayerAudioOverride;
-                    ++copied;
-                }
-            }
-
-            return endIndex;
-        }
-        
         public BetterPlayerAudioOverride GetMaxPriority()
         {
             return Get(0);
@@ -109,23 +85,23 @@ namespace Guribo.UdonBetterAudio.Runtime
         public BetterPlayerAudioOverride Get(int index)
         {
             if (index < 0
-                || _betterPlayerAudioOverride == null
-                || _betterPlayerAudioOverride.Length == 0
-                || index >= _betterPlayerAudioOverride.Length)
+                || BetterPlayerAudioOverrides == null
+                || BetterPlayerAudioOverrides.Length == 0
+                || index >= BetterPlayerAudioOverrides.Length)
             {
                 return null;
             }
 
-            var betterPlayerAudioOverride = _betterPlayerAudioOverride[index];
+            var betterPlayerAudioOverride = BetterPlayerAudioOverrides[index];
             if (Utilities.IsValid(betterPlayerAudioOverride))
             {
                 return betterPlayerAudioOverride;
             }
 
-            var remaining = Consolidate(_betterPlayerAudioOverride);
+            var remaining = Consolidate(BetterPlayerAudioOverrides);
             if (index < remaining)
             {
-                return _betterPlayerAudioOverride[index];
+                return BetterPlayerAudioOverrides[index];
             }
 
             return null;
@@ -217,8 +193,8 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public int RemoveOverride(BetterPlayerAudioOverride betterPlayerAudioOverride)
         {
-            Remove(_betterPlayerAudioOverride, betterPlayerAudioOverride);
-            return Consolidate(_betterPlayerAudioOverride);
+            Remove(BetterPlayerAudioOverrides, betterPlayerAudioOverride);
+            return Consolidate(BetterPlayerAudioOverrides);
         }
     }
 }

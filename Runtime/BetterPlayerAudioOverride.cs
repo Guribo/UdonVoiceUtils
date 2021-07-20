@@ -534,9 +534,12 @@ namespace Guribo.UdonBetterAudio.Runtime
         #endregion
 
         #region internal
-        
+
         internal bool IsActiveAndEnabled()
         {
+#if UNITY_INCLUDE_TESTS
+            return Utilities.IsValid(this) && enabled;
+#endif
             return Utilities.IsValid(this) && enabled && gameObject.activeInHierarchy;
         }
 

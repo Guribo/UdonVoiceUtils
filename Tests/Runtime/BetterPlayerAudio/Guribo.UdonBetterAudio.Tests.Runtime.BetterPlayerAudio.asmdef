@@ -2,19 +2,25 @@
     "name": "Guribo.UdonBetterAudio.Tests.Runtime.BetterPlayerAudio",
     "references": [
         "Guribo.UdonUtils.Runtime",
-        "UdonSharp.Runtime",
-        "VRC.Udon",
         "Guribo.UdonUtils.Tests.Runtime",
-        "Guribo.UdonBetterAudio.Runtime"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "Guribo.UdonBetterAudio.Runtime",
+        "VRC.Udon",
+        "UdonSharp.Runtime",
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "VRCSDKBase.dll",
+        "VRCSDK3.dll",
+        "VRC.Udon.Common.dll"
+    ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
