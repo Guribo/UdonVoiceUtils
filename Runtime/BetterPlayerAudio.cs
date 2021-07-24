@@ -413,7 +413,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         private BetterPlayerAudioOverrideList[] _playerOverrideLists;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         private int _serializationRequests;
-        internal BetterPlayerAudioOverride PreviousLocalOverride;
+        internal BetterPlayerAudioOverride LocalOverride;
 
         #endregion
 
@@ -455,6 +455,9 @@ namespace Guribo.UdonBetterAudio.Runtime
             {
                 return;
             }
+            
+            var newLocalOverride = localPlayerOverrideList.GetMaxPriority();
+            LocalOverride = UpdateAudioFilters(newLocalOverride, LocalOverride);
 
             var playerCount = UpdatePlayerList();
             if (playerCount < 2)
@@ -514,18 +517,17 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             var playerOverride = GetMaxPriorityOverride(otherPlayer);
 
-            var localPlayerOverride = localPlayerOverrideList.GetMaxPriority();
-            PreviousLocalOverride = UpdateAudioFilters(localPlayerOverride, PreviousLocalOverride);
+
 
             var privacyChannelId = -1;
             var muteOutsiders = false;
             var disallowListeningToChannel = false;
 
-            if (Utilities.IsValid(localPlayerOverride))
+            if (Utilities.IsValid(LocalOverride))
             {
-                privacyChannelId = localPlayerOverride.privacyChannelId;
-                muteOutsiders = localPlayerOverride.muteOutsiders;
-                disallowListeningToChannel = localPlayerOverride.disallowListeningToChannel;
+                privacyChannelId = LocalOverride.privacyChannelId;
+                muteOutsiders = LocalOverride.muteOutsiders;
+                disallowListeningToChannel = LocalOverride.disallowListeningToChannel;
             }
             
             var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
