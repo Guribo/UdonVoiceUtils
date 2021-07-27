@@ -1,0 +1,16 @@
+{
+    "name": "Guribo.UdonBetterAudio.Runtime",
+    "references": [
+        "UdonSharp.Runtime",
+        "Guribo.UdonUtils.Runtime",
+        "VRC.Udon"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

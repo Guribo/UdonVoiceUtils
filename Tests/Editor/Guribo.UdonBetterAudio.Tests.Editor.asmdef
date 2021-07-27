@@ -1,0 +1,31 @@
+{
+    "name": "Guribo.UdonBetterAudio.Tests.Editor",
+    "references": [
+        "UdonSharp.Editor",
+        "UdonSharp.Runtime",
+        "Guribo.UdonBetterAudio.Runtime",
+        "Guribo.UdonUtils.Runtime",
+        "Guribo.UdonUtils.Tests.Editor",
+        "VRC.Udon",
+        "Guribo.UdonUtils.Editor",
+        "Guribo.UdonUtils.Tests.Runtime",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "VRCSDKBase.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
