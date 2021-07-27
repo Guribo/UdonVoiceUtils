@@ -403,8 +403,8 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         #region State
 
-        private bool _receivedStart;
-        private bool _canUpdate;
+        internal bool ReceivedStart;
+        internal bool CanUpdate;
         private bool _isReallyOwner;
         private int _playerIndex;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
@@ -422,10 +422,10 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public void OnEnable()
         {
-            if (_receivedStart)
+            if (ReceivedStart)
             {
                 // don't wait for all players to load as they should be all loaded already
-                _canUpdate = true;
+                CanUpdate = true;
             }
         }
 
@@ -444,7 +444,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public override void PostLateUpdate()
         {
-            if (!_canUpdate)
+            if (!CanUpdate)
             {
                 return;
             }
@@ -503,7 +503,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return;
             }
 
-            _canUpdate = true;
+            CanUpdate = true;
         }
 
         internal void UpdateOtherPlayer(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer)
@@ -728,9 +728,9 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// </summary>
         public void Initialize()
         {
-            if (!_receivedStart)
+            if (!ReceivedStart)
             {
-                _receivedStart = true;
+                ReceivedStart = true;
                 ResetToDefault();
             }
         }

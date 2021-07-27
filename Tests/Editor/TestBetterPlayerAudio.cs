@@ -1042,7 +1042,8 @@ Assert.AreEqual(_voiceOverride,
             _voiceOverride.AddPlayer(_localPlayer);
 
             Assert.AreNotEqual(AudioReverbPreset.Auditorium, _betterPlayerAudio.mainAudioReverbFilter.reverbPreset);
-            _betterPlayerAudio.UpdateOtherPlayer(_localPlayer,_player2);
+            _betterPlayerAudio.CanUpdate = true;
+            _betterPlayerAudio.PostLateUpdate();
             Assert.AreEqual(AudioReverbPreset.Auditorium, _betterPlayerAudio.mainAudioReverbFilter.reverbPreset);
         }
 

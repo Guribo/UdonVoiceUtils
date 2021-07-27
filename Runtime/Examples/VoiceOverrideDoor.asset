@@ -108,8 +108,8 @@ MonoBehaviour:
       Data: 7|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: Direction vector in this GameObjects local space in which the player has
-        to pass through the trigger to leave the override zone
+      Data: Direction vector in this GameObjects local space in which the player
+        has to pass through the trigger to leave the override zone
     - Name: 
       Entry: 8
       Data: 
