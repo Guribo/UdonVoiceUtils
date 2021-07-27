@@ -235,8 +235,8 @@ MonoBehaviour:
       Data: 16|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: Use when the box collider size can change dynamically which requires updating
-        the echo/reverb in the room, requires the gameobject to be not static
+      Data: Use when the box collider size can change dynamically which requires
+        updating the echo/reverb in the room, requires the gameobject to be not static
     - Name: 
       Entry: 8
       Data: 

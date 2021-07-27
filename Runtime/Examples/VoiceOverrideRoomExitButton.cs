@@ -29,11 +29,22 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             ExitRoom(Networking.LocalPlayer);
         }
 
-        private void ExitRoom(VRCPlayerApi playerApi)
+
+        #region internal
+
+        internal void ExitRoom(VRCPlayerApi playerApi)
         {
-            if (!(udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "overrideZoneActivator invalid", this)
-                  && udonDebug.Assert(Utilities.IsValid(playerApi), "player invalid", this)
-                  && playerApi.isLocal))
+            if (!udonDebug.Assert(Utilities.IsValid(playerApi), "player invalid", this))
+            {
+                return;
+            }
+            
+            if (!udonDebug.Assert(playerApi.isLocal, "player not local", this))
+            {
+                return;
+            }
+            
+            if (!udonDebug.Assert(Utilities.IsValid(voiceOverrideRoom), "voiceOverrideRoom invalid", this))
             {
                 return;
             }
@@ -44,5 +55,7 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
                     this);
             }
         }
+        
+        #endregion
     }
 }

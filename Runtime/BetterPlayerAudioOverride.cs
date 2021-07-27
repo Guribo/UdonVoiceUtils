@@ -220,11 +220,17 @@ namespace Guribo.UdonBetterAudio.Runtime
         public UdonDebug udonDebug;
         public PlayerList playerList;
 
+
         #endregion
 
+        #region Readonly Properties
+
+        #endregion
+        
         #region State
 
-        private bool _hasStarted;
+        internal bool HasStarted;
+
 
         #endregion
 
@@ -232,7 +238,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public void OnEnable()
         {
-            if (!_hasStarted)
+            if (!HasStarted)
             {
                 Start();
             }
@@ -255,30 +261,30 @@ namespace Guribo.UdonBetterAudio.Runtime
                 {
                     continue;
                 }
-
-                if (playerToAffect.isLocal)
-                {
-                    ActivateReverb();
-                    Notify(localPlayerAddedListeners,localPlayerAddedEvent);
-                }
                 
                 betterPlayerAudio.OverridePlayerSettings(this, playerToAffect);
+                
+                if (playerToAffect.isLocal)
+                {
+                    // ActivateReverb();
+                    Notify(localPlayerAddedListeners,localPlayerAddedEvent);
+                }
             }
         }
 
         public void Start()
         {
-            if (_hasStarted)
+            if (HasStarted)
             {
                 return;
             }
 
-            _hasStarted = true;
+            HasStarted = true;
             if (Utilities.IsValid(optionalReverb))
             {
                 optionalReverb.gameObject.SetActive(false);
             }
-            DeactivateReverb();
+            // DeactivateReverb();
         }
 
         public void OnDisable()
@@ -302,15 +308,15 @@ namespace Guribo.UdonBetterAudio.Runtime
                     continue;
                 }
 
-                if (playerToRemove.isLocal)
-                {
-                    DeactivateReverb();
-                    Notify(localPlayerRemovedListeners,localPlayerRemovedEvent);
-                }
-
                 if (!betterPlayerAudio.ClearPlayerOverride(this, playerToRemove))
                 {
                     playerList.DiscardInvalid();
+                }
+                
+                if (playerToRemove.isLocal)
+                {
+                    // DeactivateReverb();
+                    Notify(localPlayerRemovedListeners,localPlayerRemovedEvent);
                 }
             }
         }
@@ -328,7 +334,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// <returns>true if the player was added/was already added before</returns>
         public bool AddPlayer(VRCPlayerApi playerToAffect)
         {
-            if (!_hasStarted)
+            if (!HasStarted)
             {
                 Start();
             }
@@ -354,17 +360,12 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return true;
             }
 
-            if (playerToAffect.isLocal)
-            {
-                ActivateReverb();
-                
-                Notify(localPlayerAddedListeners, localPlayerAddedEvent);
-            }
-
             if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
             {
                 return false;
             }
+
+            var success = true;
 
             if (!betterPlayerAudio.OverridePlayerSettings(this, playerToAffect))
             {
@@ -375,13 +376,24 @@ namespace Guribo.UdonBetterAudio.Runtime
                     {
                         Debug.LogWarning("Player list contained invalid player (has left the world)");
                     }
-                    return listContainedInvalidPlayer;
+
+                    success = listContainedInvalidPlayer;
                 }
-                Debug.LogWarning($"Player {playerToAffect.displayName} already affected by {gameObject.name} (caused by ownership race)");
-                return false;
+                else
+                {
+                    Debug.LogWarning(
+                        $"Player {playerToAffect.displayName} already affected by {gameObject.name} (caused by ownership race)");
+                    success = false;
+                }
             }
 
-            return true;
+            if (playerToAffect.isLocal)
+            {
+                // ActivateReverb();
+                Notify(localPlayerAddedListeners, localPlayerAddedEvent);
+            }
+
+            return success;
         }
 
         
@@ -415,26 +427,28 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return true;
             }
 
-            if (playerToRemove.isLocal)
-            {
-                DeactivateReverb();
-                
-                Notify(localPlayerRemovedListeners, localPlayerRemovedEvent);
-            }
-
             if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "PlayerAudio invalid", this))
             {
                 return false;
             }
 
+
+            var success = true;
+            
             // make the controller apply default settings to the player again
             if (!betterPlayerAudio.ClearPlayerOverride(this, playerToRemove))
             {
                 var oldLength = playerList.players.Length;
-                return oldLength > playerList.DiscardInvalid();
+                success =  oldLength > playerList.DiscardInvalid();
+            }
+            
+            if (playerToRemove.isLocal)
+            {
+                // DeactivateReverb();
+                Notify(localPlayerRemovedListeners, localPlayerRemovedEvent);
             }
 
-            return true;
+            return success;
         }
 
         /// <summary>
@@ -498,8 +512,6 @@ namespace Guribo.UdonBetterAudio.Runtime
             
             if (IsActiveAndEnabled())
             {
-                DeactivateReverb();
-
                 if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "playerAudio invalid", this))
                 {
                     return false;
@@ -512,6 +524,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                         betterPlayerAudio.ClearPlayerOverride(this, VRCPlayerApi.GetPlayerById(affectedPlayer));
                     }
                 }
+                // DeactivateReverb();
             }
 
             playerList.Clear();
@@ -521,39 +534,42 @@ namespace Guribo.UdonBetterAudio.Runtime
         #endregion
 
         #region internal
-        
+
         internal bool IsActiveAndEnabled()
         {
+#if UNITY_INCLUDE_TESTS
+            return Utilities.IsValid(this) && enabled;
+#endif
             return Utilities.IsValid(this) && enabled && gameObject.activeInHierarchy;
         }
 
-        private void DeactivateReverb()
-        {
-            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
-            {
-                return;
-            }
-            var activeOverride = betterPlayerAudio.GetMaxPriorityOverride(Networking.LocalPlayer);
-            if (activeOverride == null
-                || activeOverride == this)
-            {
-                betterPlayerAudio.UseReverbSettings(null);
-            }
-        }
+        // private void DeactivateReverb()
+        // {
+        //     if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
+        //     {
+        //         return;
+        //     }
+        //     var activeOverride = betterPlayerAudio.GetMaxPriorityOverride(Networking.LocalPlayer);
+        //     if (activeOverride == null
+        //         || activeOverride == this)
+        //     {
+        //         betterPlayerAudio.UseReverbSettings(null);
+        //     }
+        // }
 
-        private void ActivateReverb()
-        {
-            if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
-            {
-                return;
-            }
-            var activeOverride = betterPlayerAudio.GetMaxPriorityOverride(Networking.LocalPlayer);
-            if (activeOverride == null
-                || activeOverride == this)
-            {
-                betterPlayerAudio.UseReverbSettings(optionalReverb);
-            }
-        }
+        // private void ActivateReverb()
+        // {
+        //     if (!udonDebug.Assert(Utilities.IsValid(betterPlayerAudio), "betterPlayerAudio invalid", this))
+        //     {
+        //         return;
+        //     }
+        //     var activeOverride = betterPlayerAudio.GetMaxPriorityOverride(Networking.LocalPlayer);
+        //     if (activeOverride == null
+        //         || activeOverride == this)
+        //     {
+        //         betterPlayerAudio.UseReverbSettings(optionalReverb);
+        //     }
+        // }
 
         internal void Notify(UdonSharpBehaviour[] listeners, string eventName)
         {

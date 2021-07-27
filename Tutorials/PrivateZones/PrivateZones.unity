@@ -2796,6 +2796,11 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
       value: 
       objectReference: {fileID: 1263132452186841291}
+    - target: {fileID: 3277690005381943108, guid: 2381ba38c13a5a14598af1d394d2deb6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3277690005653271082, guid: 2381ba38c13a5a14598af1d394d2deb6,
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.size
@@ -3111,7 +3116,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   launchedFromSDKPipeline: 0
   completedSDKPipeline: 0
-  blueprintId: 
+  blueprintId: wrld_203b0140-4460-4e10-ae9a-2e706d913d2a
   contentType: 1
   assetBundleUnityVersion: 
   fallbackStatus: 0
@@ -3315,6 +3320,11 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
       value: 
       objectReference: {fileID: 4394173980256519051}
+    - target: {fileID: 4394173981196579085, guid: 14e5849604d73b544b29ed7ab85cc44b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8469762286458356283, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.size
@@ -3811,6 +3821,11 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
       objectReference: {fileID: 953707638}
+    - target: {fileID: 6811842672724899570, guid: a10555fbb66310a4985782d26478c6e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a10555fbb66310a4985782d26478c6e3, type: 3}
 --- !u!114 &6811842672727064316 stripped
@@ -4083,6 +4098,11 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[0]
       value: 
       objectReference: {fileID: 1224907329}
+    - target: {fileID: 6837954141252476441, guid: a5aa91a94f87673429df2204a89c3589,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7224542388257086493, guid: a5aa91a94f87673429df2204a89c3589,
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.size

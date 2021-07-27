@@ -8,10 +8,9 @@
         "Guribo.UdonUtils.Tests.Editor",
         "VRC.Udon",
         "Guribo.UdonUtils.Editor",
-        "Guribo.UdonUtils.Tests.Runtime"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "Guribo.UdonUtils.Tests.Runtime",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [
         "Editor"
@@ -19,7 +18,14 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "VRCSDKBase.dll"
+    ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

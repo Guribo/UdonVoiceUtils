@@ -403,8 +403,8 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         #region State
 
-        private bool _receivedStart;
-        private bool _canUpdate;
+        internal bool ReceivedStart;
+        internal bool CanUpdate;
         private bool _isReallyOwner;
         private int _playerIndex;
         private VRCPlayerApi[] _players = new VRCPlayerApi[1];
@@ -413,6 +413,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         private BetterPlayerAudioOverrideList[] _playerOverrideLists;
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         private int _serializationRequests;
+        internal BetterPlayerAudioOverride LocalOverride;
 
         #endregion
 
@@ -421,12 +422,10 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public void OnEnable()
         {
-            Debug.Log($"[<color=#008000>BetterAudio</color>] OnEnable", this);
-
-            if (_receivedStart)
+            if (ReceivedStart)
             {
                 // don't wait for all players to load as they should be all loaded already
-                _canUpdate = true;
+                CanUpdate = true;
             }
         }
 
@@ -443,9 +442,55 @@ namespace Guribo.UdonBetterAudio.Runtime
             EnableProcessingDelayed(startDelay);
         }
 
+        public override void PostLateUpdate()
+        {
+            if (!CanUpdate)
+            {
+                return;
+            }
+
+            // skip local player
+            var localPlayer = Networking.LocalPlayer;
+            if (!Utilities.IsValid(localPlayer))
+            {
+                return;
+            }
+            
+            var newLocalOverride = localPlayerOverrideList.GetMaxPriority();
+            LocalOverride = UpdateAudioFilters(newLocalOverride, LocalOverride);
+
+            var playerCount = UpdatePlayerList();
+            if (playerCount < 2)
+            {
+                return;
+            }
+
+            var pendingPlayerUpdates = GetPendingPlayerUpdates(playerCount);
+            for (var playerUpdate = 0; playerUpdate < pendingPlayerUpdates; ++playerUpdate)
+            {
+                var otherPlayer = GetNextPlayer(playerCount);
+                if (!Utilities.IsValid(otherPlayer))
+                {
+                    // this should never be the case!!!
+                    continue;
+                }
+
+                UpdateOtherPlayer(localPlayer, otherPlayer);
+            }
+        }
+
+        internal VRCPlayerApi GetNextPlayer(int playerCount)
+        {
+            _playerIndex = (_playerIndex + 1) % playerCount;
+            var otherPlayer = _players[_playerIndex];
+            return otherPlayer;
+        }
+
+        #endregion
+        
         public void EnableProcessingDelayed(float delay)
         {
-            SendCustomEventDelayedSeconds("EnableProcessing", 10f);
+            SendCustomEventDelayedSeconds(nameof(EnableProcessing), 10f);
         }
 
         public void EnableProcessing()
@@ -458,47 +503,10 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return;
             }
 
-            _canUpdate = true;
+            CanUpdate = true;
         }
 
-        private void LateUpdate()
-        {
-            if (!_canUpdate)
-            {
-                return;
-            }
-
-            // skip local player
-            var localPlayer = Networking.LocalPlayer;
-            if (!Utilities.IsValid(localPlayer))
-            {
-                return;
-            }
-
-            var playerCount = UpdatePlayerList();
-            if (playerCount < 2)
-            {
-                return;
-            }
-
-            var pendingPlayerUpdates = GetPendingPlayerUpdates(playerCount);
-            for (var playerUpdate = 0; playerUpdate < pendingPlayerUpdates; ++playerUpdate)
-            {
-                _playerIndex = (_playerIndex + 1) % playerCount;
-                var otherPlayer = _players[_playerIndex];
-                if (otherPlayer == null)
-                {
-                    // this should never be the case!!!
-                    continue;
-                }
-
-                UpdatePlayer(localPlayer, otherPlayer);
-            }
-        }
-
-        #endregion
-
-        private void UpdatePlayer(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer)
+        internal void UpdateOtherPlayer(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer)
         {
             if (!Utilities.IsValid(otherPlayer)
                 || otherPlayer.playerId == localPlayer.playerId
@@ -509,25 +517,25 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             var playerOverride = GetMaxPriorityOverride(otherPlayer);
 
+
+
+            var privacyChannelId = -1;
+            var muteOutsiders = false;
+            var disallowListeningToChannel = false;
+
+            if (Utilities.IsValid(LocalOverride))
+            {
+                privacyChannelId = LocalOverride.privacyChannelId;
+                muteOutsiders = LocalOverride.muteOutsiders;
+                disallowListeningToChannel = LocalOverride.disallowListeningToChannel;
+            }
+            
             var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
             var otherPlayerHead = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
             var listenerToPlayer = otherPlayerHead.position - listenerHead.position;
             var direction = listenerToPlayer.normalized;
             var distance = listenerToPlayer.magnitude;
-
-
-            var localPlayerOverride = localPlayerOverrideList.Get(0);
-            var privacyChannelId = -1;
-            var muteOutsiders = false;
-            var disallowListeningToChannel = false;
-
-            if (Utilities.IsValid(localPlayerOverride))
-            {
-                privacyChannelId = localPlayerOverride.privacyChannelId;
-                muteOutsiders = localPlayerOverride.muteOutsiders;
-                disallowListeningToChannel = localPlayerOverride.disallowListeningToChannel;
-            }
 
             var localPlayerInPrivateChannel = privacyChannelId != -1;
             if (Utilities.IsValid(playerOverride))
@@ -560,6 +568,8 @@ namespace Guribo.UdonBetterAudio.Runtime
                 distance,
                 otherPlayerHead);
         }
+
+
 
         public bool OtherPlayerWithOverrideCanBeHeard(BetterPlayerAudioOverride playerOverride,
             bool localPlayerInPrivateChannel, int currentPrivacyChannel, bool muteOutsiders,
@@ -718,9 +728,9 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// </summary>
         public void Initialize()
         {
-            if (!_receivedStart)
+            if (!ReceivedStart)
             {
-                _receivedStart = true;
+                ReceivedStart = true;
                 ResetToDefault();
             }
         }
@@ -1561,7 +1571,7 @@ namespace Guribo.UdonBetterAudio.Runtime
             {
                 return udonDebug.Assert(Utilities.IsValid(localPlayerOverrideList), "localPlayerOverrideList invalid",
                            this)
-                       && Utilities.IsValid(localPlayerOverrideList.Get(0));
+                       && Utilities.IsValid(localPlayerOverrideList.GetMaxPriority());
             }
 
             var noOverridesAvailable = PlayersToOverride == null || PlayersToOverride.Length == 0;
@@ -1587,7 +1597,7 @@ namespace Guribo.UdonBetterAudio.Runtime
                     return null;
                 }
 
-                return localPlayerOverrideList.Get(0);
+                return localPlayerOverrideList.GetMaxPriority();
             }
 
             var playersWithOverride = PlayersToOverride != null && PlayersToOverride.Length > 0;
@@ -1601,7 +1611,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
             if (index > -1 && index < _playerOverrideLists.Length && Utilities.IsValid(_playerOverrideLists[index]))
             {
-                return _playerOverrideLists[index].Get(0);
+                return _playerOverrideLists[index].GetMaxPriority();;
             }
 
             return null;
@@ -1629,7 +1639,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// 
         /// </summary>
         /// <param name="audioReverbFilter">Clears the reverb settings when null, otherwise copies and applies the values</param>
-        public void UseReverbSettings(AudioReverbFilter audioReverbFilter)
+        internal void UseReverbSettings(AudioReverbFilter audioReverbFilter)
         {
             if (!udonDebug.Assert(Utilities.IsValid(mainAudioReverbFilter), "mainAudioReverbFilter invalid", this))
             {
@@ -1642,9 +1652,11 @@ namespace Guribo.UdonBetterAudio.Runtime
                 mainAudioReverbFilter.reverbPreset = AudioReverbPreset.Off;
                 return;
             }
-
-
+            
             var newPreset = audioReverbFilter.reverbPreset;
+            audioReverbFilter.enabled = true;
+            audioReverbFilter.gameObject.SetActive(true);
+
             mainAudioReverbFilter.reverbPreset = newPreset;
             var doesNotNeedToCopyCustomSettings = newPreset != AudioReverbPreset.User;
             if (doesNotNeedToCopyCustomSettings)
@@ -1666,6 +1678,27 @@ namespace Guribo.UdonBetterAudio.Runtime
             mainAudioReverbFilter.reverbDelay = audioReverbFilter.reverbDelay;
             mainAudioReverbFilter.reverbLevel = audioReverbFilter.reverbLevel;
             mainAudioReverbFilter.decayHFRatio = audioReverbFilter.decayHFRatio;
+        }
+
+        #endregion
+
+        #region internal
+
+        internal BetterPlayerAudioOverride UpdateAudioFilters(BetterPlayerAudioOverride newOverride, BetterPlayerAudioOverride oldOverride)
+        {
+            if (newOverride == oldOverride)
+            {
+                return newOverride;
+            }
+
+            if (Utilities.IsValid(newOverride))
+            {
+                UseReverbSettings(newOverride.optionalReverb);
+                return newOverride;
+            }
+            
+            UseReverbSettings(null);
+            return null;
         }
 
         #endregion
