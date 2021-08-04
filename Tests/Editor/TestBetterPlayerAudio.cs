@@ -991,7 +991,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
         [Test]
         public void UpdateAudioFilters_BothNotNullEqual()
         {
-Assert.AreEqual(_voiceOverride,
+            Assert.AreEqual(_voiceOverride,
                 _betterPlayerAudio.UpdateAudioFilters(_voiceOverride, _voiceOverride));
         }
 

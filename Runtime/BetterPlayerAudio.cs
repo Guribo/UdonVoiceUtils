@@ -427,11 +427,47 @@ namespace Guribo.UdonBetterAudio.Runtime
                 // don't wait for all players to load as they should be all loaded already
                 CanUpdate = true;
             }
+
+            EnableCurrentReverbSettings();
         }
 
         public void OnDisable()
         {
             Debug.Log($"[<color=#008000>BetterAudio</color>] OnDisable", this);
+
+            UseReverbSettings(null);
+            ResetAllPlayerVoices();
+        }
+
+        public void OnDestroy()
+        {
+            Debug.Log($"[<color=#008000>BetterAudio</color>] OnDestroy", this);
+            UseReverbSettings(null);
+            ResetAllPlayerVoices();
+        }
+
+        internal void ResetAllPlayerVoices()
+        {
+            var playerCount = UpdatePlayerList();
+            for (var i = 0; i < playerCount; i++)
+            {
+                var playerApi = _players[i];
+                if (!Utilities.IsValid(playerApi))
+                {
+                    continue;
+                }
+
+                UpdateVoiceAudio(playerApi, 1f, true, 15f, 25, 0, 0);
+            }
+        }
+
+        internal void EnableCurrentReverbSettings()
+        {
+            var betterPlayerAudioOverride = GetMaxPriorityOverride(Networking.LocalPlayer);
+            if (Utilities.IsValid(betterPlayerAudioOverride))
+            {
+                UseReverbSettings(betterPlayerAudioOverride.optionalReverb);
+            }
         }
 
         public void Start()

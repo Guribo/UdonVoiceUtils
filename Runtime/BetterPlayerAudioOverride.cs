@@ -229,7 +229,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         
         #region State
 
-        internal bool HasStarted;
+        internal bool HasStarted = false;
 
 
         #endregion
@@ -238,10 +238,7 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public void OnEnable()
         {
-            if (!HasStarted)
-            {
-                Start();
-            }
+            Start();
 
             if (!udonDebug.Assert(playerList, "playerList invalid", this))
             {

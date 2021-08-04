@@ -1,4 +1,5 @@
-﻿using Guribo.UdonUtils.Runtime.Common.Networking;
+﻿using System.Globalization;
+using Guribo.UdonUtils.Runtime.Common.Networking;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -10,10 +11,41 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
     public class PickupMicrophone : UdonSharpBehaviour
     {
         protected const int NoUser = -1;
+        
+        [HideInInspector, FieldChangeCallback(nameof(PlayerIdProperty))]
+        public int playerIdField = NoUser;
 
-        [HideInInspector]
-        public int playerId = NoUser;
-        protected int OldMicUserId = NoUser;
+        public int PlayerIdProperty
+        {
+            set
+            {
+                var valueUnchanged = playerIdField == value;
+                if (valueUnchanged)
+                {
+                    return;
+                }
+
+                var oldPlayerId = playerIdField;
+                playerIdField = value;
+                
+                CleanUpOldUser(oldPlayerId);
+                NewUserStartUsingMic(playerIdField);
+
+                if (!(Utilities.IsValid(syncedInteger)
+                      && Networking.IsOwner(gameObject)))
+                {
+                    return;
+                }
+
+                if (!Networking.IsOwner(syncedInteger.gameObject))
+                {
+                    Networking.SetOwner(Networking.LocalPlayer, syncedInteger.gameObject);
+                }
+
+                syncedInteger.IntValueProperty = value;
+            }
+            get { return playerIdField; }
+        }
 
         #region Mandatory references
 
@@ -33,43 +65,30 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             }
 
             TakeOwnership(localPlayer);
-            playerId = localPlayer.playerId;
-            SynchronizePlayers();
+            PlayerIdProperty = localPlayer.playerId;
         }
 
         public override void OnDrop()
         {
-            playerId = NoUser;
-            SynchronizePlayers();
+            if (Networking.IsOwner(gameObject))
+            {
+                PlayerIdProperty = NoUser;
+            }
         }
 
         private void OnEnable()
         {
-            NewUserStartUsingMic(playerId);
+            NewUserStartUsingMic(playerIdField);
         }
 
         private void OnDisable()
         {
-            CleanUpOldUser(playerId);
+            CleanUpOldUser(playerIdField);
         }
 
         private void OnDestroy()
         {
-            CleanUpOldUser(playerId);
-        }
-
-        /// <summary>
-        /// if the current user has changed switch let only the new user be affected by the mic
-        /// </summary>
-        public void UpdateMicUser()
-        {
-            if (playerId != OldMicUserId)
-            {
-                CleanUpOldUser(OldMicUserId);
-                NewUserStartUsingMic(playerId);
-            }
-
-            OldMicUserId = playerId;
+            CleanUpOldUser(playerIdField);
         }
 
         /// <summary>
@@ -130,16 +149,6 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
             {
                 betterPlayerAudioOverride.AddPlayer(newMicUser);
             }
-        }
-
-        private void SynchronizePlayers()
-        {
-            if (!Utilities.IsValid(syncedInteger))
-            {
-                return;
-            }
-
-            syncedInteger.UpdateForAll();
         }
     }
 }
