@@ -5,9 +5,9 @@ Everything here work in progress and will evolve with time.
 
 Currently released are only the BetterPlayerAudio parts.
 
-You can find the v0.7_beta release here: https://github.com/Guribo/BetterAudio/releases/tag/BPAv0.7_beta  
->*In order to use it you need the VRChat Udon SDK, [UdonSharp by Merlin](https://github.com/MerlinVR/UdonSharp/wiki/setup) and Unity 2018.4 (soon Unity 2019 as VRChat is about to update).*
->*Afterwards simply import the v0.7_beta unitypackage and have a look at the example scene `Assets/Guribo/UdonBetterAudio/Tutorials/PrivateZones/PrivateZones.unity`.*
+You can find the v0.7 release here: https://github.com/Guribo/BetterAudio/releases/tag/BPAv0.7
+>*In order to use it you need the VRChat Udon SDK, [UdonSharp by Merlin](https://github.com/MerlinVR/UdonSharp/wiki/setup) and Unity 2019.4.*
+>*Afterwards simply import the v0.7 unitypackage and have a look at the example scene `Assets/Guribo/UdonBetterAudio/Examples/PrivateZones/PrivateZones.unity`.*
 
 **Please check out the [Wiki](https://github.com/Guribo/BetterAudio/wiki) for additional information on the available components, features and prefabs.**
 
@@ -30,3 +30,4 @@ A second version the focuses on audio effects in worlds will be released later, 
 ## References
 * [UdonSharp by Merlin](https://github.com/MerlinVR/UdonSharp)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
+
