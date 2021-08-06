@@ -123,10 +123,10 @@ MonoBehaviour:
   - {fileID: 8469762286458356283}
   - {fileID: 4394173980847611628}
   publicVariablesSerializationDataFormat: 0
---- !u!114 &4371215319643036378
+--- !u!114 &7113110071099631690
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: -666658758840176982, guid: 5e02bd79ae181d748aaad996ae881edf,
+  m_CorrespondingSourceObject: {fileID: 2927612042692631610, guid: 5e02bd79ae181d748aaad996ae881edf,
     type: 3}
   m_PrefabInstance: {fileID: 5338489903933830256}
   m_PrefabAsset: {fileID: 0}
@@ -142,7 +142,7 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 0}
     SerializedBytesString: 
-    Prefab: {fileID: -666658758840176982, guid: 5e02bd79ae181d748aaad996ae881edf,
+    Prefab: {fileID: 2927612042692631610, guid: 5e02bd79ae181d748aaad996ae881edf,
       type: 3}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
@@ -176,37 +176,12 @@ MonoBehaviour:
   localPlayerRemovedListeners: []
   localPlayerRemovedEvent: LocalPlayerRemoved
   betterPlayerAudio: {fileID: 0}
-  udonDebug: {fileID: 3778596321987323246}
-  playerList: {fileID: 4792399811900204242}
---- !u!114 &3778596321987323246
+  udonDebug: {fileID: 0}
+  playerList: {fileID: 0}
+--- !u!114 &2970921028274936405
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 9108078474741600542, guid: 5e02bd79ae181d748aaad996ae881edf,
-    type: 3}
-  m_PrefabInstance: {fileID: 5338489903933830256}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fa968b472ba21e43aa479f0eb416d85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 0
-    SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 685397315190986680}
-    SerializedBytesString: 
-    Prefab: {fileID: 9108078474741600542, guid: 5e02bd79ae181d748aaad996ae881edf,
-      type: 3}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
-  _isValidForAutoCopy: 0
---- !u!114 &5621513623177564729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 294282720743827017, guid: 5e02bd79ae181d748aaad996ae881edf,
+  m_CorrespondingSourceObject: {fileID: -2077016329039319515, guid: 5e02bd79ae181d748aaad996ae881edf,
     type: 3}
   m_PrefabInstance: {fileID: 5338489903933830256}
   m_PrefabAsset: {fileID: 0}
@@ -222,7 +197,8 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 8469762286458356283}
     SerializedBytesString: 
-    Prefab: {fileID: 294282720743827017, guid: 5e02bd79ae181d748aaad996ae881edf, type: 3}
+    Prefab: {fileID: -2077016329039319515, guid: 5e02bd79ae181d748aaad996ae881edf,
+      type: 3}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
@@ -232,6 +208,31 @@ MonoBehaviour:
   playerOverride: {fileID: 0}
   syncedIntegerArray: {fileID: 0}
   udonDebug: {fileID: 0}
+--- !u!114 &6181499894661440422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: -6926754826762790954, guid: 5e02bd79ae181d748aaad996ae881edf,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338489903933830256}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa968b472ba21e43aa479f0eb416d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 0
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 685397315190986680}
+    SerializedBytesString: 
+    Prefab: {fileID: -6926754826762790954, guid: 5e02bd79ae181d748aaad996ae881edf,
+      type: 3}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  _isValidForAutoCopy: 0
 --- !u!1 &4394173979649967082
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,10 +396,10 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000005, y: 1, z: 1.0000005}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2495904240281814412
+--- !u!114 &6451796466016742778
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 7544967428533367292, guid: 5e02bd79ae181d748aaad996ae881edf,
+  m_CorrespondingSourceObject: {fileID: -7809449580601255670, guid: 5e02bd79ae181d748aaad996ae881edf,
     type: 3}
   m_PrefabInstance: {fileID: 5338489903933830256}
   m_PrefabAsset: {fileID: 0}
@@ -414,7 +415,7 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 0}
     SerializedBytesString: 
-    Prefab: {fileID: 7544967428533367292, guid: 5e02bd79ae181d748aaad996ae881edf,
+    Prefab: {fileID: -7809449580601255670, guid: 5e02bd79ae181d748aaad996ae881edf,
       type: 3}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
@@ -807,10 +808,10 @@ Transform:
   m_Father: {fileID: 1970462409111270600}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4792399811900204242
+--- !u!114 &7076723255113165209
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 618161331216437410, guid: 5e02bd79ae181d748aaad996ae881edf,
+  m_CorrespondingSourceObject: {fileID: -6331020912141787671, guid: 5e02bd79ae181d748aaad996ae881edf,
     type: 3}
   m_PrefabInstance: {fileID: 5338489903933830256}
   m_PrefabAsset: {fileID: 0}
@@ -826,7 +827,8 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 0}
     SerializedBytesString: 
-    Prefab: {fileID: 618161331216437410, guid: 5e02bd79ae181d748aaad996ae881edf, type: 3}
+    Prefab: {fileID: -6331020912141787671, guid: 5e02bd79ae181d748aaad996ae881edf,
+      type: 3}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
