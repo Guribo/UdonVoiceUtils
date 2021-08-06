@@ -53,6 +53,14 @@ namespace Guribo.UdonBetterAudio.Editor
                 "Assets/Guribo/UdonBetterAudio/Editor/BetterAudioSymbols.cs",
                 "Assets/Guribo/UdonBetterAudio/Editor/BetterPlayerAudioEditor.cs",
                 "Assets/Guribo/UdonBetterAudio/Editor/VoiceOverrideDoorEditor.cs",
+                "Assets/Guribo/UdonBetterAudio/Editor/VoiceOverrideRoomEditor.cs",
+                "Assets/Guribo/UdonBetterAudio/Editor/VoiceOverrideRoomEnterButtonEditor.cs",
+                "Assets/Guribo/UdonBetterAudio/Editor/VoiceOverrideRoomExitButtonEditor.cs",
+            };
+            
+            var examples = new List<string>()
+            {
+                "Assets/Guribo/UdonBetterAudio/Examples"
             };
 
             var materials = new List<string>()
@@ -82,8 +90,10 @@ namespace Guribo.UdonBetterAudio.Editor
                 "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/OpenDoorExample.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/PickupMicrophone.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/Pool.prefab",
+                "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/VoiceOverrideRoom.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/Examples/VoiceOverrideTriggerZone.prefab",
 
+                "Assets/Guribo/UdonBetterAudio/Prefabs/AutoPlayerRange.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/BetterPlayerAudio.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/BetterPlayerAudioController.prefab",
                 "Assets/Guribo/UdonBetterAudio/Prefabs/BetterPlayerAudioMenu.prefab",
@@ -112,6 +122,8 @@ namespace Guribo.UdonBetterAudio.Editor
                 "Assets/Guribo/UdonUtils/Runtime/Common/UdonMath.cs",
 
                 // better player audio
+                "Assets/Guribo/UdonBetterAudio/Runtime/Examples/AutoPlayerRange.asset",
+                "Assets/Guribo/UdonBetterAudio/Runtime/Examples/AutoPlayerRange.cs",
                 "Assets/Guribo/UdonBetterAudio/Runtime/Examples/PickupMicrophone.asset",
                 "Assets/Guribo/UdonBetterAudio/Runtime/Examples/PickupMicrophone.cs",
                 "Assets/Guribo/UdonBetterAudio/Runtime/Examples/VoiceOverrideDoor.asset",
@@ -135,11 +147,6 @@ namespace Guribo.UdonBetterAudio.Editor
                 "Assets/Guribo/UdonBetterAudio/Runtime/BetterPlayerAudioUiController.cs",
             };
 
-            var tutorials = new List<string>()
-            {
-                "Assets/Guribo/UdonBetterAudio/Tutorials"
-            };
-
             var etc = new List<string>()
             {
                 // udon utils
@@ -159,7 +166,7 @@ namespace Guribo.UdonBetterAudio.Editor
                 .Append(postProcessing)
                 .Append(prefabs)
                 .Append(runtime)
-                .Append(tutorials)
+                .Append(examples)
                 .Append(etc)
                 .ToArray();
         }

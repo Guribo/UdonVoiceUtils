@@ -51,7 +51,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
-        public float occlusionFactor = 0.7f;
+        public float occlusionFactor = 1f;
 
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultPlayerOcclusionFactor"/>
@@ -59,7 +59,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Range(0, 1)]
         [Tooltip(
             "Occlusion when a player is occluded by another player. A value of 1.0 means occlusion is off. A value of 0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible")]
-        public float playerOcclusionFactor = 0.85f;
+        public float playerOcclusionFactor = 1f;
 
         #endregion
 
@@ -72,7 +72,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet.")]
-        public float listenerDirectionality = 0.5f;
+        public float listenerDirectionality;
 
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultPlayerDirectionality"/>
@@ -80,7 +80,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         [Range(0, 1)]
         [Tooltip(
             "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener.")]
-        public float playerDirectionality = 0.3f;
+        public float playerDirectionality;
 
         #endregion
 
@@ -90,8 +90,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         public AudioReverbFilter optionalReverb;
 
         #endregion
-
-
+        
         #region Voice settings
 
         [Header("Voice settings")]
@@ -147,7 +146,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// <inheritdoc cref="BetterPlayerAudio.defaultAvatarNearRadius"/>
         /// </summary>
         [Tooltip("Max. distance at which player audio sources start to fall of in volume.")]
-        public float targetAvatarNearRadius = 40f;
+        public float targetAvatarNearRadius = 0f;
 
         /// <summary>
         /// <inheritdoc cref="BetterPlayerAudio.defaultAvatarFarRadius"/>
@@ -196,6 +195,7 @@ namespace Guribo.UdonBetterAudio.Runtime
         /// prevents the local player from listening to any other player in the same channel, can be used to talk to
         /// players in a private room without being able to hear what is going on inside
         /// </summary>
+        [Tooltip("Prevents the local player from listening to any other player in the same channel, can be used to talk to players in a private room without being able to hear what is going on inside")]
         public bool disallowListeningToChannel;
 
         #endregion
