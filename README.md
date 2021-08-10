@@ -1,7 +1,7 @@
 # BetterAudio
 'Better' audio for UDON (VRChat) based worlds.
 
-Everything here work in progress and will evolve with time.
+Everything here is work in progress and will evolve with time.
 
 Currently released are only the BetterPlayerAudio parts.
 
