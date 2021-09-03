@@ -1,6 +1,7 @@
 ﻿using Guribo.UdonBetterAudio.Runtime.Examples;
 using Guribo.UdonUtils.Tests.Runtime.Utils;
 using NUnit.Framework;
+using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
@@ -60,7 +61,7 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             _udonTestEnvironment.CreatePlayer();
             _udonTestEnvironment.CreatePlayer();
             
-           _autoPlayerRange.UpdatePlayers();
+           _autoPlayerRange.UpdatePlayerVoiceRange(false);
             
            VerifyVoiceRange();
         }
@@ -152,11 +153,36 @@ namespace Guribo.UdonBetterAudio.Tests.Editor
             Assert.Null(players[1]);
             Assert.AreEqual(5, _udonTestEnvironment.GetPlayerData(players[2]).voiceRangeFar);
         }
+
+        [Test]
+        public void Disable_ResetsRange()
+        {
+            _udonTestEnvironment.CreatePlayer();
+            _udonTestEnvironment.CreatePlayer();
+            _udonTestEnvironment.CreatePlayer();
+
+            _autoPlayerRange.OnPlayerJoined(_udonTestEnvironment.CreatePlayer());
+
+            VerifyVoiceRange();
+
+            _autoPlayerRange.OnDisable();
+
+            VerifyVoiceRange(true);
+            
+            _autoPlayerRange.OnEnable();
+            VerifyVoiceRange();
+        }
         
-        private void VerifyVoiceRange()
+        private void VerifyVoiceRange(bool expectDefault = false)
         {
             foreach (var vrcPlayerApi in VRCPlayerApi.AllPlayers)
             {
+                if (expectDefault)
+                {
+                    Assert.AreEqual(DefaultRange, _udonTestEnvironment.GetPlayerData(vrcPlayerApi).voiceRangeFar);
+                    continue;
+                }
+                Assert.AreNotEqual(DefaultRange, _udonTestEnvironment.GetPlayerData(vrcPlayerApi).voiceRangeFar);
                 Assert.AreEqual(_playerRangeMapping.Evaluate(VRCPlayerApi.AllPlayers.Count),
                     _udonTestEnvironment.GetPlayerData(vrcPlayerApi).voiceRangeFar);
             }
