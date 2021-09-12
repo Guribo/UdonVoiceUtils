@@ -1474,7 +1474,11 @@ namespace Guribo.UdonBetterAudio.Runtime
                 return true;
             }
 
+#if UNITY_INCLUDE_TESTS
+            DestroyImmediate(_playerOverrideLists[index]);            
+#else
             Destroy(_playerOverrideLists[index]);
+#endif
 
             PlayersToOverride[index] = int.MaxValue;
 

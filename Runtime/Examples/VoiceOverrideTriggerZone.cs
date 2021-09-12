@@ -1,4 +1,4 @@
-﻿using Guribo.UdonUtils.Runtime.Common;
+﻿using System;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -13,20 +13,12 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class VoiceOverrideTriggerZone : UdonSharpBehaviour
     {
-        #region Reverb settings
-
-        [Header("Reverb settings")]
-        public AudioReverbFilter optionalReverb;
-
-        #endregion
-        
         #region Mandatory references
 
         [Header("Mandatory references")]
         public BetterPlayerAudioOverride playerAudioOverride;
         
         #endregion
-        
 
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
         {
@@ -50,6 +42,17 @@ namespace Guribo.UdonBetterAudio.Runtime.Examples
 
             // remove player from the override
             playerAudioOverride.RemovePlayer(player);
+        }
+
+        internal void OnDisable()
+        {
+            if (!Utilities.IsValid(playerAudioOverride))
+            {
+                Debug.LogError("playerAudioOverride is invalid");
+                return;
+            }
+
+            playerAudioOverride.Clear();
         }
     }
 }
