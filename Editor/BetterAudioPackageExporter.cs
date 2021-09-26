@@ -60,7 +60,8 @@ namespace Guribo.UdonBetterAudio.Editor
             
             var examples = new List<string>()
             {
-                "Assets/Guribo/UdonBetterAudio/Examples"
+                "Assets/Guribo/UdonBetterAudio/Examples/PrivateZones/PrivateZones",
+                "Assets/Guribo/UdonBetterAudio/Examples/PrivateZones/PrivateZones.unity"
             };
 
             var materials = new List<string>()
