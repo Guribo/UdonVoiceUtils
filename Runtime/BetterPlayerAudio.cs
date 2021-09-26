@@ -415,6 +415,8 @@ namespace Guribo.UdonBetterAudio.Runtime
         private int _serializationRequests;
         internal BetterPlayerAudioOverride LocalOverride;
 
+        internal int UiLayerMask;
+
         #endregion
 
 
@@ -422,6 +424,8 @@ namespace Guribo.UdonBetterAudio.Runtime
 
         public void OnEnable()
         {
+            UiLayerMask = LayerMask.NameToLayer("UI");
+            
             if (ReceivedStart)
             {
                 // don't wait for all players to load as they should be all loaded already
@@ -552,9 +556,7 @@ namespace Guribo.UdonBetterAudio.Runtime
             }
 
             var playerOverride = GetMaxPriorityOverride(otherPlayer);
-
-
-
+            
             var privacyChannelId = -1;
             var muteOutsiders = false;
             var disallowListeningToChannel = false;
@@ -569,7 +571,73 @@ namespace Guribo.UdonBetterAudio.Runtime
             var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
             var otherPlayerHead = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
-            var listenerToPlayer = otherPlayerHead.position - listenerHead.position;
+            Vector3 listenerHeadPosition;
+            Quaternion listenerHeadRotation;
+            Vector3 otherHeadPosition;
+            Quaternion otherHeadRotation;
+
+            var validHeadTrackingData = listenerHead.position.sqrMagnitude > 0.001f;
+            if (validHeadTrackingData)
+            {
+                listenerHeadPosition = listenerHead.position;
+                listenerHeadRotation = listenerHead.rotation;
+            }
+            else
+            {
+                var playerPosition = localPlayer.GetPosition();
+                listenerHeadRotation = localPlayer.GetRotation();
+                var playerUp = listenerHeadRotation * Vector3.up;
+
+                // assume the max player height is 10m
+                var ray = new Ray(playerPosition + playerUp * 10f, -playerUp);
+                RaycastHit hitInfo;
+                if (Physics.Raycast(ray, out hitInfo, 10f, UiLayerMask, QueryTriggerInteraction.Ignore))
+                {
+                    // and assume that the player head position is at 80% of the capsule height
+                    listenerHeadPosition = Vector3.Lerp(playerPosition, hitInfo.point, 0.8f);
+                }
+                else
+                {
+                    const float assumedAvgAvatarHeadHeight = 1.25f;
+                    listenerHeadPosition = playerPosition + playerUp * assumedAvgAvatarHeadHeight;
+                }
+
+                // use a fallback value if the UI capsule was not hit
+            }
+
+            // create a fake head position/rotation (no pitch and roll)
+            var validHeadTrackingData1 = otherPlayerHead.position.sqrMagnitude > 0.001f;
+            if (validHeadTrackingData1)
+            {
+                otherHeadPosition = otherPlayerHead.position;
+                otherHeadRotation = otherPlayerHead.rotation;
+            }
+            else
+            {
+                var playerPosition1 = otherPlayer.GetPosition();
+                otherHeadRotation = otherPlayer.GetRotation();
+                var playerUp1 = otherHeadRotation * Vector3.up;
+
+                // assume the max player height is 10m
+                var ray1 = new Ray(playerPosition1 + playerUp1 * 10f, -playerUp1);
+                RaycastHit hitInfo1;
+                if (Physics.Raycast(ray1, out hitInfo1, 10f, UiLayerMask, QueryTriggerInteraction.Ignore))
+                {
+                    // and assume that the player head position is at 80% of the capsule height
+                    otherHeadPosition = Vector3.Lerp(playerPosition1, hitInfo1.point, 0.8f);
+                }
+                else
+                {
+                    const float assumedAvgAvatarHeadHeight1 = 1.25f;
+                    otherHeadPosition = playerPosition1 + playerUp1 * assumedAvgAvatarHeadHeight1;
+                }
+
+                // use a fallback value if the UI capsule was not hit
+            }
+
+            // create a fake head position/rotation (no pitch and roll)
+
+            var listenerToPlayer = otherHeadPosition - listenerHeadPosition;
             var direction = listenerToPlayer.normalized;
             var distance = listenerToPlayer.magnitude;
 
@@ -580,11 +648,12 @@ namespace Guribo.UdonBetterAudio.Runtime
                     muteOutsiders, disallowListeningToChannel))
                 {
                     ApplyAudioOverrides(otherPlayer,
-                        listenerHead,
+                        listenerHeadPosition,
+                        listenerHeadRotation,
                         direction,
                         distance,
                         playerOverride,
-                        otherPlayerHead);
+                        otherHeadRotation);
                     return;
                 }
 
@@ -599,12 +668,12 @@ namespace Guribo.UdonBetterAudio.Runtime
             }
 
             ApplyGlobalAudioSettings(otherPlayer,
-                listenerHead,
+                listenerHeadPosition,
+                listenerHeadRotation,
                 direction,
                 distance,
-                otherPlayerHead);
+                otherHeadRotation);
         }
-
 
 
         public bool OtherPlayerWithOverrideCanBeHeard(BetterPlayerAudioOverride playerOverride,
@@ -623,19 +692,22 @@ namespace Guribo.UdonBetterAudio.Runtime
             return playerInSamePrivateChannelAllowedToBeHeard || isOutsiderAndCanBeHeard;
         }
 
-        private void ApplyGlobalAudioSettings(VRCPlayerApi otherPlayer, VRCPlayerApi.TrackingData listenerHead,
+        private void ApplyGlobalAudioSettings(VRCPlayerApi otherPlayer,
+           Vector3 listenerHeadPosition,
+           Quaternion listenerHeadRotation,
             Vector3 direction,
-            float distance, VRCPlayerApi.TrackingData otherPlayerHead)
+            float distance,
+           Quaternion otherPlayerHeadRotation)
         {
-            var occlusionFactor = CalculateOcclusion(listenerHead.position,
+            var occlusionFactor = CalculateOcclusion(listenerHeadPosition,
                 direction,
                 distance,
                 OcclusionFactor,
                 PlayerOcclusionFactor,
                 occlusionMask);
 
-            var directionality = CalculateDirectionality(listenerHead.rotation,
-                otherPlayerHead.rotation,
+            var directionality = CalculateDirectionality(listenerHeadRotation,
+                otherPlayerHeadRotation,
                 direction,
                 ListenerDirectionality,
                 PlayerDirectionality);
@@ -668,19 +740,23 @@ namespace Guribo.UdonBetterAudio.Runtime
                 TargetAvatarVolumetricRadius);
         }
 
-        private void ApplyAudioOverrides(VRCPlayerApi otherPlayer, VRCPlayerApi.TrackingData listenerHead,
-            Vector3 direction, float distance,
-            BetterPlayerAudioOverride playerOverride, VRCPlayerApi.TrackingData otherPlayerHead)
+        private void ApplyAudioOverrides(VRCPlayerApi otherPlayer,
+            Vector3 listenerHeadPosition,
+            Quaternion listenerHeadRotation,
+            Vector3 direction,
+            float distance,
+            BetterPlayerAudioOverride playerOverride,
+            Quaternion otherHeadRotation)
         {
-            var occlusionFactor = CalculateOcclusion(listenerHead.position,
+            var occlusionFactor = CalculateOcclusion(listenerHeadPosition,
                 direction,
                 distance,
                 playerOverride.occlusionFactor,
                 playerOverride.playerOcclusionFactor,
                 playerOverride.occlusionMask);
 
-            var directionality = CalculateDirectionality(listenerHead.rotation,
-                otherPlayerHead.rotation,
+            var directionality = CalculateDirectionality(listenerHeadRotation,
+                otherHeadRotation,
                 direction,
                 playerOverride.listenerDirectionality,
                 playerOverride.playerDirectionality);
