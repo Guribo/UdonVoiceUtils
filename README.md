@@ -1,5 +1,5 @@
 # Udon Audio Tools
-Udon Audio Tools constains a collection of audio reltated scripts/components for UDON/Udon Sharp based VRChat worlds.
+Udon Audio Tools constains a collection of audio related scripts/components for UDON/Udon Sharp based VRChat worlds.
 
 Everything here is work in progress and may evolve with time.
 
