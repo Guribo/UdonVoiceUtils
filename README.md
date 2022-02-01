@@ -1,7 +1,9 @@
-# BetterAudio
-'Better' audio for UDON (VRChat) based worlds.
+# Udon Audio Tools
+Udon Audio Tools constains a collection of audio reltated scripts/components for UDON/Udon Sharp based VRChat worlds.
 
-Everything here is work in progress and will evolve with time.
+Everything here is work in progress and may evolve with time.
+
+Note: Components still called 'Better-' will be renamed to reflect the name change of the Repository!
 
 Currently released are only the BetterPlayerAudio parts.
 
