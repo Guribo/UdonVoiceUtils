@@ -21,5 +21,5 @@ It contains:
 - reverb filter support
 
 ## References
-* [UdonSharp by Merlin](https://github.com/MerlinVR/UdonSharp)
+* [UdonSharp](https://github.com/vrchat-community/UdonSharp)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
