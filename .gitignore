@@ -1,0 +1,9 @@
+/*
+!.git
+!.github
+!.gitignore
+!LICENSE
+!README.md
+!Packages/
+Packages/*
+!Packages/tlp.udonvoiceutils/*

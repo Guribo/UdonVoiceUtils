@@ -1,0 +1,19 @@
+{
+    "name": "TLP.UdonVoiceUtils.Runtime",
+    "references": [
+        "GUID:5ffc5658c86203349b4ced03f037df1f",
+        "GUID:3c1bc1267eab5884ebe7f232c09ee0d9",
+      "GUID:e1a67d4778ffb214390ddafa61c1a557",
+      "GUID:99835874ee819da44948776e0df4ff1d",
+      "GUID:f517afbee54d4354ea2bdd506dc4b3b8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
