@@ -54,7 +54,7 @@ Jump to [Installation](#installation) to get started... but I really recommend y
 
 - Midnight Rooftop by ImLeXz - *Occlusion, Voice directionality*
 - The Black Cat by spookyghostboo - *Voice directionality*
-- The Great Pub by owlboy - *Occlusion, Voice directionality*
+- The Great Pug by owlboy - *Occlusion, Voice directionality*
 - Pool Parlor by Toasterly - *Voice directionality, Audio zones*
 - ...
 
