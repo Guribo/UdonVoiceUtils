@@ -75,6 +75,8 @@ via the **VRChat Creator Companion**.
 
 ### Dependencies
 During installation via the creator companion the following dependencies are installed as well if not yet present:
+
+- [Cyan.PlayerObjectPool](https://cyanlaser.github.io/CyanPlayerObjectPool/) - repository needs to be added to VCC manually first via `Add to VCC` Button!
 - [tlp.udonutils](https://github.com/Guribo/UdonUtils)
 
 > Note that dependencies may install additional packages!
