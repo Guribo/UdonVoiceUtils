@@ -534,6 +534,16 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 5594746147273956008, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
+      propertyPath: OcclusionFactor
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594746147273956008, guid: 14e5849604d73b544b29ed7ab85cc44b,
+        type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594746147273956008, guid: 14e5849604d73b544b29ed7ab85cc44b,
+        type: 3}
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 5594746147273956008, guid: 14e5849604d73b544b29ed7ab85cc44b,

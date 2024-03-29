@@ -630,8 +630,8 @@ MonoBehaviour:
       Data: 44|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: A value of 1.0 means occlusion is off. A value of 0 will reduce the max.
-        audible range of the voice/player to the current distance and make him/her/them
+      Data: A value of 0.0 means occlusion is off. A value of 1.0 will reduce the
+        max. audible range of the voice/player to the current distance and make him/her/them
         in-audible
     - Name: 
       Entry: 8
@@ -707,9 +707,9 @@ MonoBehaviour:
       Data: 49|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: Occlusion when a player is occluded by another player. A value of 1.0
-        means occlusion is off. A value of 0 will reduce the max. audible range of
-        the voice/player to the current distance and make him/her/them in-audible
+      Data: Occlusion when a player is occluded by another player. A value of 0.0
+        means occlusion is off. A value of 1.0 will reduce the max. audible range
+        of the voice/player to the current distance and make him/her/them in-audible
     - Name: 
       Entry: 8
       Data: 
