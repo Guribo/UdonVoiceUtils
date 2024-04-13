@@ -1,7 +1,7 @@
 {
   "name": "tlp.udonvoiceutils",
   "displayName": "TLP UdonVoiceUtils",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "Contains a collection of player voice related scripts/components for VRChat worlds.",
   "gitDependencies": {},
   "legacyFolders": {
@@ -15,7 +15,7 @@
   },
   "vpmDependencies": {
     "com.vrchat.base": "^3.4.x",
-    "tlp.udonutils": "^2.0.x"
+    "tlp.udonutils": "2.0.x"
   },
   "unity": "2019.4"
 }
