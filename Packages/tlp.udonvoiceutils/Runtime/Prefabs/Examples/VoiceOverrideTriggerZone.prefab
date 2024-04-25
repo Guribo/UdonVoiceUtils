@@ -438,8 +438,8 @@ MonoBehaviour:
   OcclusionMask:
     serializedVersion: 2
     m_Bits: 2080
-  OcclusionFactor: 1
-  PlayerOcclusionFactor: 1
+  OcclusionFactor: 0
+  PlayerOcclusionFactor: 0
   ListenerDirectionality: 0
   PlayerDirectionality: 0
   OptionalReverb: {fileID: 0}
@@ -454,6 +454,30 @@ MonoBehaviour:
   TargetAvatarFarRadius: 40
   TargetAvatarGain: 10
   TargetAvatarVolumetricRadius: 0
+  HeightToVoiceCorrelation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 25
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   PrivacyChannelId: -1
   MuteOutsiders: 1
   DisallowListeningToChannel: 0
@@ -461,6 +485,7 @@ MonoBehaviour:
   LocalPlayerRemoved: {fileID: 0}
   PlayerAudioController: {fileID: 0}
   PlayerList: {fileID: 5980311142126231218}
+  OptionalPlayerBlackList: {fileID: 0}
 --- !u!114 &6755912258943613213
 MonoBehaviour:
   m_ObjectHideFlags: 0

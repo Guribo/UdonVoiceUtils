@@ -3412,8 +3412,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: MuteOutsiders
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: muteOutsiders
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: PrivacyChannelId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: VoiceDistanceFar
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
@@ -3432,6 +3447,11 @@ PrefabInstance:
       objectReference: {fileID: 1802856425}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: playerAudioController
       value: 
       objectReference: {fileID: 1802856425}
@@ -3439,7 +3459,8 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 1270766548403701893, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -3496,7 +3517,14 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5290129023590635087, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+    - target: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 6755912258943613209, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_RootOrder
@@ -3912,7 +3940,7 @@ Transform:
   - {fileID: 961355545}
   - {fileID: 897969960}
   m_Father: {fileID: 4733251580547593530}
-  m_RootOrder: 5
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!1 &142859649
 GameObject:
@@ -6236,6 +6264,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: PrivacyChannelId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: VoiceDistanceFar
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: privacyChannelId
       value: 1
       objectReference: {fileID: 0}
@@ -6251,6 +6289,11 @@ PrefabInstance:
       objectReference: {fileID: 1802856425}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: playerAudioController
       value: 
       objectReference: {fileID: 1802856425}
@@ -6258,7 +6301,8 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 1270766548403701893, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -6305,7 +6349,14 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5290129023590635087, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+    - target: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 6755912258943613209, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_RootOrder
@@ -11823,8 +11874,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: Priority
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: priority
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: VoiceGain
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
@@ -11833,8 +11894,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: VoiceDistanceFar
+      value: 1000000
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: voiceDistanceFar
       value: 1000000
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: EnableVoiceLowpass
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
@@ -11846,6 +11917,16 @@ PrefabInstance:
       propertyPath: PlayerAudioController
       value: 
       objectReference: {fileID: 1802856425}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: VoiceVolumetricRadius
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: playerAudioController
@@ -11860,7 +11941,8 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 1270766548403701893, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -11917,7 +11999,14 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5290129023590635087, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+    - target: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 6755912258943613209, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_RootOrder
@@ -14097,6 +14186,11 @@ PrefabInstance:
       propertyPath: PlayerAudioController
       value: 
       objectReference: {fileID: 1802856425}
+    - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: playerAudioController
@@ -23181,6 +23275,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 194444550172220977, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
+    - target: {fileID: 539934516628095183, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 539934516628095183, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 2884558250923139498, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -23274,6 +23374,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: e8ee3cd560594eb4a9708d0515c66400,
         type: 2}
+    - target: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: Priority
@@ -24112,6 +24218,11 @@ PrefabInstance:
       propertyPath: PlayerAudioController
       value: 
       objectReference: {fileID: 1802856425}
+    - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: playerAudioController
@@ -36110,6 +36221,16 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: PrivacyChannelId
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: VoiceDistanceFar
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: privacyChannelId
       value: 2
       objectReference: {fileID: 0}
@@ -36123,6 +36244,11 @@ PrefabInstance:
       propertyPath: PlayerAudioController
       value: 
       objectReference: {fileID: 1802856425}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -36186,6 +36312,12 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 5290129023590635087, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+    - target: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
     - target: {fileID: 6755912258943613209, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
@@ -41415,6 +41547,11 @@ PrefabInstance:
       propertyPath: PlayerAudioController
       value: 
       objectReference: {fileID: 1802856425}
+    - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: playerAudioController
@@ -54867,12 +55004,12 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 141708688}
   - {fileID: 1802856426}
   - {fileID: 711318379}
   - {fileID: 1244679476}
   - {fileID: 1369318691}
   - {fileID: 758975540}
-  - {fileID: 141708688}
   - {fileID: 418678402}
   - {fileID: 607369196}
   - {fileID: 381238962}
@@ -54986,6 +55123,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: VoiceDistanceFar
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: voiceDistanceFar
       value: 60
       objectReference: {fileID: 0}
@@ -54996,6 +55138,11 @@ PrefabInstance:
       objectReference: {fileID: 1802856425}
     - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
+      propertyPath: PlayerOcclusionFactor
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
       propertyPath: playerAudioController
       value: 
       objectReference: {fileID: 1802856425}
@@ -55003,7 +55150,8 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 474798353513844495, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 1270766548403701893, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -55070,7 +55218,14 @@ PrefabInstance:
         type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5290129023590635087, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+    - target: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5980311142126231218, guid: dc582d1d0bf2fc048b79255c2369a556,
+        type: 3}
     - target: {fileID: 6755912258943613209, guid: dc582d1d0bf2fc048b79255c2369a556,
         type: 3}
       propertyPath: m_RootOrder
