@@ -15,7 +15,7 @@
   },
   "vpmDependencies": {
     "com.vrchat.base": "^3.5.x",
-    "tlp.udonutils": "^3.0.x"
+    "tlp.udonutils": "3.0.x"
   },
   "unity": "2022.3"
 }
