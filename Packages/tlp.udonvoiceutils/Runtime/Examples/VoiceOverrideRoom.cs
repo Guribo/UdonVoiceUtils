@@ -16,14 +16,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         internal bool IsInZone;
 
         #region Mandatory references
-
         #region Teleport settings
-
+        [FormerlySerializedAs("optionalRespawnLocation")]
         [Header("Teleport settings")]
-        public Transform optionalRespawnLocation;
+        public Transform OptionalRespawnLocation;
 
-        public bool exitZoneOnRespawn = true;
-
+        [FormerlySerializedAs("exitZoneOnRespawn")]
+        public bool ExitZoneOnRespawn = true;
         #endregion
 
         [Header("Mandatory references")]
@@ -31,35 +30,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public PlayerAudioOverride PlayerAudioOverride;
 
         public PlayerList PlayerList;
-
         #endregion
 
         #region LifeCycle
-
-        protected virtual void OnEnable()
-        {
+        protected virtual void OnEnable() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnEnable));
 #endif
-
             #endregion
 
-            if (!Utilities.IsValid(PlayerList))
-            {
+            if (!Utilities.IsValid(PlayerList)) {
                 ErrorAndDisableGameObject($"{nameof(PlayerList)} invalid");
                 return;
             }
 
-            if (!Utilities.IsValid(PlayerAudioOverride))
-            {
+            if (!Utilities.IsValid(PlayerAudioOverride)) {
                 ErrorAndDisableGameObject($"{nameof(PlayerAudioOverride)} invalid");
                 return;
             }
 
-            if (!PlayerList.AddListenerVerified(this, nameof(RefreshPlayersInZone)))
-            {
+            if (!PlayerList.AddListenerVerified(this, nameof(RefreshPlayersInZone))) {
                 ErrorAndDisableGameObject($"Failed listening to {nameof(PlayerList)}");
                 return;
             }
@@ -67,49 +58,39 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             RefreshPlayersInZone();
         }
 
-        protected virtual void OnDisable()
-        {
+        protected virtual void OnDisable() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnDisable));
 #endif
-
             #endregion
 
             PlayerList.RemoveListener(this, true);
         }
-
         #endregion
 
         #region Internal
-
-        internal bool AddLocalPlayerToZone(VRCPlayerApi localPlayer)
-        {
+        internal bool AddLocalPlayerToZone(VRCPlayerApi localPlayer) {
 #if TLP_DEBUG
             DebugLog(nameof(AddLocalPlayerToZone));
 #endif
-            if (!Assert(Utilities.IsValid(localPlayer), "Player invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(localPlayer), "Player invalid", this)) {
                 return false;
             }
 
-            if (!Assert(localPlayer.isLocal, "Player is not local", this))
-            {
+            if (!Assert(localPlayer.isLocal, "Player is not local", this)) {
                 return false;
             }
 
-            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "PlayerAudioOverride invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "PlayerAudioOverride invalid", this)) {
                 return false;
             }
 
             if (!Assert(
-                    PlayerAudioOverride.AddPlayer(localPlayer),
-                    "Adding player to PlayerAudioOverride failed",
-                    this
-                ))
-            {
+                        PlayerAudioOverride.AddPlayer(localPlayer),
+                        "Adding player to PlayerAudioOverride failed",
+                        this
+                )) {
                 return false;
             }
 
@@ -119,16 +100,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             return true;
         }
 
-        internal bool RemoveLocalPlayerFromZone(VRCPlayerApi localPlayer)
-        {
+        internal bool RemoveLocalPlayerFromZone(VRCPlayerApi localPlayer) {
 #if TLP_DEBUG
             DebugLog(nameof(RemoveLocalPlayerFromZone));
 #endif
             if (!Assert(Utilities.IsValid(localPlayer), "Player invalid", this)
                 || !Assert(localPlayer.isLocal, "Player is not local", this)
                 || !Assert(Utilities.IsValid(PlayerAudioOverride), "Player list invalid", this)
-                || !PlayerAudioOverride.RemovePlayer(localPlayer))
-            {
+                || !PlayerAudioOverride.RemovePlayer(localPlayer)) {
                 return false;
             }
 
@@ -139,85 +118,69 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             return true;
         }
 
-        internal void TeleportPlayer(Transform target)
-        {
+        internal void TeleportPlayer(Transform target) {
 #if TLP_DEBUG
             DebugLog(nameof(TeleportPlayer));
 #endif
-            if (Utilities.IsValid(target))
-            {
+            if (Utilities.IsValid(target)) {
                 Networking.LocalPlayer.TeleportTo(
-                    target.position,
-                    target.rotation,
-                    VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,
-                    false
+                        target.position,
+                        target.rotation,
+                        VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,
+                        false
                 );
             }
         }
 
-        internal void UpdateNetwork(VRCPlayerApi localPlayer)
-        {
+        internal void UpdateNetwork(VRCPlayerApi localPlayer) {
 #if TLP_DEBUG
             DebugLog(nameof(UpdateNetwork));
 #endif
             var syncedIntegerArray = PlayerList.gameObject;
-            if (!Networking.IsOwner(syncedIntegerArray))
-            {
+            if (!Networking.IsOwner(syncedIntegerArray)) {
                 Networking.SetOwner(localPlayer, syncedIntegerArray);
             }
 
-            if (!PlayerList.RaiseRemoteOnly(this))
-            {
+            if (!PlayerList.RaiseRemoteOnly(this)) {
                 Error($"Failed to send current {nameof(PlayerList)}");
             }
         }
-
         #endregion
 
         #region Public
-
-        public override void OnPlayerRespawn(VRCPlayerApi player)
-        {
+        public override void OnPlayerRespawn(VRCPlayerApi player) {
 #if TLP_DEBUG
             DebugLog(nameof(OnPlayerRespawn));
 #endif
-            if (!exitZoneOnRespawn)
-            {
+            if (!ExitZoneOnRespawn) {
                 return;
             }
 
-            if (!Contains(player))
-            {
+            if (!Contains(player)) {
                 return;
             }
 
             if (!Assert(Utilities.IsValid(player), "player invalid", this)
-                || !player.isLocal)
-            {
+                || !player.isLocal) {
                 return;
             }
 
-            ExitRoom(player, optionalRespawnLocation);
+            ExitRoom(player, OptionalRespawnLocation);
         }
 
-        public bool EnterRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation)
-        {
+        public bool EnterRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation) {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(EnterRoom));
 #endif
-
             #endregion
 
-            if (!localPlayer.IsLocalSafe())
-            {
+            if (!localPlayer.IsLocalSafe()) {
                 Error($"Player {localPlayer.ToStringSafe()} is not local");
                 return false;
             }
 
-            if (!AddLocalPlayerToZone(localPlayer))
-            {
+            if (!AddLocalPlayerToZone(localPlayer)) {
                 Error("Failed adding player to zone");
                 return false;
             }
@@ -226,15 +189,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             return true;
         }
 
-        public bool ExitRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation)
-        {
+        public bool ExitRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation) {
 #if TLP_DEBUG
             DebugLog(nameof(ExitRoom));
 #endif
             if (!Assert(Utilities.IsValid(localPlayer), "Invalid local player", this)
                 || !Assert(localPlayer.isLocal, "Player is not local", this)
-                || !Assert(RemoveLocalPlayerFromZone(localPlayer), "Remove player from zone failed", this))
-            {
+                || !Assert(RemoveLocalPlayerFromZone(localPlayer), "Remove player from zone failed", this)) {
                 return false;
             }
 
@@ -242,35 +203,29 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             return true;
         }
 
-        public void RefreshPlayersInZone()
-        {
+        public void RefreshPlayersInZone() {
 #if TLP_DEBUG
             DebugLog(nameof(RefreshPlayersInZone));
 #endif
-            if (!Assert(PlayerAudioOverride, $"{nameof(PlayerAudioOverride)} invalid", this))
-            {
+            if (!Assert(PlayerAudioOverride, $"{nameof(PlayerAudioOverride)} invalid", this)) {
                 return;
             }
 
             PlayerAudioOverride.Refresh();
 
             var localPlayer = Networking.LocalPlayer;
-            if (PlayerAudioOverride.IsAffected(localPlayer) == IsInZone)
-            {
+            if (PlayerAudioOverride.IsAffected(localPlayer) == IsInZone) {
                 return;
             }
 
-            if (IsInZone)
-            {
+            if (IsInZone) {
 #if TLP_DEBUG
                 DebugLog("Player not in override despite being in the zone (network state outdated)");
 #endif
                 // update
                 RemoveLocalPlayerFromZone(localPlayer);
                 AddLocalPlayerToZone(localPlayer);
-            }
-            else
-            {
+            } else {
 #if TLP_DEBUG
                 DebugLog("Player in override despite no longer being in the zone (network state outdated)");
 #endif
@@ -280,8 +235,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             UpdateNetwork(localPlayer);
         }
 
-        public bool Contains(VRCPlayerApi playerApi)
-        {
+        public bool Contains(VRCPlayerApi playerApi) {
 #if TLP_DEBUG
             DebugLog(nameof(Contains));
 #endif
@@ -289,10 +243,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                    && PlayerAudioOverride.IsAffected(playerApi);
         }
 
-        public override void OnEvent(string eventName)
-        {
-            switch (eventName)
-            {
+        public override void OnEvent(string eventName) {
+            switch (eventName) {
                 case nameof(RefreshPlayersInZone):
 #if TLP_DEBUG
                     DebugLog($"{nameof(OnEvent)} {eventName}");
@@ -304,7 +256,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                     break;
             }
         }
-
         #endregion
     }
 }

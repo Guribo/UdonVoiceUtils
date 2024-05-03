@@ -12,9 +12,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     public class PlayerAudioView : View
     {
         #region Ui Elements
-
         #region General Settings
-
         [Header("General Settings")]
         [SerializeField]
         internal Slider SliderOcclusionFactor;
@@ -45,11 +43,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
         [SerializeField]
         internal Toggle ToggleAllowMasterControl;
-
         #endregion
 
         #region Voice Settings
-
         [Header("Voice Settings")]
         [SerializeField]
         internal Slider SliderVoiceDistanceNear;
@@ -77,11 +73,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
         [SerializeField]
         internal Toggle ToggleVoiceLowpass;
-
         #endregion
 
         #region Avatar Settings
-
         [Header("Avatar Settings")]
         [SerializeField]
         internal Slider SliderAvatarDistanceNear;
@@ -112,13 +106,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
         [SerializeField]
         internal Toggle ToggleAvatarCustomCurve;
-
         #endregion
-
         #endregion
 
         #region State
-
         private RectTransform[] _tabs;
 
         private bool _preventChangeEvent;
@@ -135,33 +126,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
 
         private PlayerAudioController _playerAudioController;
-
         #endregion
 
         /// <summary>
         /// Used by the Unity Ui elements
         /// </summary>
         [PublicAPI]
-        public void OnSettingsChanged()
-        {
+        public void OnSettingsChanged() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnSettingsChanged));
 #endif
-
             #endregion
 
-            if (!Initialized)
-            {
+            if (!Initialized) {
                 Warn(
-                    $"Skipping {nameof(OnSettingsChanged)} event as {nameof(PlayerAudioView)} is not ready"
+                        $"Skipping {nameof(OnSettingsChanged)} event as {nameof(PlayerAudioView)} is not ready"
                 );
                 return;
             }
 
-            if (_preventChangeEvent)
-            {
+            if (_preventChangeEvent) {
                 return;
             }
 
@@ -186,8 +171,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             LocalConfig.Dirty = true;
             LocalConfig.NotifyIfDirty(1);
 
-            if (Networking.IsMaster)
-            {
+            if (Networking.IsMaster) {
                 MasterConfig.OcclusionFactor = SliderOcclusionFactor.value;
                 MasterConfig.PlayerOcclusionFactor = SliderPlayerOcclusionFactor.value;
                 MasterConfig.PlayerDirectionality = SliderPlayerDirectionality.value;
@@ -211,35 +195,32 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             }
         }
 
-        private void UpdateTextAndInteractiveElements()
-        {
+        private void UpdateTextAndInteractiveElements() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(UpdateTextAndInteractiveElements));
 #endif
-
             #endregion
 
             TextOcclusionFactor.text = SliderOcclusionFactor.value.ToString("F", CultureInfo.InvariantCulture);
             TextPlayerOcclusionFactor.text =
-                SliderPlayerOcclusionFactor.value.ToString("F", CultureInfo.InvariantCulture);
+                    SliderPlayerOcclusionFactor.value.ToString("F", CultureInfo.InvariantCulture);
             TextPlayerDirectionality.text =
-                SliderPlayerDirectionality.value.ToString("F", CultureInfo.InvariantCulture);
+                    SliderPlayerDirectionality.value.ToString("F", CultureInfo.InvariantCulture);
             TextListenerDirectionality.text =
-                SliderListenerDirectionality.value.ToString("F", CultureInfo.InvariantCulture);
+                    SliderListenerDirectionality.value.ToString("F", CultureInfo.InvariantCulture);
 
             TextVoiceDistanceNear.text = SliderVoiceDistanceNear.value.ToString("F1", CultureInfo.InvariantCulture);
             TextVoiceDistanceFar.text = SliderVoiceDistanceFar.value.ToString("F1", CultureInfo.InvariantCulture);
             TextVoiceGain.text = SliderVoiceGain.value.ToString("F1", CultureInfo.InvariantCulture);
             TextVoiceVolumetricRadius.text =
-                SliderVoiceVolumetricRadius.value.ToString("F1", CultureInfo.InvariantCulture);
+                    SliderVoiceVolumetricRadius.value.ToString("F1", CultureInfo.InvariantCulture);
 
             AvatarDistanceNear.text = SliderAvatarDistanceNear.value.ToString("F1", CultureInfo.InvariantCulture);
             AvatarDistanceFar.text = SliderAvatarDistanceFar.value.ToString("F1", CultureInfo.InvariantCulture);
             AvatarGain.text = SliderAvatarGain.value.ToString("F1", CultureInfo.InvariantCulture);
             AvatarVolumetricRadius.text =
-                SliderAvatarVolumetricRadius.value.ToString("F1", CultureInfo.InvariantCulture);
+                    SliderAvatarVolumetricRadius.value.ToString("F1", CultureInfo.InvariantCulture);
 
             bool isOwner = Networking.IsOwner(MasterConfig.gameObject);
             bool locallyControlled = !LocalConfig.AllowMasterControlLocalValues || isOwner;
@@ -266,14 +247,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// <summary>
         /// Used by the Unity Ui elements
         /// </summary>
-        public void ResetAll()
-        {
+        public void ResetAll() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(ResetAll));
 #endif
-
             #endregion
 
             _preventChangeEvent = true;
@@ -282,8 +260,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
             _displayedConfig = LocalConfig;
             CopyValuesFromTo(DefaultValues, LocalConfig);
-            if (Networking.IsMaster)
-            {
+            if (Networking.IsMaster) {
                 CopyValuesFromTo(DefaultValues, MasterConfig);
             }
 
@@ -293,19 +270,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// <summary>
         /// Callback function, can be called by the BetterPlayerAudio to update the UI
         /// </summary>
-        public void UpdateUi()
-        {
+        public void UpdateUi() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(UpdateUi));
 #endif
-
             #endregion
 
             var owner = Networking.GetOwner(_playerAudioController.gameObject);
-            if (Utilities.IsValid(owner))
-            {
+            if (Utilities.IsValid(owner)) {
                 TextAllowMasterControl.text = $"Let {owner.displayName} (owner) control everything";
             }
 
@@ -338,49 +311,40 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             UpdateTextAndInteractiveElements();
         }
 
-        protected override bool InitializeInternal()
-        {
+        protected override bool InitializeInternal() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(InitializeInternal));
 #endif
-
             #endregion
 
-            if (!Utilities.IsValid(DefaultValues))
-            {
+            if (!Utilities.IsValid(DefaultValues)) {
                 ErrorAndDisableComponent($"{nameof(DefaultValues)} not set");
                 return false;
             }
 
-            if (!Utilities.IsValid(LocalConfig))
-            {
+            if (!Utilities.IsValid(LocalConfig)) {
                 ErrorAndDisableComponent($"{nameof(LocalConfig)} not set");
                 return false;
             }
 
-            if (!Utilities.IsValid(MasterConfig))
-            {
+            if (!Utilities.IsValid(MasterConfig)) {
                 ErrorAndDisableComponent($"{nameof(MasterConfig)} not set");
                 return false;
             }
 
 
-            if (!LocalConfig.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged)))
-            {
+            if (!LocalConfig.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
                 ErrorAndDisableComponent($"Failed to add listener to {nameof(LocalConfig)}");
                 return false;
             }
 
-            if (!MasterConfig.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged)))
-            {
+            if (!MasterConfig.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
                 ErrorAndDisableComponent($"Failed to add listener to {nameof(MasterConfig)}");
                 return false;
             }
 
-            if (!Utilities.IsValid(Controller))
-            {
+            if (!Utilities.IsValid(Controller)) {
                 ErrorAndDisableComponent($"{nameof(Controller)} invalid");
                 return false;
             }
@@ -390,19 +354,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             return true;
         }
 
-        public override void OnModelChanged()
-        {
+        public override void OnModelChanged() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnModelChanged));
 #endif
-
             #endregion
 
             if (Utilities.IsValid(EventInstigator) && Networking.IsMaster &&
-                ReferenceEquals(EventInstigator, MasterConfig))
-            {
+                ReferenceEquals(EventInstigator, MasterConfig)) {
                 // nothing to do
                 return;
             }
@@ -415,37 +375,29 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         }
 
         #region Internal
-
-        protected override bool DeInitializeInternal()
-        {
+        protected override bool DeInitializeInternal() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(DeInitializeInternal));
 #endif
-
             #endregion
 
-            if (!Utilities.IsValid(LocalConfig))
-            {
+            if (!Utilities.IsValid(LocalConfig)) {
                 Warn($"{nameof(LocalConfig)} was destroyed");
                 return true; // OK in case of de-init
             }
 
-            if (!Utilities.IsValid(LocalConfig.ChangeEvent))
-            {
+            if (!Utilities.IsValid(LocalConfig.ChangeEvent)) {
                 Warn($"{nameof(LocalConfig.ChangeEvent)} was destroyed");
                 return true; // OK in case of de-init
             }
 
-            if (!Utilities.IsValid(MasterConfig))
-            {
+            if (!Utilities.IsValid(MasterConfig)) {
                 Warn($"{nameof(MasterConfig)} was destroyed");
                 return true; // OK in case of de-init
             }
 
-            if (!Utilities.IsValid(MasterConfig.ChangeEvent))
-            {
+            if (!Utilities.IsValid(MasterConfig.ChangeEvent)) {
                 Warn($"{nameof(MasterConfig.ChangeEvent)} was destroyed");
                 return true; // OK in case of de-init
             }
@@ -453,13 +405,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             bool successLocal = LocalConfig.ChangeEvent.RemoveListener(this, true);
             bool successMaster = MasterConfig.ChangeEvent.RemoveListener(this, true);
 
-            if (!successLocal)
-            {
+            if (!successLocal) {
                 Error($"Failed to remove listener from {nameof(LocalConfig)}");
             }
 
-            if (!successMaster)
-            {
+            if (!successMaster) {
                 Error($"Failed to remove listener from {nameof(MasterConfig)}");
             }
 
@@ -467,16 +417,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         }
 
 
-        private void CopyValuesFromTo(PlayerAudioConfigurationModel from, PlayerAudioConfigurationModel to)
-        {
-            if (!Utilities.IsValid(from))
-            {
+        private void CopyValuesFromTo(PlayerAudioConfigurationModel from, PlayerAudioConfigurationModel to) {
+            if (!Utilities.IsValid(from)) {
                 Error($"{nameof(PlayerAudioConfigurationModel)} '{nameof(from)}' invalid");
                 return;
             }
 
-            if (!Utilities.IsValid(to))
-            {
+            if (!Utilities.IsValid(to)) {
                 Error($"{nameof(PlayerAudioConfigurationModel)} '{nameof(to)}' invalid");
                 return;
             }
@@ -502,7 +449,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             to.NotifyIfDirty(1);
             to.MarkNetworkDirty();
         }
-
         #endregion
     }
 }

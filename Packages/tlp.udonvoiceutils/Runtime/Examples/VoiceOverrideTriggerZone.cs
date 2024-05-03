@@ -17,18 +17,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     public class VoiceOverrideTriggerZone : TlpBaseBehaviour
     {
         #region Mandatory references
-
         [FormerlySerializedAs("playerAudioOverride")]
         [Header("Mandatory references")]
         public PlayerAudioOverride PlayerAudioOverride;
 
         private Collider[] _allTrigger;
 
-        private void Start()
-        {
-#if TLP_DEBUG
-            DebugLog(nameof(Start));
-#endif
+        public override void Start() {
+            base.Start();
             // ensure that players already being inside the trigger before udon starts are detected by disabling them
             // once and enabling them 1 frame later again  
             _allTrigger = gameObject.GetComponents<Collider>();
@@ -37,83 +33,66 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         }
 
         #region Internal
-
-        private void DisableAllTrigger()
-        {
+        private void DisableAllTrigger() {
 #if TLP_DEBUG
             DebugLog(nameof(DisableAllTrigger));
 #endif
 
-            foreach (var trigger in _allTrigger)
-            {
-                if (trigger.isTrigger)
-                {
+            foreach (var trigger in _allTrigger) {
+                if (trigger.isTrigger) {
                     trigger.enabled = false;
                 }
             }
         }
 
-        public void EnableAllTriggerDelayed()
-        {
+        public void EnableAllTriggerDelayed() {
 #if TLP_DEBUG
             DebugLog(nameof(EnableAllTriggerDelayed));
 #endif
-            foreach (var trigger in _allTrigger)
-            {
-                if (trigger.isTrigger)
-                {
+            foreach (var trigger in _allTrigger) {
+                if (trigger.isTrigger) {
                     trigger.enabled = true;
                 }
             }
         }
-
+        #endregion
         #endregion
 
-        #endregion
-
-        public override void OnPlayerTriggerEnter(VRCPlayerApi player)
-        {
+        public override void OnPlayerTriggerEnter(VRCPlayerApi player) {
 #if TLP_DEBUG
             DebugLog(nameof(OnPlayerTriggerEnter));
 #endif
-            if (!Assert(Utilities.IsValid(player), "Entering player invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(player), "Entering player invalid", this)) {
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this)) {
                 return;
             }
 
             Assert(PlayerAudioOverride.AddPlayer(player), "Failed to add player", this);
         }
 
-        public override void OnPlayerTriggerExit(VRCPlayerApi player)
-        {
+        public override void OnPlayerTriggerExit(VRCPlayerApi player) {
 #if TLP_DEBUG
             DebugLog(nameof(OnPlayerTriggerExit));
 #endif
-            if (!Assert(Utilities.IsValid(player), "Exiting player invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(player), "Exiting player invalid", this)) {
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this)) {
                 return;
             }
 
             Assert(PlayerAudioOverride.RemovePlayer(player), "Failed to remove player", this);
         }
 
-        public void OnDisable()
-        {
+        public void OnDisable() {
 #if TLP_DEBUG
             DebugLog(nameof(OnDisable));
 #endif
-            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this)) {
                 return;
             }
 

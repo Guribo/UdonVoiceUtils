@@ -225,11 +225,12 @@ Please follow these steps in order and read all the instructions first before ex
 
 All notable changes to this project will be documented in this file.
 
-### [1.0.0-rc.2] - 2024-03-29
+### [1.0.0-rc.3] - 2024-05-03
 
 #### 🚀 Features
 
 - Update to Unity 2022.3
+- Migrate to UdonUtils 6.1.x
 
 #### 📚 Documentation
 
@@ -238,7 +239,6 @@ All notable changes to this project will be documented in this file.
 #### ⚙️ Miscellaneous Tasks
 
 - Update git configuration and setup script
-- Add release pipeline
 
 ### [1.0.0-rc.1] - 2023-11-19
 

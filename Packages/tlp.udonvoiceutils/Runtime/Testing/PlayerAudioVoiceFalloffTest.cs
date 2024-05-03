@@ -7,7 +7,7 @@ using VRC.SDKBase;
 using VRC.Udon.Common.Enums;
 using VRC.Udon.Common.Interfaces;
 
-namespace TLP.UdonVoiceUtils.Runtime.IngameTests
+namespace TLP.UdonVoiceUtils.Runtime.Testing
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class PlayerAudioVoiceFalloffTest : TestCase
@@ -40,18 +40,17 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
         private VRCPlayerApi _voiceListener;
         private VRCPlayerApi _voiceEmitter;
 
-        protected override void InitializeTest()
-        {
-            if (!Assert(Networking.IsMaster, "Non-Master is not allowed to start the test"))
-            {
+        protected override void InitializeTest() {
+            if (!Networking.IsMaster) {
+                Error("Non-Master is not allowed to start the test");
                 TestController.TestInitialized(false);
                 return;
             }
 
             // verify 2 players are in the world
             int playerCount = VRCPlayerApi.GetPlayerCount();
-            if (!Assert(playerCount == 2, $"Requires 2 players to be present, found {playerCount}"))
-            {
+            if (playerCount != 2) {
+                Error($"Requires 2 players to be present, found {playerCount}");
                 TestController.TestInitialized(false);
                 return;
             }
@@ -59,38 +58,31 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
             var players = new VRCPlayerApi[2];
             players = VRCPlayerApi.GetPlayers(players);
 
-            if (!Assert(Utilities.IsValid(players[0]), "First player is invalid"))
-            {
+            if (!Utilities.IsValid(players[0])) {
+                Error("First player is invalid");
                 TestController.TestInitialized(false);
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(players[1]), "Second player is invalid"))
-            {
+            if (!Utilities.IsValid(players[1])) {
+                Error("Second player is invalid");
                 TestController.TestInitialized(false);
                 return;
             }
 
             // turn the local player into the voice emitter and the other player into the listener
-            if (players[0].isLocal)
-            {
+            if (players[0].isLocal) {
                 _voiceEmitter = players[0];
                 _voiceListener = players[1];
-            }
-            else
-            {
+            } else {
                 _voiceEmitter = players[1];
                 _voiceListener = players[0];
             }
 
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            if (Utilities.IsValid(PlayerAudio))
-            {
-                if (!Assert(
-                        !PlayerAudio.enabled,
-                        "betterPlayerAudio component must be disabled by default for this test"
-                    ))
-                {
+            if (Utilities.IsValid(PlayerAudio)) {
+                if (!PlayerAudio.enabled) {
+                    Error($"{nameof(PlayerAudio)} component must be disabled by default for this test");
                     TestController.TestInitialized(false);
                     return;
                 }
@@ -107,18 +99,17 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
             TestController.TestInitialized(true);
         }
 
-        public void SetAudioProperties()
-        {
+        public void SetAudioProperties() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-         DebugLog(
-                $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(SetAudioProperties)}"
+            DebugLog(
+                    $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(SetAudioProperties)}"
             );
 #endif
             #endregion DebugLog(
 
-            if (!Assert(Utilities.IsValid(PlayerAudio), $"{nameof(PlayerAudio)} invalid"))
-            {
+            if (!Utilities.IsValid(PlayerAudio)) {
+                Error($"{nameof(PlayerAudio)} invalid");
                 TestController.TestInitialized(false);
                 return;
             }
@@ -126,18 +117,17 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
             PlayerAudio.enabled = true;
         }
 
-        public void ClearAudioProperties()
-        {
+        public void ClearAudioProperties() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
-         DebugLog(
-                $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(ClearAudioProperties)}"
+            DebugLog(
+                    $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(ClearAudioProperties)}"
             );
 #endif
-#endregion
-            if (!Assert(Utilities.IsValid(PlayerAudio), $"{nameof(PlayerAudio)} invalid"))
-            {
+            #endregion
+
+            if (!Utilities.IsValid(PlayerAudio)) {
+                Error($"{nameof(PlayerAudio)} invalid");
                 TestController.TestCleanedUp(false);
                 return;
             }
@@ -145,83 +135,87 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
             PlayerAudio.enabled = false;
         }
 
-        private void EmitterTeleportInFrontOfListener(int step)
-        {
+        private void EmitterTeleportInFrontOfListener(int step) {
             var forward = _voiceListener.GetRotation() * Quaternion.Euler(0, ListenerAngle, 0) * Vector3.forward;
             var positionOffset = step * StepSize * forward;
             var teleportPosition = _voiceListener.GetPosition() + positionOffset;
             _voiceEmitter.TeleportTo(
-                teleportPosition,
-                Quaternion.LookRotation(-forward, Vector3.up) * Quaternion.Euler(0, EmitterAngle, 0),
-                VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,
-                false
+                    teleportPosition,
+                    Quaternion.LookRotation(-forward, Vector3.up) * Quaternion.Euler(0, EmitterAngle, 0),
+                    VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,
+                    false
             );
         }
 
-        protected override void RunTest()
-        {
-            SendCustomEventDelayedSeconds("PerformStep", StartDelay, EventTiming.LateUpdate);
+        protected override void RunTest() {
+            SendCustomEventDelayedSeconds(nameof(PerformStep), StartDelay, EventTiming.LateUpdate);
         }
 
-        public void PerformStep()
-        {
-            if (!Assert(Utilities.IsValid(this) || !gameObject.activeInHierarchy, "This component is no longer valid"))
-            {
+        public void PerformStep() {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(PerformStep));
+#endif
+            #endregion
+
+            if (Utilities.IsValid(this) || !gameObject.activeInHierarchy) {
+                Error($"{name} is no longer valid");
                 TestController.TestCompleted(false);
             }
 
-            if (!Assert(Utilities.IsValid(_voiceEmitter), "Voice emitting player is invalid"))
-            {
+            if (!Utilities.IsValid(_voiceEmitter)) {
+                Error("Voice emitting player is invalid");
                 TestController.TestCompleted(false);
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(_voiceListener), "Voice listening player is invalid"))
-            {
+            if (!Utilities.IsValid(_voiceListener)) {
+                Error("Voice listening player is invalid");
                 TestController.TestCompleted(false);
                 return;
             }
 
             DebugLog(
-                $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] Teleporting local player to sample position {_currentStep}"
+                    $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] Teleporting local player to sample position {_currentStep}"
             );
             EmitterTeleportInFrontOfListener(_currentStep);
 
             _currentStep++;
-            if (_currentStep < Samples)
-            {
+            if (_currentStep < Samples) {
                 SendCustomEventDelayedSeconds("PerformStep", StepInterval, EventTiming.LateUpdate);
-            }
-            else
-            {
+            } else {
                 TestController.TestCompleted(true);
             }
         }
 
-        protected override void CleanUpTest()
-        {
-            if (!Assert(Utilities.IsValid(this) || !gameObject.activeInHierarchy, "This component is no longer valid"))
-            {
+        protected override void CleanUpTest() {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(CleanUpTest));
+#endif
+            #endregion
+
+            if (!Utilities.IsValid(this) || !gameObject.activeInHierarchy) {
+                Error($"{name} is no longer valid");
                 TestController.TestCleanedUp(false);
             }
 
-            if (!Assert(Utilities.IsValid(_voiceEmitter), "Voice emitting player is invalid"))
-            {
+            if (!Utilities.IsValid(_voiceEmitter)) {
+                Error("Voice emitting player is invalid");
                 TestController.TestCleanedUp(false);
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(_voiceListener), "Voice listening player is invalid"))
-            {
+            if (!Utilities.IsValid(_voiceListener)) {
+                Error("Voice listening player is invalid");
                 TestController.TestCleanedUp(false);
                 return;
             }
 
             EmitterTeleportInFrontOfListener(1);
 
-            if (Utilities.IsValid(PlayerAudio))
-            {
-                SendCustomNetworkEvent(NetworkEventTarget.All, "ClearAudioProperties");
+            if (Utilities.IsValid(PlayerAudio)) {
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(ClearAudioProperties));
             }
 
             _voiceEmitter.Immobilize(false);

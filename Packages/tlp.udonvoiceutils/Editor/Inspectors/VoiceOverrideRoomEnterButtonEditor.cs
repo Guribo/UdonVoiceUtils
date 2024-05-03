@@ -9,17 +9,14 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
     [CustomEditor(typeof(VoiceOverrideRoomEnterButton))]
     public class VoiceOverrideEnterButtonEditor : UnityEditor.Editor
     {
-        public override void OnInspectorGUI()
-        {
+        public override void OnInspectorGUI() {
             UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target);
             DrawDefaultInspector();
         }
 
-        public void OnSceneGUI()
-        {
+        public void OnSceneGUI() {
             var voiceOverrideRoomEnterButton = (VoiceOverrideRoomEnterButton)target;
-            if (!Utilities.IsValid(voiceOverrideRoomEnterButton))
-            {
+            if (!Utilities.IsValid(voiceOverrideRoomEnterButton)) {
                 return;
             }
 
@@ -28,19 +25,17 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
 
             var guiEvent = Event.current;
 
-            switch (guiEvent.type)
-            {
+            switch (guiEvent.type) {
                 case EventType.Repaint:
                 {
-                    if (Utilities.IsValid(voiceOverrideRoomEnterButton.voiceOverrideRoom))
-                    {
-                        var roomPosition = voiceOverrideRoomEnterButton.voiceOverrideRoom.transform.position;
+                    if (Utilities.IsValid(voiceOverrideRoomEnterButton.VoiceOverrideRoom)) {
+                        var roomPosition = voiceOverrideRoomEnterButton.VoiceOverrideRoom.transform.position;
 
                         Handles.color = Color.white;
                         Handles.DrawDottedLine(doorPosition, roomPosition, 2);
 
                         GUI.color = Color.white;
-                        Handles.Label(roomPosition, voiceOverrideRoomEnterButton.voiceOverrideRoom.gameObject.name);
+                        Handles.Label(roomPosition, voiceOverrideRoomEnterButton.VoiceOverrideRoom.gameObject.name);
                     }
                 }
                     break;
@@ -58,38 +53,34 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
         }
 
 
-        private void HandleInput(Event guiEvent, VoiceOverrideRoomEnterButton voiceOverrideRoomEnterButton)
-        {
+        private void HandleInput(Event guiEvent, VoiceOverrideRoomEnterButton voiceOverrideRoomEnterButton) {
             var mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
             float drawPlaneHeight = 0;
             float dstToDrawPlane = (drawPlaneHeight - mouseRay.origin.y) / mouseRay.direction.y;
             var mousePosition = mouseRay.GetPoint(dstToDrawPlane);
 
             if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 &&
-                guiEvent.modifiers == EventModifiers.None)
-            {
+                guiEvent.modifiers == EventModifiers.None) {
                 HandleLeftMouseDown(mousePosition, voiceOverrideRoomEnterButton);
             }
         }
 
         private void HandleLeftMouseDown(
-            Vector3 mousePosition,
-            VoiceOverrideRoomEnterButton voiceOverrideRoomEnterButton
-        )
-        {
-            if (Utilities.IsValid(voiceOverrideRoomEnterButton.voiceOverrideRoom))
-            {
+                Vector3 mousePosition,
+                VoiceOverrideRoomEnterButton voiceOverrideRoomEnterButton
+        ) {
+            if (Utilities.IsValid(voiceOverrideRoomEnterButton.VoiceOverrideRoom)) {
                 var roomGuiPosition =
-                    HandleUtility.WorldToGUIPoint(voiceOverrideRoomEnterButton.voiceOverrideRoom.transform.position);
+                        HandleUtility.WorldToGUIPoint(
+                                voiceOverrideRoomEnterButton.VoiceOverrideRoom.transform.position);
                 var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
                 bool clickCloseToRoomGameObject = Vector2.Distance(roomGuiPosition, mouseGuiPosition) < 10f;
-                if (clickCloseToRoomGameObject)
-                {
+                if (clickCloseToRoomGameObject) {
                     Selection.SetActiveObjectWithContext(
-                        voiceOverrideRoomEnterButton.voiceOverrideRoom.gameObject,
-                        voiceOverrideRoomEnterButton.voiceOverrideRoom
+                            voiceOverrideRoomEnterButton.VoiceOverrideRoom.gameObject,
+                            voiceOverrideRoomEnterButton.VoiceOverrideRoom
                     );
-                    EditorGUIUtility.PingObject(voiceOverrideRoomEnterButton.voiceOverrideRoom);
+                    EditorGUIUtility.PingObject(voiceOverrideRoomEnterButton.VoiceOverrideRoom);
                 }
             }
         }

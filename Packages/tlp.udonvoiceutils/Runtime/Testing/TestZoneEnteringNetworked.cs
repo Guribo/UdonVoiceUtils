@@ -6,7 +6,7 @@ using VRC.SDKBase;
 using VRC.Udon.Common;
 using VRC.Udon.Common.Interfaces;
 
-namespace TLP.UdonVoiceUtils.Runtime.IngameTests
+namespace TLP.UdonVoiceUtils.Runtime.Testing
 {
     /// <summary>
     /// Component which implements the base of a test case, includes preparation, execution and cleanup methods
@@ -29,13 +29,13 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
         [SerializeField]
         private VoiceOverrideRoom[] AllRooms;
 
-        [UdonSynced, HideInInspector]
+        [UdonSynced]
+        [HideInInspector]
         public int TeleportTimeMs = int.MinValue;
 
         private int _initialPlayerCount;
 
-        protected override void InitializeTest()
-        {
+        protected override void InitializeTest() {
             _initialPlayerCount = VRCPlayerApi.GetPlayerCount();
 
             var localPlayer = Networking.LocalPlayer;
@@ -43,10 +43,8 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
             Networking.SetOwner(localPlayer, gameObject);
 
             TeleportTimeMs = Networking.GetServerTimeInMilliseconds() + 10000;
-            foreach (var room in AllRooms)
-            {
-                if (!Utilities.IsValid(room))
-                {
+            foreach (var room in AllRooms) {
+                if (!Utilities.IsValid(room)) {
                     Error($"{nameof(AllRooms)} contains invalid room");
                     TestController.TestInitialized(false);
                     return;
@@ -60,45 +58,41 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
             TestController.TestInitialized(Networking.IsOwner(localPlayer, gameObject));
         }
 
-        public override void OnDeserialization(DeserializationResult deserializationResult)
-        {
+        public override void OnDeserialization(DeserializationResult deserializationResult) {
             PrepareLocalPlayer();
         }
 
-        public void PrepareLocalPlayer()
-        {
-            if (TeleportTimeMs < Networking.GetServerTimeInMilliseconds())
-            {
+        public void PrepareLocalPlayer() {
+            if (TeleportTimeMs < Networking.GetServerTimeInMilliseconds()) {
                 return;
             }
 
-            foreach (var overrideRoom in AllRooms)
-            {
-                if (!Utilities.IsValid(overrideRoom)) continue;
-                if (overrideRoom.Contains(Networking.LocalPlayer))
-                {
+            foreach (var overrideRoom in AllRooms) {
+                if (!Utilities.IsValid(overrideRoom)) {
+                    continue;
+                }
+
+                if (overrideRoom.Contains(Networking.LocalPlayer)) {
                     overrideRoom.ExitRoom(Networking.LocalPlayer, null);
                 }
             }
 
-           //Networking.LocalPlayer.TeleportTo(
-           //    Vector3.down * 10f,
-           //    Exit.rotation,
-           //    VRC_SceneDescriptor.SpawnOrientation.Default,
-           //    false
-           //);
+            //Networking.LocalPlayer.TeleportTo(
+            //    Vector3.down * 10f,
+            //    Exit.rotation,
+            //    VRC_SceneDescriptor.SpawnOrientation.Default,
+            //    false
+            //);
 
             Networking.LocalPlayer.Immobilize(true);
 
 
-            while (true)
-            {
+            while (true) {
                 var betterPlayerAudioOverride =
-                    VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController.GetMaxPriorityOverride(
-                        Networking.LocalPlayer
-                    );
-                if (Utilities.IsValid(betterPlayerAudioOverride))
-                {
+                        VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController.GetMaxPriorityOverride(
+                                Networking.LocalPlayer
+                        );
+                if (Utilities.IsValid(betterPlayerAudioOverride)) {
                     betterPlayerAudioOverride.RemovePlayer(Networking.LocalPlayer);
                     continue;
                 }
@@ -106,36 +100,33 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
                 break;
             }
 
-            SendCustomEventDelayedSeconds(nameof(EnterDelayed), (TeleportTimeMs - Networking.GetServerTimeInMilliseconds()) * 0.001f);
+            SendCustomEventDelayedSeconds(
+                    nameof(EnterDelayed),
+                    (TeleportTimeMs - Networking.GetServerTimeInMilliseconds()) * 0.001f);
         }
 
-        public void EnterDelayed()
-        {
+        public void EnterDelayed() {
             VoiceOverrideRoom.EnterRoom(Networking.LocalPlayer, Enter);
         }
 
-        protected override void RunTest()
-        {
+        protected override void RunTest() {
             SendCustomEventDelayedSeconds(nameof(CheckDelayed), 70f);
         }
 
-        public void CheckDelayed()
-        {
+        public void CheckDelayed() {
             int playerCount = VRCPlayerApi.GetPlayerCount();
             var players = new VRCPlayerApi[playerCount];
             VRCPlayerApi.GetPlayers(players);
 
             int successCount = 0;
-            foreach (var vrcPlayerApi in players)
-            {
-                if (Utilities.IsValid(vrcPlayerApi))
-                {
+            foreach (var vrcPlayerApi in players) {
+                if (Utilities.IsValid(vrcPlayerApi)) {
                     successCount +=
-                        VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController
-                            .GetMaxPriorityOverride(vrcPlayerApi) ==
-                        VoiceOverrideRoom.PlayerAudioOverride
-                            ? 1
-                            : 0;
+                            VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController
+                                    .GetMaxPriorityOverride(vrcPlayerApi) ==
+                            VoiceOverrideRoom.PlayerAudioOverride
+                                    ? 1
+                                    : 0;
                 }
             }
 
@@ -144,14 +135,12 @@ namespace TLP.UdonVoiceUtils.Runtime.IngameTests
             TestController.TestCompleted(successCount == _initialPlayerCount);
         }
 
-        protected override void CleanUpTest()
-        {
+        protected override void CleanUpTest() {
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(LeaveZone));
             TestController.TestCleanedUp(true);
         }
 
-        public void LeaveZone()
-        {
+        public void LeaveZone() {
             VoiceOverrideRoom.ExitRoom(Networking.LocalPlayer, Exit);
             Networking.LocalPlayer.Immobilize(false);
         }

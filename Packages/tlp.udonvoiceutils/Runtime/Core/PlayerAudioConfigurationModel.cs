@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.DesignPatterns.MVC;
-using TLP.UdonUtils.Events;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -16,12 +15,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         [PublicAPI]
         public new const int ExecutionOrder = Model.ExecutionOrder;
 
-
         #region Constants
-
         public const int EnvironmentLayerMask = 1 << 11;
         public const int UILayerMask = 1 << 5;
-
         #endregion
 
         /// <summary>
@@ -33,9 +29,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         public bool AllowMasterControlLocalValues;
 
         #region Audio Configuration
-
         #region Occlusion settings
-
         [Header("Occlusion settings")]
         /// <summary>
         /// Layers which can reduce voice and avatar sound effects when they are in between the local player (listener)
@@ -43,7 +37,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// Default layers: 11 and 5 (Environment and UI which includes the capsule colliders of other players)
         /// </summary>
         [Tooltip(
-            "Objects on these layers reduce the voice/avatar sound volume when they are in-between the local player and the player/avatar that produces the sound"
+                "Objects on these layers reduce the voice/avatar sound volume when they are in-between the local player and the player/avatar that produces the sound"
         )]
         public LayerMask OcclusionMask = EnvironmentLayerMask | UILayerMask;
 
@@ -54,7 +48,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// </summary>
         [Range(0, 1)]
         [Tooltip(
-            "A value of ß.0 means occlusion is off. A value of 1 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible"
+                "A value of ß.0 means occlusion is off. A value of 1 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible"
         )]
         [UdonSynced]
         public float OcclusionFactor;
@@ -67,15 +61,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// </summary>
         [Range(0, 1)]
         [Tooltip(
-            "Occlusion when a player is occluded by another player. A value of 0.0 means occlusion is off. A value of 1.0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible"
+                "Occlusion when a player is occluded by another player. A value of 0.0 means occlusion is off. A value of 1.0 will reduce the max. audible range of the voice/player to the current distance and make him/her/them in-audible"
         )]
         [UdonSynced]
         public float PlayerOcclusionFactor;
-
         #endregion
 
         #region Directionality settings
-
         [Header("Directionality settings")]
         /// <summary>
         /// Range 0.0 to 1.0.
@@ -84,7 +76,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// </summary>
         [Range(0, 1)]
         [Tooltip(
-            "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet."
+                "A value of 1.0 reduces the ranges by up to 100% when the listener is facing away from a voice/avatar and thus making them more quiet."
         )]
         [UdonSynced]
         public float ListenerDirectionality;
@@ -96,15 +88,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// </summary>
         [Range(0, 1)]
         [Tooltip(
-            "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener."
+                "A value of 1.0 reduces the ranges by up to 100% when someone is speaking/playing avatar sounds but is facing away from the listener."
         )]
         [UdonSynced]
         public float PlayerDirectionality;
-
         #endregion
 
         #region Voice Settings
-
         [Header("Voice settings")]
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-disable-lowpass</remarks>
@@ -143,16 +133,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// <remarks>https://docs.vrchat.com/docs/player-audio#set-voice-volumetric-radius</remarks>
         /// </summary>
         [Tooltip(
-            "Range in which the player voice is not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed."
+                "Range in which the player voice is not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed."
         )]
         [Range(0, 1000)]
         [UdonSynced]
         public float VoiceVolumetricRadius;
-
         #endregion
 
         #region Avatar Sounds
-
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudioforcespatial</remarks>
         /// </summary>
@@ -194,7 +182,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiovolumetricradius</remarks>
         /// </summary>
         [Tooltip(
-            "Range in which the player audio sources are not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed."
+                "Range in which the player audio sources are not spatialized. Increases experienced volume by a lot! May require extensive tweaking of gain/range parameters when being changed."
         )]
         [UdonSynced]
         public float AvatarVolumetricRadius;
@@ -207,47 +195,37 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// Leave at a constant value of 1.0 to turn off avatar height based voice range changes.
         /// </summary>
         [Tooltip(
-            "Defines how other players avatar eye height affects their audio ranges.\n"
-            + "On the X-axis is the eye height, on the y-axis is the voice range multiplier.\n\n"
-            + "Leave at a constant value of 1.0 to turn off avatar height based voice range changing."
+                "Defines how other players avatar eye height affects their audio ranges.\n"
+                + "On the X-axis is the eye height, on the y-axis is the voice range multiplier.\n\n"
+                + "Leave at a constant value of 1.0 to turn off avatar height based voice range changing."
         )]
         public AnimationCurve HeightToVoiceCorrelation = AnimationCurve.Constant(0, 25, 1f);
-
         #endregion
-
         #endregion
 
 
         #region Udon Lifecycle
-
-        protected void OnEnable()
-        {
+        protected void OnEnable() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnEnable));
 #endif
-
             #endregion
 
 
-            if (!Initialized)
-            {
+            if (!Initialized) {
                 return;
             }
 
             Dirty = true;
             NotifyIfDirty(1);
         }
-
         #endregion
 
-        public override void OnDeserialization(DeserializationResult deserializationResult)
-        {
+        public override void OnDeserialization(DeserializationResult deserializationResult) {
             base.OnDeserialization(deserializationResult);
 
-            if (!Initialized)
-            {
+            if (!Initialized) {
                 Warn("Skipping as not yet initialized");
                 return;
             }

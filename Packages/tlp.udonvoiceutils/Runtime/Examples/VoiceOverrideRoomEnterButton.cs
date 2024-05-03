@@ -1,6 +1,7 @@
 ﻿using TLP.UdonUtils;
 using UdonSharp;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
@@ -9,53 +10,45 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     public class VoiceOverrideRoomEnterButton : TlpBaseBehaviour
     {
         #region Teleport settings
-
+        [FormerlySerializedAs("optionalEnterLocation")]
         [Header("Teleport settings")]
-        public Transform optionalEnterLocation;
-
+        public Transform OptionalEnterLocation;
         #endregion
 
         #region Mandatory references
-
+        [FormerlySerializedAs("voiceOverrideRoom")]
         [Header("Mandatory references")]
-        public VoiceOverrideRoom voiceOverrideRoom;
-
+        public VoiceOverrideRoom VoiceOverrideRoom;
         #endregion
 
-        public override void Interact()
-        {
+        public override void Interact() {
 #if TLP_DEBUG
             DebugLog(nameof(Interact));
 #endif
             EnterRoom(Networking.LocalPlayer);
         }
 
-        internal void EnterRoom(VRCPlayerApi playerApi)
-        {
+        internal void EnterRoom(VRCPlayerApi playerApi) {
 #if TLP_DEBUG
             DebugLog(nameof(EnterRoom));
 #endif
-            if (!Assert(Utilities.IsValid(playerApi), "Invalid Player tried entering a room", this))
-            {
+            if (!Assert(Utilities.IsValid(playerApi), "Invalid Player tried entering a room", this)) {
                 return;
             }
 
-            if (!playerApi.isLocal)
-            {
+            if (!playerApi.isLocal) {
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(voiceOverrideRoom), "VoiceOverrideRoom invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(VoiceOverrideRoom), "VoiceOverrideRoom invalid", this)) {
                 return;
             }
 
-            if (!voiceOverrideRoom.Contains(playerApi))
-            {
+            if (!VoiceOverrideRoom.Contains(playerApi)) {
                 Assert(
-                    voiceOverrideRoom.EnterRoom(playerApi, optionalEnterLocation),
-                    "EnterRoom failed",
-                    this
+                        VoiceOverrideRoom.EnterRoom(playerApi, OptionalEnterLocation),
+                        "EnterRoom failed",
+                        this
                 );
             }
         }

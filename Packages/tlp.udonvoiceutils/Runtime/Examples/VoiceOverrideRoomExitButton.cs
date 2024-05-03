@@ -1,6 +1,7 @@
 ﻿using TLP.UdonUtils;
 using UdonSharp;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
@@ -9,54 +10,44 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     public class VoiceOverrideRoomExitButton : TlpBaseBehaviour
     {
         #region Teleport settings
-
+        [FormerlySerializedAs("optionalExitLocation")]
         [Header("Teleport settings")]
-        public Transform optionalExitLocation;
-
+        public Transform OptionalExitLocation;
         #endregion
 
         #region Mandatory references
-
+        [FormerlySerializedAs("voiceOverrideRoom")]
         [Header("Mandatory references")]
-        public VoiceOverrideRoom voiceOverrideRoom;
-
+        public VoiceOverrideRoom VoiceOverrideRoom;
         #endregion
 
-        public override void Interact()
-        {
+        public override void Interact() {
             ExitRoom(Networking.LocalPlayer);
         }
 
 
         #region internal
-
-        internal void ExitRoom(VRCPlayerApi playerApi)
-        {
-            if (!Assert(Utilities.IsValid(playerApi), "player invalid", this))
-            {
+        internal void ExitRoom(VRCPlayerApi playerApi) {
+            if (!Assert(Utilities.IsValid(playerApi), "player invalid", this)) {
                 return;
             }
 
-            if (!Assert(playerApi.isLocal, "player not local", this))
-            {
+            if (!Assert(playerApi.isLocal, "player not local", this)) {
                 return;
             }
 
-            if (!Assert(Utilities.IsValid(voiceOverrideRoom), "voiceOverrideRoom invalid", this))
-            {
+            if (!Assert(Utilities.IsValid(VoiceOverrideRoom), "voiceOverrideRoom invalid", this)) {
                 return;
             }
 
-            if (voiceOverrideRoom.Contains(playerApi))
-            {
+            if (VoiceOverrideRoom.Contains(playerApi)) {
                 Assert(
-                    voiceOverrideRoom.ExitRoom(playerApi, optionalExitLocation),
-                    "ExitRoom failed",
-                    this
+                        VoiceOverrideRoom.ExitRoom(playerApi, OptionalExitLocation),
+                        "ExitRoom failed",
+                        this
                 );
             }
         }
-
         #endregion
     }
 }

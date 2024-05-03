@@ -30,8 +30,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             {
                 DebugLog($"Set {nameof(PlayerIdProperty)} = {value}");
                 bool valueUnchanged = _playerId == value;
-                if (valueUnchanged)
-                {
+                if (valueUnchanged) {
                     return;
                 }
 
@@ -42,13 +41,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 NewUserStartUsingMic(_playerId);
 
                 if (!(Utilities.IsValid(PlayerIdSync)
-                      && Networking.IsOwner(gameObject)))
-                {
+                      && Networking.IsOwner(gameObject))) {
                     return;
                 }
 
-                if (!Networking.IsOwner(PlayerIdSync.gameObject))
-                {
+                if (!Networking.IsOwner(PlayerIdSync.gameObject)) {
                     Networking.SetOwner(Networking.LocalPlayer, PlayerIdSync.gameObject);
                 }
 
@@ -59,45 +56,31 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         }
 
         #region Mandatory references
-
         [Header("Mandatory references")]
         public PlayerAudioOverride PlayerAudioOverride;
-
         #endregion
 
-        private void Start()
-        {
-            #region TLP_DEBUG
+        public override void Start() {
+            base.Start();
 
-#if TLP_DEBUG
-            DebugLog(nameof(Start));
-#endif
-
-            if (!Utilities.IsValid(PlayerIdSync))
-            {
+            if (!Utilities.IsValid(PlayerIdSync)) {
                 Error($"{nameof(PlayerIdSync)} not set");
                 return;
             }
-
-            #endregion
 
             PlayerIdSync.AddListenerVerified(this, nameof(UserChanged));
             PlayerIdSync.Value = NoUser;
         }
 
-        public override void OnPickup()
-        {
+        public override void OnPickup() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnPickup));
 #endif
-
             #endregion
 
             var localPlayer = Networking.LocalPlayer;
-            if (!Utilities.IsValid(localPlayer))
-            {
+            if (!Utilities.IsValid(localPlayer)) {
                 return;
             }
 
@@ -105,35 +88,28 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             PlayerIdProperty = localPlayer.playerId;
         }
 
-        public override void OnDrop()
-        {
+        public override void OnDrop() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnDrop));
 #endif
-
             #endregion
 
 
-            if (Networking.IsOwner(gameObject))
-            {
+            if (Networking.IsOwner(gameObject)) {
                 PlayerIdProperty = NoUser;
             }
         }
 
-        private void OnEnable()
-        {
+        private void OnEnable() {
             NewUserStartUsingMic(_playerId);
         }
 
-        private void OnDisable()
-        {
+        private void OnDisable() {
             CleanUpOldUser(_playerId);
         }
 
-        private void OnDestroy()
-        {
+        private void OnDestroy() {
             CleanUpOldUser(_playerId);
         }
 
@@ -141,10 +117,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         /// take ownership of the microphone if the user doesn't have it yet, or force it
         /// </summary>
         /// <param name="localPlayer"></param>
-        private void TakeOwnership(VRCPlayerApi localPlayer)
-        {
-            if (!OwnershipTransfer.TransferOwnership(gameObject, localPlayer, true))
-            {
+        private void TakeOwnership(VRCPlayerApi localPlayer) {
+            if (!OwnershipTransfer.TransferOwnership(gameObject, localPlayer, true)) {
                 Error("PickupMicrophone.TakeOwnership: failed to transfer ownership");
             }
         }
@@ -152,26 +126,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         /// <summary>
         /// if the mic is still held by the given user let that person no longer be affected by the mic
         /// </summary>
-        private void CleanUpOldUser(int oldUser)
-        {
+        private void CleanUpOldUser(int oldUser) {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(CleanUpOldUser));
 #endif
-
             #endregion
 
-            if (oldUser == NoUser)
-            {
+            if (oldUser == NoUser) {
                 return;
             }
 
             var currentMicUser = VRCPlayerApi.GetPlayerById(oldUser);
-            if (Utilities.IsValid(currentMicUser))
-            {
-                if (Utilities.IsValid(PlayerAudioOverride))
-                {
+            if (Utilities.IsValid(currentMicUser)) {
+                if (Utilities.IsValid(PlayerAudioOverride)) {
                     PlayerAudioOverride.RemovePlayer(currentMicUser);
                 }
             }
@@ -180,45 +148,35 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         /// <summary>
         /// let the given user be affected by the mic
         /// </summary>
-        private void NewUserStartUsingMic(int newUser)
-        {
+        private void NewUserStartUsingMic(int newUser) {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(NewUserStartUsingMic));
 #endif
-
             #endregion
 
-            if (newUser == NoUser)
-            {
+            if (newUser == NoUser) {
                 return;
             }
 
             var newMicUser = VRCPlayerApi.GetPlayerById(newUser);
-            if (!Utilities.IsValid(newMicUser))
-            {
+            if (!Utilities.IsValid(newMicUser)) {
                 return;
             }
 
-            if (Utilities.IsValid(PlayerAudioOverride))
-            {
+            if (Utilities.IsValid(PlayerAudioOverride)) {
                 PlayerAudioOverride.AddPlayer(newMicUser);
             }
         }
 
-        public override void OnEvent(string eventName)
-        {
+        public override void OnEvent(string eventName) {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(OnEvent));
 #endif
-
             #endregion
 
-            switch (eventName)
-            {
+            switch (eventName) {
                 case nameof(UserChanged):
                     UserChanged();
                     break;
@@ -228,14 +186,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
         }
 
-        private void UserChanged()
-        {
+        private void UserChanged() {
             #region TLP_DEBUG
-
 #if TLP_DEBUG
             DebugLog(nameof(UserChanged));
 #endif
-
             #endregion
 
             PlayerIdProperty = PlayerIdSync.Value;
