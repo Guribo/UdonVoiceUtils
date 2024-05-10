@@ -4625,6 +4625,7 @@ MonoBehaviour:
   m_Script: {fileID: -1533785930, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AllowFocusView: 1
 --- !u!114 &166848821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55908,11 +55909,23 @@ PrefabInstance:
       propertyPath: _syncMethod
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 477821840008949651, guid: 9aa3664ebac948042a90fd58d2355175,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4ee1b68a0beea0b48815dd6eea2e45db,
+        type: 2}
     - target: {fileID: 4034130123786063638, guid: 9aa3664ebac948042a90fd58d2355175,
         type: 3}
       propertyPath: _syncMethod
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4034130123786063638, guid: 9aa3664ebac948042a90fd58d2355175,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 0dc861281d293834fa6bcf087b4de1db,
+        type: 2}
     - target: {fileID: 7267592404545306744, guid: 9aa3664ebac948042a90fd58d2355175,
         type: 3}
       propertyPath: m_Name

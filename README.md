@@ -225,6 +225,12 @@ Please follow these steps in order and read all the instructions first before ex
 
 All notable changes to this project will be documented in this file.
 
+### [1.0.0-rc.4] - 2024-05-10
+
+#### ⚙️ Miscellaneous Tasks
+
+- Support com.vrchat.worlds 3.6.x and Unity 2022.3.22
+
 ### [1.0.0-rc.3] - 2024-05-03
 
 #### 🚀 Features
