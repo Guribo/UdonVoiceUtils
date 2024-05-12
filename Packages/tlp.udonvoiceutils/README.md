@@ -52,10 +52,12 @@ Jump to [Installation](#installation) to get started... but I really recommend y
 
 ### Where is it being used?
 
-- Midnight Rooftop by ImLeXz - *Occlusion, Voice directionality*
-- The Black Cat by spookyghostboo - *Voice directionality*
-- The Great Pub by owlboy - *Occlusion, Voice directionality*
-- Pool Parlor by Toasterly - *Voice directionality, Audio zones*
+- [Drinking Night](https://vrchat.com/home/world/wrld_4a65ba53-d8df-40a7-b67d-30c63bff0e95) by Rackshaw - *Occlusion, Audio zones*
+- [Midnight Rooftop](https://vrchat.com/home/world/wrld_d29bb0d0-d268-42dc-8365-926f9d485505) by ImLeXz - *Occlusion, Voice directionality*
+- [The Black Cat](https://vrchat.com/home/world/wrld_4cf554b4-430c-4f8f-b53e-1f294eed230b) by spookyghostboo - *Voice directionality*
+- [The Great Pub](https://vrchat.com/home/world/wrld_6caf5200-70e1-46c2-b043-e3c4abe69e0f) by owlboy - *Occlusion, Voice directionality*
+- [The Pool Parlor](https://vrchat.com/home/world/wrld_99bdc4c6-b80c-49f3-aae0-5d67017d8340) by Toasterly - *Voice directionality, Audio zones*
+- [Virtual Performing Arts Theater](https://vrchat.com/home/world/wrld_f1ae5929-a881-4c21-acc0-8d5cb9bf919f) by DjembeDragon - *Private channels, Audio Zones, Reverb, Audience/Stage volume control*
 - ...
 
 
@@ -224,6 +226,12 @@ Please follow these steps in order and read all the instructions first before ex
 ## Changelog
 
 All notable changes to this project will be documented in this file.
+
+### [1.0.0-rc.5] - 2024-05-12
+
+#### 📚 Documentation
+
+- *(Readme)* Add new world listings, add links to VRC worlds
 
 ### [1.0.0-rc.4] - 2024-05-10
 
