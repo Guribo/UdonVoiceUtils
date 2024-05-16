@@ -1,6 +1,7 @@
 ﻿#if !COMPILER_UDONSHARP && UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using TLP.UdonUtils.Common;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEditor;
@@ -53,7 +54,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                         Handles.DrawDottedLine(playerAudioController.transform.position, doorPosition, 2);
 
                         GUI.color = Color.white;
-                        Handles.Label(doorPosition, playerAudioOverride.gameObject.name);
+                        Handles.Label(doorPosition, playerAudioOverride.transform.GetPathInScene());
                     }
                 }
                     break;

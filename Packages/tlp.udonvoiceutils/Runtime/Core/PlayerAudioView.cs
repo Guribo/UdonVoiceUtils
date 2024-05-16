@@ -265,6 +265,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             }
 
             _preventChangeEvent = false;
+            UpdateUi();
         }
 
         /// <summary>
@@ -276,6 +277,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             DebugLog(nameof(UpdateUi));
 #endif
             #endregion
+
+            if (!Initialized) {
+                Error($"Not initialized, did you reference it correctly on the {nameof(PlayerAudioController)}?");
+                return;
+            }
 
             var owner = Networking.GetOwner(_playerAudioController.gameObject);
             if (Utilities.IsValid(owner)) {

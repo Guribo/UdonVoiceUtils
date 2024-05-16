@@ -227,6 +227,22 @@ Please follow these steps in order and read all the instructions first before ex
 
 All notable changes to this project will be documented in this file.
 
+### [1.0.0-rc.6] - 2024-05-16
+
+#### 🚀 Features
+
+- *(Gizmos)* Display entire GameObject path instead of just name in scene view when PlayerAudioController is selected
+
+#### 🐛 Bug Fixes
+
+- *(PlayerAudioView)* Fix custom default settings not being displayed after init
+- *(PlayerAudioController)* Fix PlayerAudioOverride occlusion values being applied inverted
+- *(Prefabs)* Fix main prefab with UI having broken references in new scenes
+
+#### 🎨 Styling
+
+- *(Demo)* Bake light of demo scene, add light probes
+
 ### [1.0.0-rc.5] - 2024-05-12
 
 #### 📚 Documentation

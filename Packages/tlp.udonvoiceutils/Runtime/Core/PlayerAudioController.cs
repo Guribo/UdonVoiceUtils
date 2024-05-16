@@ -517,8 +517,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     listenerHeadPosition,
                     direction,
                     distance,
-                    playerOverride.OcclusionFactor,
-                    playerOverride.PlayerOcclusionFactor,
+                    1f - playerOverride.OcclusionFactor,
+                    1f - playerOverride.PlayerOcclusionFactor,
                     playerOverride.OcclusionMask
             );
 
