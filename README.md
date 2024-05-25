@@ -227,6 +227,12 @@ Please follow these steps in order and read all the instructions first before ex
 
 All notable changes to this project will be documented in this file.
 
+### [1.0.0] - 2024-05-25
+
+#### ⚙️ Miscellaneous Tasks
+
+- Migrate to UdonUtils 8.1.0, go into full release state
+
 ### [1.0.0-rc.6] - 2024-05-16
 
 #### 🚀 Features

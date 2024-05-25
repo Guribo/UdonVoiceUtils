@@ -1,9 +1,9 @@
 ﻿using System;
 using JetBrains.Annotations;
-using TLP.UdonUtils;
-using TLP.UdonUtils.DesignPatterns.MVC;
-using TLP.UdonUtils.Events;
-using TLP.UdonUtils.Extensions;
+using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
+using TLP.UdonUtils.Runtime.Events;
+using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Pool;
 using UdonSharp;
 using UnityEngine;

@@ -1,6 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
-using TLP.UdonUtils;
+using TLP.UdonUtils.Runtime;
 using UdonSharp;
 using VRC.SDKBase;
 

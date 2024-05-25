@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using TLP.UdonUtils;
-using TLP.UdonUtils.Sync;
-using TLP.UdonUtils.Sync.SyncedEvents;
+using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Sync;
+using TLP.UdonUtils.Runtime.Sync.SyncedEvents;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;

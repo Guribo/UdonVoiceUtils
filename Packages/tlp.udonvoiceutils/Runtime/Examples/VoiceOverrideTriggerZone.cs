@@ -1,4 +1,4 @@
-﻿using TLP.UdonUtils;
+﻿using TLP.UdonUtils.Runtime;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;

@@ -1,4 +1,5 @@
 using TLP.UdonUtils;
+using TLP.UdonUtils.Runtime;
 
 namespace TLP.UdonVoiceUtils.Runtime
 {

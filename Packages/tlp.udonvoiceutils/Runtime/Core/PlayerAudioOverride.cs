@@ -1,7 +1,7 @@
-﻿using TLP.UdonUtils;
-using TLP.UdonUtils.Events;
-using TLP.UdonUtils.Extensions;
-using TLP.UdonUtils.Player;
+﻿using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Events;
+using TLP.UdonUtils.Runtime.Extensions;
+using TLP.UdonUtils.Runtime.Player;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;

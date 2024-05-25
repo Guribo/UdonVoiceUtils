@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using JetBrains.Annotations;
-using TLP.UdonUtils.DesignPatterns.MVC;
+using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;

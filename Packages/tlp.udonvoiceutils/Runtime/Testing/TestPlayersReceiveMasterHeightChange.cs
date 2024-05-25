@@ -1,6 +1,6 @@
 ﻿using System;
-using TLP.UdonUtils.Extensions;
-using TLP.UdonUtils.Testing;
+using TLP.UdonUtils.Runtime.Extensions;
+using TLP.UdonUtils.Runtime.Testing;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;

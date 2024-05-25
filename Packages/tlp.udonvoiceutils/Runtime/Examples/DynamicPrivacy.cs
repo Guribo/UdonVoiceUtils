@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
-using TLP.UdonUtils;
-using TLP.UdonUtils.Events;
+using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Events;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;

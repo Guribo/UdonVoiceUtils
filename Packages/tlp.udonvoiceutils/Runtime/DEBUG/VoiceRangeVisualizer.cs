@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using TLP.UdonUtils.Adapters.Cyan;
-using TLP.UdonUtils.Extensions;
-using TLP.UdonUtils.Player;
+using TLP.UdonUtils.Runtime.Adapters.Cyan;
+using TLP.UdonUtils.Runtime.Extensions;
+using TLP.UdonUtils.Runtime.Player;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;

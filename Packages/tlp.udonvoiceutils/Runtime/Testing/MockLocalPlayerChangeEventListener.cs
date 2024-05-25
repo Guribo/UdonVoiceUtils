@@ -1,5 +1,5 @@
 #if !COMPILER_UDONSHARP && UNITY_EDITOR
-using TLP.UdonUtils;
+using TLP.UdonUtils.Runtime;
 using UnityEngine.Serialization;
 
 namespace TLP.UdonVoiceUtils.Runtime.IngameTests

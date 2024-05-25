@@ -1,7 +1,7 @@
 ﻿using System;
-using TLP.UdonUtils;
-using TLP.UdonUtils.Extensions;
-using TLP.UdonUtils.Player;
+using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Extensions;
+using TLP.UdonUtils.Runtime.Player;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;
