@@ -23,6 +23,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
         private Collider[] _allTrigger;
 
+        private int[] playerIds = new int[82];
+        private int[] colliderStacks = new int[82];
+
         public override void Start() {
             base.Start();
             // ensure that players already being inside the trigger before udon starts are detected by disabling them
@@ -30,6 +33,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             _allTrigger = gameObject.GetComponents<Collider>();
             DisableAllTrigger();
             SendCustomEventDelayedFrames(nameof(EnableAllTriggerDelayed), 1, EventTiming.LateUpdate);
+            SendCustomEventDelayedSeconds(nameof(TriggerStayCheck), 1f, EventTiming.LateUpdate);
         }
 
         #region Internal
@@ -70,7 +74,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            Assert(PlayerAudioOverride.AddPlayer(player), "Failed to add player", this);
+            var index = System.Array.IndexOf(playerIds, player.playerId);
+            if (index > -1)
+            {
+                var stack = colliderStacks[index] + 1;
+                colliderStacks[index] = stack;
+                if (stack == 1)
+                    Assert(PlayerAudioOverride.AddPlayer(player), "Failed to add player", this);
+            }
+            else Assert(PlayerAudioOverride.AddPlayer(player), "Failed to add player", this);
         }
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player) {
@@ -85,7 +97,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            Assert(PlayerAudioOverride.RemovePlayer(player), "Failed to remove player", this);
+            var index = System.Array.IndexOf(playerIds, player.playerId);
+            if (index > -1)
+            {
+                var stack = colliderStacks[index] - 1;
+                colliderStacks[index] = stack;
+                if (stack == 0)
+                    Assert(PlayerAudioOverride.RemovePlayer(player), "Failed to remove player", this);
+            }
+            else Assert(PlayerAudioOverride.RemovePlayer(player), "Failed to remove player", this);
         }
 
         public void OnDisable() {
@@ -97,6 +117,65 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             Assert(PlayerAudioOverride.Clear(), "Failed to clear on disable", this);
+        }
+
+        // This ensures continuity for edge cases like players entering stations while in the trigger zone.
+        public void TriggerStayCheck()
+        {
+            SendCustomEventDelayedSeconds(nameof(TriggerStayCheck), 5f);
+            RecheckTriggers();
+        }
+
+        public void RecheckTriggers()
+        {
+            int inside = 0;
+            var player = Networking.LocalPlayer;
+            foreach (var t in _allTrigger)
+            {
+                if (!t.enabled) continue;
+                var pos = player.GetPosition();
+                if (t.ClosestPoint(pos) == pos) inside++;
+            }
+
+            var index = System.Array.IndexOf(playerIds, player.playerId);
+            if (index > -1)
+            {
+                var lastInside = colliderStacks[index];
+                colliderStacks[index] = inside;
+                if (inside > lastInside && inside == 1) Assert(PlayerAudioOverride.AddPlayer(player), "Failed to add player", this);
+                else if (inside < lastInside && inside == 0) Assert(PlayerAudioOverride.RemovePlayer(player), "Failed to remove player", this);
+            }
+        }
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            var index = System.Array.IndexOf(playerIds, 0);
+            if (index == -1)
+            {
+                index = playerIds.Length;
+                expand(ref playerIds, index + 20);
+                expand(ref colliderStacks, index + 20);
+            }
+
+            playerIds[index] = player.playerId;
+            colliderStacks[index] = 0;
+        }
+
+        public override void OnPlayerLeft(VRCPlayerApi player)
+        {
+            var index = System.Array.IndexOf(playerIds, player.playerId);
+            if (index > -1)
+            {
+                playerIds[index] = 0;
+                colliderStacks[index] = 0;
+            }
+        }
+
+        private void expand(ref int[] stale, int newSize)
+        {
+            var fresh = new int[newSize];
+            System.Array.Copy(stale, fresh, stale.Length);
+            stale = fresh;
         }
     }
 }
