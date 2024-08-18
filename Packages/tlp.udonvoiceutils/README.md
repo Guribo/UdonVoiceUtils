@@ -54,6 +54,7 @@ Jump to [Installation](#installation) to get started... but I really recommend y
 
 - [Drinking Night](https://vrchat.com/home/world/wrld_4a65ba53-d8df-40a7-b67d-30c63bff0e95) by Rackshaw - *Occlusion, Audio zones*
 - [Midnight Rooftop](https://vrchat.com/home/world/wrld_d29bb0d0-d268-42dc-8365-926f9d485505) by ImLeXz - *Occlusion, Voice directionality*
+- [The Avali ShatterDome](https://vrchat.com/home/launch?worldId=wrld_f2c3ed62-7d02-416d-a450-753939a5f327) by RadioFoxWin - *Microphone, PlayerAudioController menu*
 - [The Black Cat](https://vrchat.com/home/world/wrld_4cf554b4-430c-4f8f-b53e-1f294eed230b) by spookyghostboo - *Voice directionality*
 - [The Great Pub](https://vrchat.com/home/world/wrld_6caf5200-70e1-46c2-b043-e3c4abe69e0f) by owlboy - *Occlusion, Voice directionality*
 - [The Pool Parlor](https://vrchat.com/home/world/wrld_99bdc4c6-b80c-49f3-aae0-5d67017d8340) by Toasterly - *Voice directionality, Audio zones*
@@ -226,6 +227,17 @@ Please follow these steps in order and read all the instructions first before ex
 ## Changelog
 
 All notable changes to this project will be documented in this file.
+
+### [1.0.1] - 2024-08-18
+
+#### 📚 Documentation
+
+- *(Readme)* Add The Avali ShatterDome by RadioFoxWin to list of worlds
+
+#### ⚙️ Miscellaneous Tasks
+
+- Support UdonUtils 8.2.0
+- Add support for com.vrchat.worlds 3.7.x
 
 ### [1.0.0] - 2024-05-25
 
