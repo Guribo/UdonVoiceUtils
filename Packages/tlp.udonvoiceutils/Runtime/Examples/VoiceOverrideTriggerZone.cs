@@ -1,4 +1,7 @@
-﻿using TLP.UdonUtils.Runtime;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Common;
+using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;
@@ -13,24 +16,107 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     /// associated voice override.
     /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    [DefaultExecutionOrder(TlpExecutionOrder.AudioStart)]
+    [DefaultExecutionOrder(ExecutionOrder)]
     public class VoiceOverrideTriggerZone : TlpBaseBehaviour
     {
+        #region ExecutionOrder
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = PlayerAudioOverride.ExecutionOrder + 1;
+        #endregion
+
         #region Mandatory references
         [FormerlySerializedAs("playerAudioOverride")]
         [Header("Mandatory references")]
         public PlayerAudioOverride PlayerAudioOverride;
+        #endregion
 
+        #region State
         private Collider[] _allTrigger;
+        internal bool Initialized { private set; get; }
+        #endregion
 
-        public override void Start() {
-            base.Start();
+        #region Lifecycle
+        public void OnDisable() {
+#if TLP_DEBUG
+            DebugLog(nameof(OnDisable));
+#endif
+            if (!Utilities.IsValid(PlayerAudioOverride) || PlayerAudioOverride.Clear()) {
+                return;
+            }
+
+            Error("Failed to clear on disable");
+        }
+        #endregion
+
+        #region Player Events
+        public override void OnPlayerTriggerEnter(VRCPlayerApi player) {
+#if TLP_DEBUG
+            DebugLog(nameof(OnPlayerTriggerEnter));
+#endif
+            if (!Initialized) {
+                Error("Not initialized");
+                return;
+            }
+
+            if (!Utilities.IsValid(player)) {
+                Error($"{nameof(OnPlayerTriggerEnter)}: Invalid player entered");
+                return;
+            }
+
+            if (!PlayerAudioOverride.AddPlayer(player)) {
+                Error($"Failed to add {player.ToStringSafe()} to {PlayerAudioOverride.GetScriptPathInScene()}");
+            }
+        }
+
+        public override void OnPlayerTriggerExit(VRCPlayerApi player) {
+#if TLP_DEBUG
+            DebugLog(nameof(OnPlayerTriggerExit));
+#endif
+            if (!Initialized) {
+                Error("Not initialized");
+                return;
+            }
+
+            if (!Utilities.IsValid(player)) {
+                Error($"{nameof(OnPlayerTriggerExit)}: Invalid player exited");
+                return;
+            }
+
+            if (!PlayerAudioOverride.RemovePlayer(player)) {
+                Error($"Failed to remove {player.ToStringSafe()} from {PlayerAudioOverride.GetScriptPathInScene()}");
+            }
+        }
+        #endregion
+
+
+        #region Overrides
+        protected override bool SetupAndValidate() {
+            if (!base.SetupAndValidate()) {
+                return false;
+            }
+
+            if (!Utilities.IsValid(PlayerAudioOverride)) {
+                Error($"{nameof(PlayerAudioOverride)} not set");
+                return false;
+            }
+
+            if (!PlayerAudioOverride.ForceNoSynchronization()) {
+                Error($"Failed to disable synchronization on {PlayerAudioOverride.GetScriptPathInScene()}");
+                return false;
+            }
+
+            Initialized = true;
+
             // ensure that players already being inside the trigger before udon starts are detected by disabling them
-            // once and enabling them 1 frame later again  
+            // once and enabling them 1 frame later again
             _allTrigger = gameObject.GetComponents<Collider>();
             DisableAllTrigger();
             SendCustomEventDelayedFrames(nameof(EnableAllTriggerDelayed), 1, EventTiming.LateUpdate);
+            return true;
         }
+        #endregion
 
         #region Internal
         private void DisableAllTrigger() {
@@ -56,47 +142,5 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
         }
         #endregion
-        #endregion
-
-        public override void OnPlayerTriggerEnter(VRCPlayerApi player) {
-#if TLP_DEBUG
-            DebugLog(nameof(OnPlayerTriggerEnter));
-#endif
-            if (!Assert(Utilities.IsValid(player), "Entering player invalid", this)) {
-                return;
-            }
-
-            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this)) {
-                return;
-            }
-
-            Assert(PlayerAudioOverride.AddPlayer(player), "Failed to add player", this);
-        }
-
-        public override void OnPlayerTriggerExit(VRCPlayerApi player) {
-#if TLP_DEBUG
-            DebugLog(nameof(OnPlayerTriggerExit));
-#endif
-            if (!Assert(Utilities.IsValid(player), "Exiting player invalid", this)) {
-                return;
-            }
-
-            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this)) {
-                return;
-            }
-
-            Assert(PlayerAudioOverride.RemovePlayer(player), "Failed to remove player", this);
-        }
-
-        public void OnDisable() {
-#if TLP_DEBUG
-            DebugLog(nameof(OnDisable));
-#endif
-            if (!Assert(Utilities.IsValid(PlayerAudioOverride), "playerAudioOverride invalid", this)) {
-                return;
-            }
-
-            Assert(PlayerAudioOverride.Clear(), "Failed to clear on disable", this);
-        }
     }
 }

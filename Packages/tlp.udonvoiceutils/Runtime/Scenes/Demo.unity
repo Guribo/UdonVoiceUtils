@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 1787983410}
-  m_IndirectSpecularColor: {r: 0.33220503, g: 0.36271596, b: 0.4647405, a: 1}
+  m_IndirectSpecularColor: {r: 0.3322065, g: 0.3627174, b: 0.46474278, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -215,6 +215,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2869101}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -272,20 +274,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2869103}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1679848107}
   Far: {fileID: 1177117706}
   NearField: {fileID: 2117764396}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &3119945
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,6 +520,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 6533104}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -579,20 +579,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 6533106}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 154048555}
   Far: {fileID: 1146437628}
   NearField: {fileID: 1574442405}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &6729237
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,6 +793,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 7861444}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -854,20 +852,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 7861446}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1041260657}
   Far: {fileID: 113187938}
   NearField: {fileID: 819547490}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &9078514
 GameObject:
   m_ObjectHideFlags: 0
@@ -1161,6 +1155,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 14516314}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -1218,20 +1214,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 14516316}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 419226140}
   Far: {fileID: 911399988}
   NearField: {fileID: 407339180}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &15582799
 GameObject:
   m_ObjectHideFlags: 0
@@ -1966,6 +1958,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 56839128}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -2023,20 +2017,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 56839130}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 864274276}
   Far: {fileID: 1634101352}
   NearField: {fileID: 1199930493}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &58425995
 GameObject:
   m_ObjectHideFlags: 0
@@ -2700,6 +2690,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 97070117}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -2757,20 +2749,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 97070119}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 743694137}
   Far: {fileID: 1506359980}
   NearField: {fileID: 1618212841}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &103341913
 GameObject:
   m_ObjectHideFlags: 0
@@ -2978,6 +2966,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 107337962}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -3035,20 +3025,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 107337964}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1534904637}
   Far: {fileID: 627401563}
   NearField: {fileID: 1624262807}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &111549071
 GameObject:
   m_ObjectHideFlags: 0
@@ -3886,6 +3872,12 @@ Transform:
   - {fileID: 1096992242}
   m_Father: {fileID: 1917115188}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &138938478 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 139794520833833088, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 1069278333}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &139158282
 GameObject:
   m_ObjectHideFlags: 0
@@ -4824,6 +4816,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 172489280}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -4881,20 +4875,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 172489282}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2073100753}
   Far: {fileID: 866889068}
   NearField: {fileID: 290130209}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &177378571
 GameObject:
   m_ObjectHideFlags: 0
@@ -6016,6 +6006,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 251271971}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -6073,20 +6065,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 251271973}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1528798932}
   Far: {fileID: 6241550}
   NearField: {fileID: 203478594}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &252708558
 GameObject:
   m_ObjectHideFlags: 0
@@ -7222,6 +7210,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 293968391}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -7279,20 +7269,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 293968393}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1701500322}
   Far: {fileID: 674596527}
   NearField: {fileID: 1513573407}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &298903266
 GameObject:
   m_ObjectHideFlags: 0
@@ -7815,6 +7801,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 340532702}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -7872,20 +7860,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 340532704}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 762671956}
   Far: {fileID: 1258657369}
   NearField: {fileID: 141073945}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &342920417
 GameObject:
   m_ObjectHideFlags: 0
@@ -7967,6 +7951,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 342920419}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -8101,6 +8087,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 349285704}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -8158,20 +8146,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 349285706}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 646184029}
   Far: {fileID: 1026329395}
   NearField: {fileID: 52062001}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &350399290 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2611232789528767386, guid: dc582d1d0bf2fc048b79255c2369a556,
@@ -8797,6 +8781,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 384605876}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -8854,20 +8840,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 384605878}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 518165863}
   Far: {fileID: 298903267}
   NearField: {fileID: 58425996}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &387264483
 GameObject:
   m_ObjectHideFlags: 0
@@ -9161,6 +9143,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 406406295}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -9218,20 +9202,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 406406297}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 656101427}
   Far: {fileID: 1170661555}
   NearField: {fileID: 282623944}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &406559607
 GameObject:
   m_ObjectHideFlags: 0
@@ -9532,6 +9512,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 409847024}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -9589,20 +9571,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 409847026}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 764249546}
   Far: {fileID: 1167085248}
   NearField: {fileID: 97021479}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &414731633
 GameObject:
   m_ObjectHideFlags: 0
@@ -9692,6 +9670,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 414731635}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -9749,20 +9729,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 414731637}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2083920233}
   Far: {fileID: 382578737}
   NearField: {fileID: 468118005}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!4 &418678402 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6755912258943613209, guid: dc582d1d0bf2fc048b79255c2369a556,
@@ -10007,6 +9983,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 420509602}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -10064,20 +10042,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 420509604}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 773995270}
   Far: {fileID: 1957547555}
   NearField: {fileID: 1741206327}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &439525266
 GameObject:
   m_ObjectHideFlags: 0
@@ -10256,6 +10230,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 446123473}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -10313,20 +10289,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 446123475}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2054562783}
   Far: {fileID: 1874714669}
   NearField: {fileID: 576162311}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &446201263
 GameObject:
   m_ObjectHideFlags: 0
@@ -11170,6 +11142,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 480018697}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -11227,20 +11201,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 480018699}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 202426236}
   Far: {fileID: 1186178328}
   NearField: {fileID: 358880105}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &482925989
 GameObject:
   m_ObjectHideFlags: 0
@@ -11407,6 +11377,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 488357350}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &497650662 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7808411565946752853, guid: 00334f725dae7c24aa6715aefa325fd2,
+    type: 3}
+  m_PrefabInstance: {fileID: 672748913}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &504360367
 GameObject:
   m_ObjectHideFlags: 0
@@ -11977,6 +11953,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 533503550}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -12198,6 +12176,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 542739228}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -12255,20 +12235,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 542739230}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1124866517}
   Far: {fileID: 1191839956}
   NearField: {fileID: 739362784}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1001 &546136652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12766,6 +12742,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 551598980}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -12823,20 +12801,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 551598982}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 926683767}
   Far: {fileID: 623871476}
   NearField: {fileID: 554805939}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &554805938
 GameObject:
   m_ObjectHideFlags: 0
@@ -13486,6 +13460,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 584744163}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -13568,6 +13544,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 592801476}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -14173,6 +14151,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 612657695}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -14230,20 +14210,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 612657697}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 245048980}
   Far: {fileID: 1296232394}
   NearField: {fileID: 657662016}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &617391579
 GameObject:
   m_ObjectHideFlags: 0
@@ -14427,6 +14403,17 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 2677931791027998608, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2884558250923139498, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -14453,12 +14440,47 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[0]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2915490082731494779, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2988317469971998195, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializedProgramAsset
       value: 
       objectReference: {fileID: 11400000, guid: 717664729863f1244879bdb03467835e,
         type: 2}
+    - target: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 5879668846447256369, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -14490,6 +14512,12 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 6304727246407199568, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: m_Name
@@ -14498,7 +14526,7 @@ PrefabInstance:
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -14627,6 +14655,22 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1f6e33a58a70568488e1df1b8354d344,
+        type: 2}
+    - target: {fileID: 7002554818575380994, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -14673,6 +14717,18 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
     - target: {fileID: 9172536517904237588, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -14786,6 +14842,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 633402908}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -14843,20 +14901,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 633402910}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 26857748}
   Far: {fileID: 1967417664}
   NearField: {fileID: 2102667065}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &637643830
 GameObject:
   m_ObjectHideFlags: 0
@@ -15144,6 +15198,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 641150507}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -15201,20 +15257,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 641150509}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 252708559}
   Far: {fileID: 1374939101}
   NearField: {fileID: 472116529}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &642159005
 GameObject:
   m_ObjectHideFlags: 0
@@ -15911,6 +15963,12 @@ Transform:
   - {fileID: 1170158123}
   m_Father: {fileID: 677768065}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &665317971 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5091154399069525134, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 982806469}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &665432518
 GameObject:
   m_ObjectHideFlags: 0
@@ -16032,6 +16090,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 666965138}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -16089,20 +16149,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 666965140}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 731263834}
   Far: {fileID: 1986786913}
   NearField: {fileID: 925908170}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1001 &672748913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16238,7 +16294,7 @@ PrefabInstance:
     - target: {fileID: 1358213624566532967, guid: 00334f725dae7c24aa6715aefa325fd2,
         type: 3}
       propertyPath: m_Name
-      value: PlayerAudioController
+      value: TLP_PlayerAudioController
       objectReference: {fileID: 0}
     - target: {fileID: 1359727655679775380, guid: 00334f725dae7c24aa6715aefa325fd2,
         type: 3}
@@ -16283,6 +16339,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: d8025c5f0212eaa44807bc0fac973140,
         type: 2}
+    - target: {fileID: 2389902051813167840, guid: 00334f725dae7c24aa6715aefa325fd2,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2389902051813167840, guid: 00334f725dae7c24aa6715aefa325fd2,
+        type: 3}
     - target: {fileID: 2418879447910959799, guid: 00334f725dae7c24aa6715aefa325fd2,
         type: 3}
       propertyPath: _syncMethod
@@ -16327,6 +16389,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: d45c4a2db24880e47aaf5a2fb83e07dd,
         type: 2}
+    - target: {fileID: 3245098380743026353, guid: 00334f725dae7c24aa6715aefa325fd2,
+        type: 3}
+      propertyPath: Menu
+      value: 
+      objectReference: {fileID: 711318375}
     - target: {fileID: 3245098380743026353, guid: 00334f725dae7c24aa6715aefa325fd2,
         type: 3}
       propertyPath: m_Enabled
@@ -16669,6 +16736,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0983f09147a10940ad710270e4a58cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &673495730 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 139794520833833088, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 961355544}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &674596526
 GameObject:
   m_ObjectHideFlags: 0
@@ -16790,6 +16863,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 676458430}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -16847,20 +16922,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 676458432}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 659742960}
   Far: {fileID: 1044318523}
   NearField: {fileID: 2147332037}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &677768064
 GameObject:
   m_ObjectHideFlags: 0
@@ -16950,6 +17021,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 677768066}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -17007,20 +17080,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 677768068}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 665103762}
   Far: {fileID: 1301177058}
   NearField: {fileID: 1845650840}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &682097630
 GameObject:
   m_ObjectHideFlags: 0
@@ -17193,6 +17262,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 693089112}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -17250,20 +17321,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 693089114}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 997076331}
   Far: {fileID: 2024229090}
   NearField: {fileID: 406559608}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &693159636
 GameObject:
   m_ObjectHideFlags: 0
@@ -17729,6 +17796,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 714056354}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &715888994 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5091154399069525134, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 630711262}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &716917821
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18878,6 +18951,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 754466278}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -18935,20 +19010,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 754466280}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1206326626}
   Far: {fileID: 1226622446}
   NearField: {fileID: 1845474744}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &757873943
 GameObject:
   m_ObjectHideFlags: 0
@@ -19428,6 +19499,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 783975710}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -20436,6 +20509,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 822762240}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -20493,20 +20568,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 822762242}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1332830832}
   Far: {fileID: 1908240732}
   NearField: {fileID: 263821398}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &823420799
 GameObject:
   m_ObjectHideFlags: 0
@@ -20877,6 +20948,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 844426527}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -20934,20 +21007,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 844426529}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1533387127}
   Far: {fileID: 1543035732}
   NearField: {fileID: 1876015800}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &845953984
 GameObject:
   m_ObjectHideFlags: 0
@@ -21408,6 +21477,12 @@ Transform:
   - {fileID: 141068687}
   m_Father: {fileID: 56839127}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &865041418 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5091154399069525134, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 1659357926}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &866425522
 GameObject:
   m_ObjectHideFlags: 0
@@ -21695,6 +21770,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 871799133}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -21752,20 +21829,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 871799135}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2042423075}
   Far: {fileID: 1187984175}
   NearField: {fileID: 1555797518}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &875882827
 GameObject:
   m_ObjectHideFlags: 0
@@ -22135,7 +22208,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 539934516628095183, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
+    - target: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 2677931791027998608, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2884558250923139498, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2915490082731494779, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
       value: 1
@@ -22146,6 +22235,42 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 717664729863f1244879bdb03467835e,
         type: 2}
+    - target: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 6304727246407199568, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: m_Name
@@ -22154,7 +22279,7 @@ PrefabInstance:
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -22228,6 +22353,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: e8ee3cd560594eb4a9708d0515c66400,
         type: 2}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1f6e33a58a70568488e1df1b8354d344,
+        type: 2}
+    - target: {fileID: 7002554818575380994, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -22279,6 +22420,18 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
     - target: {fileID: 9172536517904237588, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -23559,6 +23712,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 954344306}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -23616,20 +23771,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 954344308}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 775691595}
   Far: {fileID: 473387514}
   NearField: {fileID: 639956712}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &955103994
 GameObject:
   m_ObjectHideFlags: 0
@@ -23964,7 +24115,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 539934516628095183, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
+    - target: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 2677931791027998608, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2884558250923139498, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2915490082731494779, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
       value: 1
@@ -23975,6 +24142,42 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 717664729863f1244879bdb03467835e,
         type: 2}
+    - target: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 6304727246407199568, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: m_Name
@@ -23983,7 +24186,7 @@ PrefabInstance:
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -24057,6 +24260,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: e8ee3cd560594eb4a9708d0515c66400,
         type: 2}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1f6e33a58a70568488e1df1b8354d344,
+        type: 2}
+    - target: {fileID: 7002554818575380994, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -24108,6 +24327,18 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
     - target: {fileID: 9172536517904237588, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -24265,6 +24496,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 966271283}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -24322,20 +24555,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 966271285}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1210743426}
   Far: {fileID: 1228938483}
   NearField: {fileID: 367139736}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &973710629
 GameObject:
   m_ObjectHideFlags: 0
@@ -24417,6 +24646,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 973710631}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -24675,6 +24906,17 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 2677931791027998608, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2884558250923139498, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -24701,12 +24943,47 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[0]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2915490082731494779, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2988317469971998195, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializedProgramAsset
       value: 
       objectReference: {fileID: 11400000, guid: 717664729863f1244879bdb03467835e,
         type: 2}
+    - target: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 5879668846447256369, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -24738,6 +25015,12 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 6304727246407199568, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: m_Name
@@ -24746,7 +25029,7 @@ PrefabInstance:
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -24875,6 +25158,22 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1f6e33a58a70568488e1df1b8354d344,
+        type: 2}
+    - target: {fileID: 7002554818575380994, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -24931,6 +25230,18 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
     - target: {fileID: 9172536517904237588, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -25532,6 +25843,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1003499693}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -25589,20 +25902,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1003499695}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 268281225}
   Far: {fileID: 580204431}
   NearField: {fileID: 1424736103}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1015537575
 GameObject:
   m_ObjectHideFlags: 0
@@ -25692,6 +26001,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1015537577}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -25749,20 +26060,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1015537579}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 703579495}
   Far: {fileID: 1135094248}
   NearField: {fileID: 2109675388}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1017296699 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6734603202446077018, guid: 0ba7ed9fc879c4548aa441158d218daa,
@@ -27144,6 +27451,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1191988332075787873, guid: 0ba7ed9fc879c4548aa441158d218daa,
         type: 3}
+    - target: {fileID: 1540656341890796671, guid: 0ba7ed9fc879c4548aa441158d218daa,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2066936989617677394, guid: 0ba7ed9fc879c4548aa441158d218daa,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -27566,6 +27878,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1062359332}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -27623,20 +27937,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1062359334}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 883256482}
   Far: {fileID: 1279233309}
   NearField: {fileID: 563427407}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1064482965
 GameObject:
   m_ObjectHideFlags: 0
@@ -27809,6 +28119,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1065095979}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -27866,20 +28178,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1065095981}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 103341914}
   Far: {fileID: 446201264}
   NearField: {fileID: 2097407501}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1066336402
 GameObject:
   m_ObjectHideFlags: 0
@@ -28090,6 +28398,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1067240289}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -28147,20 +28457,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1067240291}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2021377952}
   Far: {fileID: 1603812009}
   NearField: {fileID: 302559288}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1001 &1067674087
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28426,6 +28732,17 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 2677931791027998608, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2884558250923139498, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -28452,12 +28769,47 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[0]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2915490082731494779, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2988317469971998195, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializedProgramAsset
       value: 
       objectReference: {fileID: 11400000, guid: 717664729863f1244879bdb03467835e,
         type: 2}
+    - target: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 5879668846447256369, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -28489,6 +28841,12 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 6304727246407199568, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: m_Name
@@ -28497,7 +28855,7 @@ PrefabInstance:
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -28631,6 +28989,22 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1f6e33a58a70568488e1df1b8354d344,
+        type: 2}
+    - target: {fileID: 7002554818575380994, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -28670,7 +29044,7 @@ PrefabInstance:
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: OcclusionFactor
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -28710,7 +29084,7 @@ PrefabInstance:
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: VoiceDistanceNear
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -28783,6 +29157,18 @@ PrefabInstance:
       propertyPath: allowAvatarCustomAudioCurves
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 9172536517904237588, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializedProgramAsset
@@ -29131,6 +29517,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1077836104}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -29188,20 +29576,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1077836106}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1040562703}
   Far: {fileID: 881835528}
   NearField: {fileID: 1052204280}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1079523345
 GameObject:
   m_ObjectHideFlags: 0
@@ -29683,13 +30067,15 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1105544831}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
   LocalPlayerAdded: {fileID: 533503549}
   LocalPlayerRemoved: {fileID: 592801475}
-  OverrideWithDynamicPriority: {fileID: 1611928129}
+  OverrideWithDynamicPrivacy: {fileID: 1611928129}
   PlayerAddedPrivacyChannelId: 1
   PlayerExitedPrivacyChannelId: -1
 --- !u!1 &1109832694
@@ -29864,6 +30250,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1111750276}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -29921,20 +30309,22 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1111750278}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1049529479}
   Far: {fileID: 1695540826}
   NearField: {fileID: 551428912}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
+--- !u!1 &1115007224 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 139794520833833088, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 982806469}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1122386731
 GameObject:
   m_ObjectHideFlags: 0
@@ -30024,6 +30414,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1122386733}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -30081,20 +30473,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1122386735}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1284402642}
   Far: {fileID: 551365812}
   NearField: {fileID: 1529202207}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1124540757
 GameObject:
   m_ObjectHideFlags: 0
@@ -30861,6 +31249,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1145179861}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -30918,20 +31308,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1145179863}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1945965421}
   Far: {fileID: 1976369554}
   NearField: {fileID: 2104574143}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1146437627
 GameObject:
   m_ObjectHideFlags: 0
@@ -31545,6 +31931,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1040499137}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1176856011 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5091154399069525134, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 961355544}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1177117705
 GameObject:
   m_ObjectHideFlags: 0
@@ -31666,6 +32058,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1181801216}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -31723,20 +32117,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1181801218}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1154172407}
   Far: {fileID: 215595989}
   NearField: {fileID: 1805656738}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1184372513 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1573883458379950855, guid: 0ba7ed9fc879c4548aa441158d218daa,
@@ -31902,6 +32292,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1191701647}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -31959,20 +32351,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1191701649}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 585950066}
   Far: {fileID: 1757406733}
   NearField: {fileID: 1158558748}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1191839955
 GameObject:
   m_ObjectHideFlags: 0
@@ -32324,6 +32712,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1202181151}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -32381,20 +32771,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1202181153}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 343209090}
   Far: {fileID: 1214798988}
   NearField: {fileID: 242918332}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1205750499
 GameObject:
   m_ObjectHideFlags: 0
@@ -32484,6 +32870,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1205750501}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -32541,20 +32929,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1205750503}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1601752205}
   Far: {fileID: 1357701201}
   NearField: {fileID: 1215287321}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1206326625
 GameObject:
   m_ObjectHideFlags: 0
@@ -33295,6 +33679,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1248937856}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -33352,20 +33738,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1248937858}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 738327584}
   Far: {fileID: 2104880173}
   NearField: {fileID: 320727644}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1249229583
 GameObject:
   m_ObjectHideFlags: 0
@@ -34496,6 +34878,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1305043334}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -34553,20 +34937,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1305043336}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1796648253}
   Far: {fileID: 739429109}
   NearField: {fileID: 104641696}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1309091052
 GameObject:
   m_ObjectHideFlags: 0
@@ -35608,6 +35988,12 @@ Transform:
   - {fileID: 1310807361}
   m_Father: {fileID: 822762239}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1334912627 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 139794520833833088, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 1659357926}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1345188854
 GameObject:
   m_ObjectHideFlags: 0
@@ -35697,6 +36083,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1345188856}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -35754,20 +36142,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1345188858}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2141487142}
   Far: {fileID: 168229390}
   NearField: {fileID: 363977311}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1354524322
 GameObject:
   m_ObjectHideFlags: 0
@@ -35857,6 +36241,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1354524324}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -35914,20 +36300,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1354524326}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 331683815}
   Far: {fileID: 2084279203}
   NearField: {fileID: 1989267696}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1357701200
 GameObject:
   m_ObjectHideFlags: 0
@@ -36113,6 +36495,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1365704042}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -36170,20 +36554,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1365704044}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2097221298}
   Far: {fileID: 133524391}
   NearField: {fileID: 875882828}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1367804077
 GameObject:
   m_ObjectHideFlags: 0
@@ -36969,6 +37349,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1426835342}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -37026,20 +37408,22 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1426835344}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 878240663}
   Far: {fileID: 1778799731}
   NearField: {fileID: 1586948350}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
+--- !u!1 &1428343227 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5091154399069525134, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 897969959}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1429475039 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3888126815758310084, guid: 0ba7ed9fc879c4548aa441158d218daa,
@@ -37092,6 +37476,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1191988332075787873, guid: 0ba7ed9fc879c4548aa441158d218daa,
         type: 3}
+    - target: {fileID: 1540656341890796671, guid: 0ba7ed9fc879c4548aa441158d218daa,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2066936989617677394, guid: 0ba7ed9fc879c4548aa441158d218daa,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -38027,6 +38416,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1453668340}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -38084,20 +38475,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1453668342}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 188200269}
   Far: {fileID: 1139686373}
   NearField: {fileID: 1639536866}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1457631256
 GameObject:
   m_ObjectHideFlags: 0
@@ -38187,6 +38574,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1457631258}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -38244,20 +38633,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1457631260}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1447987059}
   Far: {fileID: 929860926}
   NearField: {fileID: 1922852969}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1459875157
 GameObject:
   m_ObjectHideFlags: 0
@@ -38749,6 +39134,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1488526780}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -38806,20 +39193,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1488526782}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1831083245}
   Far: {fileID: 1483350097}
   NearField: {fileID: 24655080}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1489765768
 GameObject:
   m_ObjectHideFlags: 0
@@ -39973,6 +40356,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1532239357}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -40030,20 +40415,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1532239359}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1043555119}
   Far: {fileID: 1218925549}
   NearField: {fileID: 858693393}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1533387126
 GameObject:
   m_ObjectHideFlags: 0
@@ -40408,6 +40789,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1556684004}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -40465,20 +40848,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1556684006}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1364365938}
   Far: {fileID: 1489765769}
   NearField: {fileID: 1059186866}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1559190019
 GameObject:
   m_ObjectHideFlags: 0
@@ -40689,6 +41068,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1565979407}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -40746,20 +41127,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1565979409}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1079523346}
   Far: {fileID: 480017782}
   NearField: {fileID: 1147186739}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1568661951
 GameObject:
   m_ObjectHideFlags: 0
@@ -40945,6 +41322,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1588567482}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -41002,20 +41381,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1588567484}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 265505566}
   Far: {fileID: 212622886}
   NearField: {fileID: 556361996}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1593926124
 GameObject:
   m_ObjectHideFlags: 0
@@ -41590,6 +41965,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1609419771}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -41647,20 +42024,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1609419773}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 665432519}
   Far: {fileID: 135368977}
   NearField: {fileID: 213628662}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1609742852
 GameObject:
   m_ObjectHideFlags: 0
@@ -42657,6 +43030,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1648371665}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -42714,20 +43089,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1648371667}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1547586521}
   Far: {fileID: 406856616}
   NearField: {fileID: 966185806}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1649259444
 GameObject:
   m_ObjectHideFlags: 0
@@ -42886,6 +43257,17 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2414478265534862136, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 2677931791027998608, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2884558250923139498, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -42912,12 +43294,47 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[0]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2915490082731494779, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2988317469971998195, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializedProgramAsset
       value: 
       objectReference: {fileID: 11400000, guid: 717664729863f1244879bdb03467835e,
         type: 2}
+    - target: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3660142111522920400, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3981096451794641374, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4216655069016842928, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 4223880783209303031, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 5237064173859901745, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 5879668846447256369, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
@@ -42949,6 +43366,12 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 6169423986053272219, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
     - target: {fileID: 6304727246407199568, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: m_Name
@@ -42957,7 +43380,7 @@ PrefabInstance:
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: _syncMethod
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6304727246407199569, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -43086,6 +43509,22 @@ PrefabInstance:
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6641591067677981752, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1f6e33a58a70568488e1df1b8354d344,
+        type: 2}
+    - target: {fileID: 7002554818575380994, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7414254623256129724, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -43142,6 +43581,18 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 8069365171889708193, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8266934114714724027, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+    - target: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8317123929927436317, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
     - target: {fileID: 9172536517904237588, guid: c35f94b5b439c7446a4100d2a7b84aad,
         type: 3}
@@ -43255,6 +43706,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1661143317}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -43312,20 +43765,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1661143319}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1773806323}
   Far: {fileID: 276501613}
   NearField: {fileID: 2077060385}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1665651712
 GameObject:
   m_ObjectHideFlags: 0
@@ -43415,6 +43864,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1665651714}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -43472,20 +43923,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1665651716}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1568661952}
   Far: {fileID: 2055363412}
   NearField: {fileID: 845953985}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1667548221
 GameObject:
   m_ObjectHideFlags: 0
@@ -43575,6 +44022,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1667548223}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -43632,20 +44081,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1667548225}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 612260044}
   Far: {fileID: 770260035}
   NearField: {fileID: 877076130}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1679848106
 GameObject:
   m_ObjectHideFlags: 0
@@ -43850,6 +44295,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1694321093}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -43907,20 +44354,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1694321095}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 600835280}
   Far: {fileID: 797534707}
   NearField: {fileID: 390884702}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1695540825
 GameObject:
   m_ObjectHideFlags: 0
@@ -44195,6 +44638,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1713653677}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -44252,20 +44697,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1713653679}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1435077127}
   Far: {fileID: 1904061951}
   NearField: {fileID: 407042363}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1722068945
 GameObject:
   m_ObjectHideFlags: 0
@@ -44432,6 +44873,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1723405654}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1730284042 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 139794520833833088, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 897969959}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1731544655
 GameObject:
   m_ObjectHideFlags: 0
@@ -44868,6 +45315,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1752123193}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -44925,20 +45374,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1752123195}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 7468448}
   Far: {fileID: 1783088156}
   NearField: {fileID: 51949178}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1756468091
 GameObject:
   m_ObjectHideFlags: 0
@@ -45028,6 +45473,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1756468093}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -45085,20 +45532,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1756468095}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1617282285}
   Far: {fileID: 6026042}
   NearField: {fileID: 1404696896}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1757406732
 GameObject:
   m_ObjectHideFlags: 0
@@ -45220,6 +45663,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1759526983}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -45277,20 +45722,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1759526985}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 843093847}
   Far: {fileID: 570980715}
   NearField: {fileID: 214761254}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1759907751
 GameObject:
   m_ObjectHideFlags: 0
@@ -45380,6 +45821,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1759907753}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -45437,20 +45880,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1759907755}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 382755576}
   Far: {fileID: 274500180}
   NearField: {fileID: 463195657}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!4 &1760513215 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2154371230155525937, guid: 0ba7ed9fc879c4548aa441158d218daa,
@@ -45750,6 +46189,12 @@ Transform:
   - {fileID: 1609742853}
   m_Father: {fileID: 1661143316}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1774152325 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 139794520833833088, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 630711262}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1774501623
 GameObject:
   m_ObjectHideFlags: 0
@@ -45839,6 +46284,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1774501625}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -45896,20 +46343,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1774501627}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1292160954}
   Far: {fileID: 2029444858}
   NearField: {fileID: 757873944}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1778214149
 GameObject:
   m_ObjectHideFlags: 0
@@ -46197,6 +46640,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1781137476}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -46254,20 +46699,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1781137478}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1845787234}
   Far: {fileID: 819879521}
   NearField: {fileID: 339641072}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1781914998
 GameObject:
   m_ObjectHideFlags: 0
@@ -46726,6 +47167,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1794759266}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1794820195 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5091154399069525134, guid: c35f94b5b439c7446a4100d2a7b84aad,
+    type: 3}
+  m_PrefabInstance: {fileID: 1069278333}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1796648252
 GameObject:
   m_ObjectHideFlags: 0
@@ -46962,6 +47409,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1801901719}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -47019,20 +47468,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1801901721}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 609647671}
   Far: {fileID: 938962527}
   NearField: {fileID: 476016663}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!114 &1802856425 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3245098380743026353, guid: 00334f725dae7c24aa6715aefa325fd2,
@@ -47619,6 +48064,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1826683246}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -47676,20 +48123,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1826683248}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1066632021}
   Far: {fileID: 1984767314}
   NearField: {fileID: 1559190020}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1830695739
 GameObject:
   m_ObjectHideFlags: 0
@@ -47932,6 +48375,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1835877112}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -47989,20 +48434,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1835877114}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1801523490}
   Far: {fileID: 1417648439}
   NearField: {fileID: 1459875158}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1840618534
 GameObject:
   m_ObjectHideFlags: 0
@@ -48175,6 +48616,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1844913381}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -48232,20 +48675,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1844913383}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1556259973}
   Far: {fileID: 2133155142}
   NearField: {fileID: 1079639829}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1845474743
 GameObject:
   m_ObjectHideFlags: 0
@@ -48374,18 +48813,6 @@ Transform:
   - {fileID: 822668124}
   m_Father: {fileID: 1975810722}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1866990319 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4394173980921056355, guid: 14e5849604d73b544b29ed7ab85cc44b,
-    type: 3}
-  m_PrefabInstance: {fileID: 4394173980256519050}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4394173980256519057}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45115577ef41a5b4ca741ed302693907, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1868942569
 GameObject:
   m_ObjectHideFlags: 0
@@ -48475,6 +48902,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1868942571}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -48532,20 +48961,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1868942573}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 907475514}
   Far: {fileID: 50129634}
   NearField: {fileID: 36089914}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1869645739
 GameObject:
   m_ObjectHideFlags: 0
@@ -48992,6 +49417,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1893585200}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -49049,20 +49476,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1893585202}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1195321731}
   Far: {fileID: 1830695740}
   NearField: {fileID: 983144824}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1895291270
 GameObject:
   m_ObjectHideFlags: 0
@@ -49407,6 +49830,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1903443153}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -49464,20 +49889,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1903443155}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1805801278}
   Far: {fileID: 1268772872}
   NearField: {fileID: 1301880248}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1904061950
 GameObject:
   m_ObjectHideFlags: 0
@@ -49671,6 +50092,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1191988332075787873, guid: 0ba7ed9fc879c4548aa441158d218daa,
         type: 3}
+    - target: {fileID: 1540656341890796671, guid: 0ba7ed9fc879c4548aa441158d218daa,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2066936989617677394, guid: 0ba7ed9fc879c4548aa441158d218daa,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -50049,6 +50475,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1917115189}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -50106,20 +50534,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1917115191}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1979237872}
   Far: {fileID: 138854614}
   NearField: {fileID: 363276254}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1922852968
 GameObject:
   m_ObjectHideFlags: 0
@@ -50480,6 +50904,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1937776410}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -50537,20 +50963,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1937776412}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 953941419}
   Far: {fileID: 854503190}
   NearField: {fileID: 13532785}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1938373086
 GameObject:
   m_ObjectHideFlags: 0
@@ -50988,6 +51410,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1945088586}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -51418,6 +51842,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1975810723}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -51475,20 +51901,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1975810725}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1853299831}
   Far: {fileID: 2127269472}
   NearField: {fileID: 1869645740}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1976369553
 GameObject:
   m_ObjectHideFlags: 0
@@ -51642,6 +52064,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1983591510}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -51699,20 +52123,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 1983591512}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1028304571}
   Far: {fileID: 1944589682}
   NearField: {fileID: 1970289157}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &1984767313
 GameObject:
   m_ObjectHideFlags: 0
@@ -52492,6 +52912,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2039229313}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -52549,20 +52971,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2039229315}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 2083370379}
   Far: {fileID: 803634996}
   NearField: {fileID: 1254424195}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &2041468743
 GameObject:
   m_ObjectHideFlags: 0
@@ -52997,6 +53415,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2064115111}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -53054,20 +53474,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2064115113}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 461982182}
   Far: {fileID: 1970958894}
   NearField: {fileID: 554915230}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &2068365705
 GameObject:
   m_ObjectHideFlags: 0
@@ -53157,6 +53573,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2068365707}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -53214,20 +53632,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2068365709}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 50183211}
   Far: {fileID: 1421563143}
   NearField: {fileID: 728596983}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &2069229677
 GameObject:
   m_ObjectHideFlags: 0
@@ -53547,6 +53961,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2076776129}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -53604,20 +54020,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2076776131}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1744447358}
   Far: {fileID: 617391580}
   NearField: {fileID: 2075246699}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &2077060384
 GameObject:
   m_ObjectHideFlags: 0
@@ -54040,6 +54452,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2084491372}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -54097,20 +54511,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2084491374}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1705546087}
   Far: {fileID: 1358445223}
   NearField: {fileID: 781515500}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &2092007818
 GameObject:
   m_ObjectHideFlags: 0
@@ -54518,6 +54928,8 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2115365654}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 3
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -54575,20 +54987,16 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 2115365656}
+  AutoRetrySendOnFailure: 1
+  PauseSynchronization: 0
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  cyanPoolAdapter: {fileID: 0}
+  CyanPoolAdapter: {fileID: 0}
   Near: {fileID: 1645144758}
   Far: {fileID: 1410333705}
   NearField: {fileID: 653504946}
-  PlayerAudioController: {fileID: 1802856425}
-  VoiceLowpass: 0
-  VoiceGain: 0
-  VoiceDistanceFar: 0
-  VoiceDistanceNear: 0
-  VoiceVolumetricRadius: 0
 --- !u!1 &2117764395
 GameObject:
   m_ObjectHideFlags: 0
@@ -55380,6 +55788,12 @@ PrefabInstance:
       propertyPath: serializedPublicVariablesBytesString
       value: Ai8AAAAAATIAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAFQAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AAAAAAAYBAAAAAAAAACcBBAAAAHQAeQBwAGUAAWgAAABTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEcAZQBuAGUAcgBpAGMALgBMAGkAcwB0AGAAMQBbAFsAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBJAG4AdABlAHIAZgBhAGMAZQBzAC4ASQBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AXQBdACwAIABtAHMAYwBvAHIAbABpAGIAAQEJAAAAVgBhAHIAaQBhAGIAbABlAHMALwEAAAABaAAAAFMAeQBzAHQAZQBtAC4AQwBvAGwAbABlAGMAdABpAG8AbgBzAC4ARwBlAG4AZQByAGkAYwAuAEwAaQBzAHQAYAAxAFsAWwBWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAEkAbgB0AGUAcgBmAGEAYwBlAHMALgBJAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgBdAF0ALAAgAG0AcwBjAG8AcgBsAGkAYgABAAAABgIAAAAAAAAAAi8CAAAAAUkAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAGAAMQBbAFsAUwB5AHMAdABlAG0ALgBJAG4AdAAzADIALAAgAG0AcwBjAG8AcgBsAGkAYgBdAF0ALAAgAFYAUgBDAC4AVQBkAG8AbgAuAEMAbwBtAG0AbwBuAAIAAAAGAgAAAAAAAAAnAQQAAAB0AHkAcABlAAEXAAAAUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwAsACAAbQBzAGMAbwByAGwAaQBiACcBCgAAAFMAeQBtAGIAbwBsAE4AYQBtAGUAAR8AAABfAF8AXwBVAGQAbwBuAFMAaABhAHIAcABCAGUAaABhAHYAaQBvAHUAcgBWAGUAcgBzAGkAbwBuAF8AXwBfACcBBAAAAHQAeQBwAGUAARYAAABTAHkAcwB0AGUAbQAuAEkAbgB0ADMAMgAsACAAbQBzAGMAbwByAGwAaQBiABcBBQAAAFYAYQBsAHUAZQACAAAABwUCLwMAAAABSwAAAFYAUgBDAC4AVQBkAG8AbgAuAEMAbwBtAG0AbwBuAC4AVQBkAG8AbgBWAGEAcgBpAGEAYgBsAGUAYAAxAFsAWwBTAHkAcwB0AGUAbQAuAEIAbwBvAGwAZQBhAG4ALAAgAG0AcwBjAG8AcgBsAGkAYgBdAF0ALAAgAFYAUgBDAC4AVQBkAG8AbgAuAEMAbwBtAG0AbwBuAAMAAAAGAgAAAAAAAAAnAQQAAAB0AHkAcABlAAEXAAAAUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwAsACAAbQBzAGMAbwByAGwAaQBiACcBCgAAAFMAeQBtAGIAbwBsAE4AYQBtAGUAASsAAABfAF8AXwBVAGQAbwBuAFMAaABhAHIAcABCAGUAaABhAHYAaQBvAHUAcgBIAGEAcwBEAG8AbgBlAFMAYwBlAG4AZQBVAHAAZwByAGEAZABlAF8AXwBfACcBBAAAAHQAeQBwAGUAARgAAABTAHkAcwB0AGUAbQAuAEIAbwBvAGwAZQBhAG4ALAAgAG0AcwBjAG8AcgBsAGkAYgArAQUAAABWAGEAbAB1AGUAAQcFBwUHBQ==
       objectReference: {fileID: 0}
+    - target: {fileID: 1730867926255954024, guid: 2381ba38c13a5a14598af1d394d2deb6,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 1730867926255954024, guid: 2381ba38c13a5a14598af1d394d2deb6,
+        type: 3}
     - target: {fileID: 1830756529718929443, guid: 2381ba38c13a5a14598af1d394d2deb6,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -55794,6 +56208,11 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 6667434801586432575, guid: 2381ba38c13a5a14598af1d394d2deb6,
         type: 3}
+      propertyPath: OptionalRespawnLocation
+      value: 
+      objectReference: {fileID: 1263132452186841292}
+    - target: {fileID: 6667434801586432575, guid: 2381ba38c13a5a14598af1d394d2deb6,
+        type: 3}
       propertyPath: optionalRespawnLocation
       value: 
       objectReference: {fileID: 1263132452186841292}
@@ -56002,6 +56421,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 4ee1b68a0beea0b48815dd6eea2e45db,
         type: 2}
+    - target: {fileID: 2105658751038351998, guid: 9aa3664ebac948042a90fd58d2355175,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 2105658751038351998, guid: 9aa3664ebac948042a90fd58d2355175,
+        type: 3}
+    - target: {fileID: 3516215682365138230, guid: 9aa3664ebac948042a90fd58d2355175,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3516215682365138230, guid: 9aa3664ebac948042a90fd58d2355175,
+        type: 3}
     - target: {fileID: 4034130123786063638, guid: 9aa3664ebac948042a90fd58d2355175,
         type: 3}
       propertyPath: _syncMethod
@@ -56076,12 +56507,17 @@ PrefabInstance:
     - target: {fileID: 7932554065880862758, guid: 9aa3664ebac948042a90fd58d2355175,
         type: 3}
       propertyPath: Severity
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7932554065880862758, guid: 9aa3664ebac948042a90fd58d2355175,
         type: 3}
       propertyPath: severity
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7932554065880862758, guid: 9aa3664ebac948042a90fd58d2355175,
+        type: 3}
+      propertyPath: DetailedPlayerInfo
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7932554065880862758, guid: 9aa3664ebac948042a90fd58d2355175,
         type: 3}
@@ -56180,7 +56616,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   launchedFromSDKPipeline: 0
   completedSDKPipeline: 1
-  blueprintId: wrld_7ec7bbdd-ba81-4564-985a-c79dfc9eaca7
+  blueprintId: wrld_650c769c-1e23-46ff-b13f-8e03848c3141
   contentType: 1
   assetBundleUnityVersion: 
   fallbackStatus: 0
@@ -56247,7 +56683,7 @@ PrefabInstance:
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
-      objectReference: {fileID: 1866990319}
+      objectReference: {fileID: 0}
     - target: {fileID: 401564554600758471, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
@@ -56280,6 +56716,12 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 643921394672883306, guid: 14e5849604d73b544b29ed7ab85cc44b,
+        type: 3}
+    - target: {fileID: 685333777916204577, guid: 14e5849604d73b544b29ed7ab85cc44b,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 685333777916204577, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
     - target: {fileID: 685397315190986680, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
@@ -56468,7 +56910,7 @@ PrefabInstance:
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
-      objectReference: {fileID: 1866990319}
+      objectReference: {fileID: 0}
     - target: {fileID: 4394173979734059298, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.data[2]
@@ -56663,6 +57105,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5035039016777020675, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
+    - target: {fileID: 5548699610068620406, guid: 14e5849604d73b544b29ed7ab85cc44b,
+        type: 3}
+      propertyPath: OptionalRespawnLocation
+      value: 
+      objectReference: {fileID: 4394173980256519052}
     - target: {fileID: 5548699610068620406, guid: 14e5849604d73b544b29ed7ab85cc44b,
         type: 3}
       propertyPath: optionalRespawnLocation
@@ -57826,6 +58273,12 @@ PrefabInstance:
       propertyPath: serializedPublicVariablesBytesString
       value: Ai8AAAAAATIAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAFQAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AAAAAAAYBAAAAAAAAACcBBAAAAHQAeQBwAGUAAWgAAABTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEcAZQBuAGUAcgBpAGMALgBMAGkAcwB0AGAAMQBbAFsAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBJAG4AdABlAHIAZgBhAGMAZQBzAC4ASQBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AXQBdACwAIABtAHMAYwBvAHIAbABpAGIAAQEJAAAAVgBhAHIAaQBhAGIAbABlAHMALwEAAAABaAAAAFMAeQBzAHQAZQBtAC4AQwBvAGwAbABlAGMAdABpAG8AbgBzAC4ARwBlAG4AZQByAGkAYwAuAEwAaQBzAHQAYAAxAFsAWwBWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAEkAbgB0AGUAcgBmAGEAYwBlAHMALgBJAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgBdAF0ALAAgAG0AcwBjAG8AcgBsAGkAYgABAAAABgIAAAAAAAAAAi8CAAAAAUsAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAGAAMQBbAFsAUwB5AHMAdABlAG0ALgBCAG8AbwBsAGUAYQBuACwAIABtAHMAYwBvAHIAbABpAGIAXQBdACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgACAAAABgIAAAAAAAAAJwEEAAAAdAB5AHAAZQABFwAAAFMAeQBzAHQAZQBtAC4AUwB0AHIAaQBuAGcALAAgAG0AcwBjAG8AcgBsAGkAYgAnAQoAAABTAHkAbQBiAG8AbABOAGEAbQBlAAErAAAAXwBfAF8AVQBkAG8AbgBTAGgAYQByAHAAQgBlAGgAYQB2AGkAbwB1AHIASABhAHMARABvAG4AZQBTAGMAZQBuAGUAVQBwAGcAcgBhAGQAZQBfAF8AXwAnAQQAAAB0AHkAcABlAAEYAAAAUwB5AHMAdABlAG0ALgBCAG8AbwBsAGUAYQBuACwAIABtAHMAYwBvAHIAbABpAGIAKwEFAAAAVgBhAGwAdQBlAAEHBQIvAwAAAAFJAAAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQBgADEAWwBbAFMAeQBzAHQAZQBtAC4ASQBuAHQAMwAyACwAIABtAHMAYwBvAHIAbABpAGIAXQBdACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgADAAAABgIAAAAAAAAAJwEEAAAAdAB5AHAAZQABFwAAAFMAeQBzAHQAZQBtAC4AUwB0AHIAaQBuAGcALAAgAG0AcwBjAG8AcgBsAGkAYgAnAQoAAABTAHkAbQBiAG8AbABOAGEAbQBlAAEfAAAAXwBfAF8AVQBkAG8AbgBTAGgAYQByAHAAQgBlAGgAYQB2AGkAbwB1AHIAVgBlAHIAcwBpAG8AbgBfAF8AXwAnAQQAAAB0AHkAcABlAAEWAAAAUwB5AHMAdABlAG0ALgBJAG4AdAAzADIALAAgAG0AcwBjAG8AcgBsAGkAYgAXAQUAAABWAGEAbAB1AGUAAgAAAAcFBwUHBQ==
       objectReference: {fileID: 0}
+    - target: {fileID: 9087030002911641945, guid: a10555fbb66310a4985782d26478c6e3,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 9087030002911641945, guid: a10555fbb66310a4985782d26478c6e3,
+        type: 3}
     - target: {fileID: 9207719662509342221, guid: a10555fbb66310a4985782d26478c6e3,
         type: 3}
       propertyPath: _syncMethod
@@ -57930,16 +58383,18 @@ MonoBehaviour:
   useAssignedLayers: 0
   DynamicPrefabs: []
   DynamicMaterials:
+  - {fileID: 2100000, guid: f9beda6b67f7ebb46a588b6d8a2d6996, type: 2}
   - {fileID: 2100000, guid: 4e9077c1c5455be4da2a85ff047355da, type: 2}
-  - {fileID: 2100000, guid: c1f23e4d9aec51546bcfb8ec48c1da06, type: 2}
   - {fileID: 2100000, guid: 426dbbf61dd7264498ac9818b6b894be, type: 2}
+  - {fileID: 2100000, guid: 688ad78316f69184d887f409474a6f56, type: 2}
+  - {fileID: 2100000, guid: 2843114e38784b14ea267f518fa32e1e, type: 2}
+  - {fileID: 2100000, guid: 219b8b6950b888f40b189f45cb13f02a, type: 2}
+  - {fileID: 2100000, guid: 5cd3b778e97f7f140bbf0e98f6ab9078, type: 2}
+  - {fileID: 2100000, guid: 1c987494452b85f4ab4cac3322415907, type: 2}
   - {fileID: 2100000, guid: 8200bf9bfb7ebc642b77d97d9ac2d12d, type: 2}
   - {fileID: 2100000, guid: c10d7a22e42bc794889aa5f530a9ce45, type: 2}
-  - {fileID: 2100000, guid: 1c987494452b85f4ab4cac3322415907, type: 2}
-  - {fileID: 2100000, guid: 688ad78316f69184d887f409474a6f56, type: 2}
-  - {fileID: 2100000, guid: 5cd3b778e97f7f140bbf0e98f6ab9078, type: 2}
-  - {fileID: 2100000, guid: 219b8b6950b888f40b189f45cb13f02a, type: 2}
   - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c1f23e4d9aec51546bcfb8ec48c1da06, type: 2}
   - {fileID: 2100000, guid: fd20e45036ef323459e8286e9c23c02c, type: 2}
   LightMapsNear: []
   LightMapsFar: []
@@ -58585,8 +59040,80 @@ MonoBehaviour:
     ID: 398
     SerializedTypeNames:
     - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1794820195}
+    ID: 399
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 138938478}
+    ID: 400
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 715888994}
+    ID: 401
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1774152325}
+    ID: 402
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 865041418}
+    ID: 403
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1334912627}
+    ID: 404
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 665317971}
+    ID: 405
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1115007224}
+    ID: 406
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1176856011}
+    ID: 407
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 673495730}
+    ID: 408
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1428343227}
+    ID: 409
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1730284042}
+    ID: 410
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 497650662}
+    ID: 411
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
   portraitCameraPositionOffset: {x: 0, y: 0, z: 0}
   portraitCameraRotationOffset: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+  NavigationAreas: []
 --- !u!1001 &7224542387465665785
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -59040,6 +59567,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: d45c4a2db24880e47aaf5a2fb83e07dd,
         type: 2}
+    - target: {fileID: 8784349650338756722, guid: a5aa91a94f87673429df2204a89c3589,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 8784349650338756722, guid: a5aa91a94f87673429df2204a89c3589,
+        type: 3}
     - target: {fileID: 8784703445529934315, guid: a5aa91a94f87673429df2204a89c3589,
         type: 3}
       propertyPath: _syncMethod

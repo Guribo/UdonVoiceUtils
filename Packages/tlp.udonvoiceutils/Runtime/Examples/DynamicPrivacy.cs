@@ -1,12 +1,11 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Events;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VRC.SDKBase;
-using VRC.Udon;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
@@ -25,8 +24,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         [SerializeField]
         private UdonEvent LocalPlayerRemoved;
 
+        [FormerlySerializedAs("OverrideWithDynamicPriority")]
         [SerializeField]
-        private PlayerAudioOverride OverrideWithDynamicPriority;
+        private PlayerAudioOverride OverrideWithDynamicPrivacy;
 
 
         [SerializeField]
@@ -35,24 +35,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         [SerializeField]
         private int PlayerExitedPrivacyChannelId;
 
-        public override void Start() {
-            base.Start();
 
-            if (!Utilities.IsValid(LocalPlayerAdded)) {
-                ErrorAndDisableComponent($"{nameof(LocalPlayerAdded)} is not set");
-                return;
-            }
-
-            if (!Utilities.IsValid(LocalPlayerRemoved)) {
-                ErrorAndDisableComponent($"{nameof(LocalPlayerRemoved)} is not set");
-                return;
-            }
-
-            if (!Utilities.IsValid(OverrideWithDynamicPriority)) {
-                ErrorAndDisableComponent($"{nameof(OverrideWithDynamicPriority)} is not set");
-            }
-        }
-
+        #region Lifecylce
         public void OnEnable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
@@ -87,7 +71,31 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 ErrorAndDisableComponent($"Failed to stop listening to {nameof(LocalPlayerRemoved)}");
             }
         }
+        #endregion
 
+        #region Overrides
+        protected override bool SetupAndValidate() {
+            if (!base.SetupAndValidate()) {
+                return false;
+            }
+
+            if (!Utilities.IsValid(LocalPlayerAdded)) {
+                Error($"{nameof(LocalPlayerAdded)} is not set");
+                return false;
+            }
+
+            if (!Utilities.IsValid(LocalPlayerRemoved)) {
+                Error($"{nameof(LocalPlayerRemoved)} is not set");
+                return false;
+            }
+
+            if (!Utilities.IsValid(OverrideWithDynamicPrivacy)) {
+                Error($"{nameof(OverrideWithDynamicPrivacy)} is not set");
+                return false;
+            }
+
+            return true;
+        }
 
         public override void OnEvent(string eventName) {
             switch (eventName) {
@@ -102,7 +110,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                     break;
             }
         }
+        #endregion
 
+        #region Events
         internal void OnLocalPlayerAdded() {
             #region TLP_DEBUG
 #if TLP_DEBUG
@@ -110,8 +120,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
-            if (Utilities.IsValid(OverrideWithDynamicPriority)) {
-                OverrideWithDynamicPriority.PrivacyChannelId = PlayerAddedPrivacyChannelId;
+            if (Utilities.IsValid(OverrideWithDynamicPrivacy)) {
+                OverrideWithDynamicPrivacy.PrivacyChannelId = PlayerAddedPrivacyChannelId;
             }
         }
 
@@ -122,9 +132,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
-            if (Utilities.IsValid(OverrideWithDynamicPriority)) {
-                OverrideWithDynamicPriority.PrivacyChannelId = PlayerExitedPrivacyChannelId;
+            if (Utilities.IsValid(OverrideWithDynamicPrivacy)) {
+                OverrideWithDynamicPrivacy.PrivacyChannelId = PlayerExitedPrivacyChannelId;
             }
         }
+        #endregion
     }
 }

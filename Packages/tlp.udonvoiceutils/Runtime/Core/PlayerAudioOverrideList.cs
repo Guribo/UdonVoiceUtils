@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Extensions;
 using UdonSharp;
 using VRC.SDKBase;
 
@@ -23,6 +24,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             DebugLog(nameof(AddOverride));
 #endif
             if (!Utilities.IsValid(voiceOverride)) {
+                Error($"{nameof(voiceOverride)} invalid");
                 return false;
             }
 
@@ -241,6 +243,22 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             PlayerAudioOverrides = null;
             TempList = null;
             Overrides = 0;
+        }
+
+        public bool Contains(PlayerAudioOverride playerAudioOverride) {
+            if (!Utilities.IsValid(playerAudioOverride)) {
+                Error($"{nameof(playerAudioOverride)} invalid");
+                return false;
+            }
+
+            if (PlayerAudioOverrides.LengthSafe() < 1) return false;
+            for (int i = 0; i < Overrides; i++) {
+                if (ReferenceEquals(PlayerAudioOverrides[i], playerAudioOverride)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

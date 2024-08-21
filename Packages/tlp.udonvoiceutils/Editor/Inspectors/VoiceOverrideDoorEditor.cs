@@ -31,14 +31,14 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     // draw
                     DrawDoorInfo(voiceOverrideDoor);
 
-                    if (Utilities.IsValid(voiceOverrideDoor.voiceOverrideRoom)) {
-                        var roomPosition = voiceOverrideDoor.voiceOverrideRoom.transform.position;
+                    if (Utilities.IsValid(voiceOverrideDoor.VoiceOverrideRoom)) {
+                        var roomPosition = voiceOverrideDoor.VoiceOverrideRoom.transform.position;
 
                         Handles.color = Color.white;
                         Handles.DrawDottedLine(doorPosition, roomPosition, 2);
 
                         GUI.color = Color.white;
-                        Handles.Label(roomPosition, voiceOverrideDoor.voiceOverrideRoom.gameObject.name);
+                        Handles.Label(roomPosition, voiceOverrideDoor.VoiceOverrideRoom.gameObject.name);
                     }
                 }
                     break;
@@ -62,7 +62,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
 
             var doorTransform = voiceOverrideDoor.transform;
             var doorPosition = doorTransform.position;
-            var exitDirection = doorTransform.TransformDirection(voiceOverrideDoor.exitDirection).normalized;
+            var exitDirection = doorTransform.TransformDirection(voiceOverrideDoor.ExitDirection).normalized;
 
 
             Handles.color = Color.red;
@@ -91,17 +91,17 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
         }
 
         private void HandleLeftMouseDown(Vector3 mousePosition, VoiceOverrideDoor voiceOverrideDoor) {
-            if (Utilities.IsValid(voiceOverrideDoor.voiceOverrideRoom)) {
+            if (Utilities.IsValid(voiceOverrideDoor.VoiceOverrideRoom)) {
                 var roomGuiPosition =
-                        HandleUtility.WorldToGUIPoint(voiceOverrideDoor.voiceOverrideRoom.transform.position);
+                        HandleUtility.WorldToGUIPoint(voiceOverrideDoor.VoiceOverrideRoom.transform.position);
                 var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
                 bool clickCloseToRoomGameObject = Vector2.Distance(roomGuiPosition, mouseGuiPosition) < 10f;
                 if (clickCloseToRoomGameObject) {
                     Selection.SetActiveObjectWithContext(
-                            voiceOverrideDoor.voiceOverrideRoom.gameObject,
-                            voiceOverrideDoor.voiceOverrideRoom
+                            voiceOverrideDoor.VoiceOverrideRoom.gameObject,
+                            voiceOverrideDoor.VoiceOverrideRoom
                     );
-                    EditorGUIUtility.PingObject(voiceOverrideDoor.voiceOverrideRoom);
+                    EditorGUIUtility.PingObject(voiceOverrideDoor.VoiceOverrideRoom);
                 }
             }
         }

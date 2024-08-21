@@ -7,6 +7,9 @@ using VRC.Udon.Common;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core
 {
+    /// <summary>
+    /// Data model of the Debug Menu. Can be synchronized with other players if set to manual sync.
+    /// </summary>
     [DefaultExecutionOrder(ExecutionOrder)]
     public class PlayerAudioConfigurationModel : Model
     {
@@ -20,6 +23,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         public const int UILayerMask = 1 << 5;
         #endregion
 
+        #region Networking Settings
         /// <summary>
         /// When enabled the master can change the settings of all players
         /// </summary>
@@ -27,6 +31,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         [FormerlySerializedAs("AllowMasterControl")]
         [Tooltip("When enabled the master can change the settings of all players")]
         public bool AllowMasterControlLocalValues;
+        #endregion
 
         #region Audio Configuration
         #region Occlusion settings
@@ -203,17 +208,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         #endregion
         #endregion
 
-
         #region Udon Lifecycle
-        protected void OnEnable() {
+        public void OnEnable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
             DebugLog(nameof(OnEnable));
 #endif
             #endregion
 
-
             if (!Initialized) {
+                Warn($"Skipping {nameof(OnEnable)} as not yet initialized");
                 return;
             }
 
@@ -222,16 +226,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         }
         #endregion
 
+        #region Overrides
         public override void OnDeserialization(DeserializationResult deserializationResult) {
             base.OnDeserialization(deserializationResult);
 
             if (!Initialized) {
-                Warn("Skipping as not yet initialized");
+                Warn($"Skipping {nameof(OnDeserialization)} as not yet initialized");
                 return;
             }
 
             Dirty = true;
             NotifyIfDirty(1);
         }
+        #endregion
     }
 }

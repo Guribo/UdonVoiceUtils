@@ -1,5 +1,7 @@
 ﻿using TLP.UdonUtils;
 using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Common;
+using TLP.UdonUtils.Runtime.Extensions;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -22,36 +24,66 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public VoiceOverrideRoom VoiceOverrideRoom;
         #endregion
 
+        #region State
+        internal bool Initialized { get; private set; }
+        #endregion
+
+        #region Player Events
         public override void Interact() {
+            #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(Interact));
+            DebugLog($"{nameof(Interact)}: {Networking.LocalPlayer.ToStringSafe()}");
 #endif
-            EnterRoom(Networking.LocalPlayer);
-        }
+            #endregion
 
-        internal void EnterRoom(VRCPlayerApi playerApi) {
+            if (!Initialized) {
+                Error("Not initialized");
+                return;
+            }
+
+            var localPlayer = Networking.LocalPlayer;
+            if (!Utilities.IsValid(localPlayer)) {
+                Error("Local player invalid");
+                return;
+            }
+
+            if (VoiceOverrideRoom.Contains(localPlayer)) {
 #if TLP_DEBUG
-            DebugLog(nameof(EnterRoom));
+                Warn($"{localPlayer.ToStringSafe()} already in room");
 #endif
-            if (!Assert(Utilities.IsValid(playerApi), "Invalid Player tried entering a room", this)) {
+
+                if (Utilities.IsValid(OptionalEnterLocation)) {
+                    localPlayer.TeleportTo(
+                            OptionalEnterLocation.position,
+                            OptionalEnterLocation.rotation,
+                            VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,
+                            false
+                    );
+                }
+
                 return;
             }
 
-            if (!playerApi.isLocal) {
-                return;
-            }
-
-            if (!Assert(Utilities.IsValid(VoiceOverrideRoom), "VoiceOverrideRoom invalid", this)) {
-                return;
-            }
-
-            if (!VoiceOverrideRoom.Contains(playerApi)) {
-                Assert(
-                        VoiceOverrideRoom.EnterRoom(playerApi, OptionalEnterLocation),
-                        "EnterRoom failed",
-                        this
-                );
+            if (!VoiceOverrideRoom.EnterRoom(localPlayer, OptionalEnterLocation)) {
+                Error($"Failed to add {localPlayer} to {VoiceOverrideRoom.GetScriptPathInScene()}");
             }
         }
+        #endregion
+
+        #region Overrides
+        protected override bool SetupAndValidate() {
+            if (!base.SetupAndValidate()) {
+                return false;
+            }
+
+            if (!Utilities.IsValid(VoiceOverrideRoom)) {
+                Error($"{nameof(VoiceOverrideRoom)} not set");
+                return false;
+            }
+
+            Initialized = true;
+            return true;
+        }
+        #endregion
     }
 }

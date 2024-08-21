@@ -44,7 +44,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                         // TODO refactor redundant code
                         var voiceOverrideDoor = udonSharpBehavior as VoiceOverrideDoor;
                         if (voiceOverrideDoor != null) {
-                            if (voiceOverrideDoor.voiceOverrideRoom != voiceOverrideRoom) {
+                            if (voiceOverrideDoor.VoiceOverrideRoom != voiceOverrideRoom) {
                                 continue;
                             }
 
@@ -124,7 +124,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
 
             foreach (var udonBehaviour in Resources.FindObjectsOfTypeAll<UdonBehaviour>()) {
                 foreach (var betterPlayerAudioOverride in udonBehaviour.gameObject.GetComponents<VoiceOverrideDoor>()) {
-                    if (betterPlayerAudioOverride.voiceOverrideRoom == voiceOverrideRoom) {
+                    if (betterPlayerAudioOverride.VoiceOverrideRoom == voiceOverrideRoom) {
                         _relevantBehaviours.Add(betterPlayerAudioOverride);
                     }
                 }

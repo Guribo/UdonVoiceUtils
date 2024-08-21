@@ -1,13 +1,17 @@
 ﻿#if !COMPILER_UDONSHARP && UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
+using UdonSharpEditor;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRC.Udon.Serialization.OdinSerializer.Utilities;
 
 namespace TLP.UdonVoiceUtils.Editor.Inspectors
 {
@@ -17,13 +21,15 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
         private readonly HashSet<PlayerAudioOverride> _relevantBehaviours =
                 new HashSet<PlayerAudioOverride>();
 
-        private const int RefreshInterval = 60;
-        private int _refreshCount;
-
+        public override void OnInspectorGUI() {
+            UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target);
+            DrawDefaultInspector();
+        }
 
         public void OnSceneGUI() {
             var playerAudioController = (PlayerAudioController)target;
             if (!Utilities.IsValid(playerAudioController)) {
+                Debug.LogWarning($"{nameof(playerAudioController)} invalid");
                 return;
             }
 
@@ -33,21 +39,14 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                 case EventType.Repaint:
                 {
                     // draw lines to each connected element
-                    _refreshCount = (_refreshCount + 1) % RefreshInterval;
-                    if (_refreshCount == 0) {
-                        UpdateRelevantBehaviours(playerAudioController);
-                    }
+
+                    UpdateRelevantBehaviours();
 
                     foreach (var playerAudioOverride in _relevantBehaviours) {
                         // TODO refactor redundant code
                         if (!playerAudioOverride) {
                             continue;
                         }
-
-                        if (playerAudioOverride.PlayerAudioController != playerAudioController) {
-                            continue;
-                        }
-
                         var doorPosition = playerAudioOverride.transform.position;
 
                         Handles.color = Color.white;
@@ -73,22 +72,42 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
             }
         }
 
-        private void UpdateRelevantBehaviours(PlayerAudioController playerAudioController) {
+        private void UpdateRelevantBehaviours() {
             _relevantBehaviours.Clear();
 
-            foreach (var udonBehaviour in Resources.FindObjectsOfTypeAll<UdonBehaviour>()) {
-                try {
-                    foreach (var betterPlayerAudioOverride in udonBehaviour.gameObject
-                                     .GetComponents<PlayerAudioOverride>()) {
-                        if (betterPlayerAudioOverride.PlayerAudioController == playerAudioController) {
-                            _relevantBehaviours.Add(betterPlayerAudioOverride);
+            var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+            Debug.Log($"Roots: {rootGameObjects.Count()}");
+
+            foreach (var rootGameObject in rootGameObjects) {
+                var udonBehaviours = rootGameObject.GetComponentsInChildren<UdonBehaviour>();
+                Debug.Log($"{rootGameObject.transform.GetPathInScene()}: {udonBehaviours.Count()}");
+
+                foreach (var udonBehaviour in udonBehaviours) {
+                    try {
+                        var udonSharpBehaviour = UdonSharpEditorUtility.GetProxyBehaviour(udonBehaviour);
+
+                        if (!udonSharpBehaviour) {
+                            Debug.LogWarning(
+                                    $"{udonBehaviour.GetComponentPathInScene()} has no backing {nameof(UdonSharpBehaviour)}");
+                            continue;
                         }
+
+                        var playerAudioOverride = (PlayerAudioOverride)udonSharpBehaviour;
+                        if (!playerAudioOverride) {
+                            Debug.LogWarning(
+                                    $"{udonSharpBehaviour.GetScriptPathInScene()} is no {nameof(PlayerAudioOverride)}");
+                            continue;
+                        }
+
+                        _relevantBehaviours.Add(playerAudioOverride);
+                    }
+                    catch (Exception) {
+                        // ignored
                     }
                 }
-                catch (Exception) {
-                    // ignored
-                }
             }
+
+            Debug.Log($"{nameof(_relevantBehaviours)}: {_relevantBehaviours.Count}");
         }
 
         private void HandleInput(Event guiEvent, UdonSharpBehaviour destination) {

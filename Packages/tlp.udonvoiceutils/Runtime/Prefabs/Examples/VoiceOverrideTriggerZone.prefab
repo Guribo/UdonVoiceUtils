@@ -28,9 +28,9 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6970394788139005305}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -60,6 +60,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -165,10 +166,10 @@ RectTransform:
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.00092613173, y: 0.005787962, z: 0.00092613173}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5242462649246972533}
   m_Father: {fileID: 6755912258943613209}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -192,7 +193,9 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -218,6 +221,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 10
+  m_PresetInfoIsWorld: 0
 --- !u!1 &2611232789528767386
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,12 +247,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2611232789528767386}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6755912258943613209}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5980311142126231218
 MonoBehaviour:
@@ -272,6 +277,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 2852579828967926198}
+  AutoRetrySendOnFailure: 1
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -279,10 +285,9 @@ MonoBehaviour:
   Listeners: []
   RaiseOnEnable: 0
   RaiseOnStart: 0
-  ListenerMethod: NOT_USED
+  ListenerMethod: OnPlayerListUpdated
   FastSync: 0
   Calls: 0
-  Values: 
 --- !u!114 &2852579828967926198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,7 +307,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
   Reliable: 0
-  _syncMethod: 3
+  _syncMethod: 1
   serializedProgramAsset: {fileID: 11400000, guid: 717664729863f1244879bdb03467835e,
     type: 2}
   programSource: {fileID: 11400000, guid: de61bb1bbef83b8409027ccffd980bc8, type: 2}
@@ -339,14 +344,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6755912258943613215}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.0000029504295}
   m_LocalPosition: {x: 0, y: 0, z: 1.81}
   m_LocalScale: {x: 2.6994, y: 0.43193096, z: 2.6994}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6970394788139005305}
   - {fileID: 7311382992179574519}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6755912258943613208
 MeshFilter:
@@ -367,10 +373,12 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -395,6 +403,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &6755912258943613210
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -403,9 +412,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6755912258943613215}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 1.0000005, y: 1, z: 1.0000005}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &474798353513844495
@@ -430,6 +447,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6755912258943613213}
+  AutoRetrySendOnFailure: 1
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
@@ -483,7 +501,6 @@ MonoBehaviour:
   DisallowListeningToChannel: 0
   LocalPlayerAdded: {fileID: 0}
   LocalPlayerRemoved: {fileID: 0}
-  PlayerAudioController: {fileID: 0}
   PlayerList: {fileID: 5980311142126231218}
   OptionalPlayerBlackList: {fileID: 0}
 --- !u!114 &6755912258943613213
@@ -534,6 +551,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6755912258943613212}
+  AutoRetrySendOnFailure: 1
   Severity: 5
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
