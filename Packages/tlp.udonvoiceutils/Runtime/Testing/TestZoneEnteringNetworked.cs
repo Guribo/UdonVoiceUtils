@@ -1,4 +1,5 @@
-﻿using TLP.UdonUtils.Runtime.Testing;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime.Testing;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UdonSharp;
 using UnityEngine;
@@ -15,8 +16,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
     /// Behaviour sync mode can be changed depending on the test performed, default is no variable sync
     /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(TestZoneEnteringNetworked), ExecutionOrder)]
     public class TestZoneEnteringNetworked : TestCase
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = TestPlayersReceiveMasterHeightChange.ExecutionOrder + 1;
+
         [SerializeField]
         private Transform Enter;
 

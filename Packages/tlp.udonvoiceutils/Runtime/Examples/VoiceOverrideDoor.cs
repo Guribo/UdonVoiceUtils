@@ -10,8 +10,9 @@ using VRC.SDKBase;
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     [RequireComponent(typeof(BoxCollider))]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(VoiceOverrideDoor), ExecutionOrder)]
     public class VoiceOverrideDoor : TlpBaseBehaviour
     {
         #region ExecutionOrder

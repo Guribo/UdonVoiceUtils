@@ -1,4 +1,4 @@
-﻿using TLP.UdonUtils;
+﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Extensions;
@@ -9,9 +9,16 @@ using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(VoiceOverrideRoomEnterButton), ExecutionOrder)]
     public class VoiceOverrideRoomEnterButton : TlpBaseBehaviour
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = VoiceOverrideRoomExitButton.ExecutionOrder + 1;
+
         #region Teleport settings
         [FormerlySerializedAs("optionalEnterLocation")]
         [Header("Teleport settings")]

@@ -8,6 +8,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(MicActivation), ExecutionOrder)]
     public abstract class MicActivation : TlpBaseBehaviour
     {
         #region ExecutionOrder

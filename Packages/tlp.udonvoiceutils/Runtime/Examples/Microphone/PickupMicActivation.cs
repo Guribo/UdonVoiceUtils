@@ -1,8 +1,18 @@
 ﻿
+using JetBrains.Annotations;
+using UnityEngine;
+
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(PickupMicActivation), ExecutionOrder)]
     public class PickupMicActivation : MicActivation
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = MicActivation.ExecutionOrder + 2;
+
         public override void OnDrop() {
             base.OnDrop();
 

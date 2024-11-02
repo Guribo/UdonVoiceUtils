@@ -3,13 +3,21 @@ using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Extensions;
 using UdonSharp;
+using UnityEngine;
 using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(PlayerAudioOverrideList), ExecutionOrder)]
     public class PlayerAudioOverrideList : TlpBaseBehaviour
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = PlayerAudioOverride.ExecutionOrder + 1;
+
         // start with an initial size of 3
         internal PlayerAudioOverride[] PlayerAudioOverrides;
         internal PlayerAudioOverride[] TempList;
@@ -125,28 +133,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 return null;
             }
 
-            if (PlayerAudioOverrides == null) {
+            if (PlayerAudioOverrides.LengthSafe() == 0) {
                 return null;
             }
 
-            if (PlayerAudioOverrides.Length == 0) {
-                return null;
-            }
-
-            if (!Assert(
-                        Overrides <= PlayerAudioOverrides.Length,
-                        "Overrides == PlayerAudioOverrides.Length failed",
-                        this
-                )) {
+            if (Overrides > PlayerAudioOverrides.Length) {
+                Error("Overrides <= PlayerAudioOverrides.Length failed");
                 return null;
             }
 
             Overrides = Consolidate(PlayerAudioOverrides);
-            if (index < Overrides) {
-                return PlayerAudioOverrides[index];
-            }
-
-            return null;
+            return index < Overrides ? PlayerAudioOverrides[index] : null;
         }
         #endregion
 

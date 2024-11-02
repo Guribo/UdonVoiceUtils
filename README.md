@@ -4,11 +4,14 @@
 > 
 > **Create a backup before testing 2.0.0!**
 > 
-> Feel free to give UVU 2.0.0-rc1 a try and create issue tickets if you run into any problems.
+> Feel free to give UVU 2.0.0-rc2 a try and create issue tickets if you run into any problems.
 > I will get these sorted out before the final release.
 > 
 > Migration from 1.0.x to 2.0.x should not require any additional work
-> unless you use custom scripts that interact with UVU components.
+> unless you use custom scripts that interact with UVU components or are based on them:
+> **UdonVoiceUtils and other scripts based on TLP scripts MUST have a unique ExecutionOrder now!**
+> Use the `Tools/TLP/UdonUtils/TLP ExecutionOrder` menu to log the order to the console.
+> Please use other TLP based scripts as reference when defining new ExecutionOrder values for your scripts.
 
 [![Total downloads](https://img.shields.io/github/downloads/Guribo/UdonVoiceUtils/total?style=flat-square&logo=appveyor)](https://github.com/Guribo/UdonVoiceUtils/releases)
 
@@ -331,6 +334,12 @@ This includes:
 ## Changelog
 
 All notable changes to this project will be documented in this file.
+
+### [2.0.0-rc.2] - 2024-11-02
+
+#### 🚀 Features
+
+- [**breaking**] Deterministic execution order to address known VRC-bug
 
 ### [2.0.0-rc.1] - 2024-08-21
 

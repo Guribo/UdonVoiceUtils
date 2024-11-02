@@ -16,13 +16,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 {
     [RequireComponent(typeof(DummyView))]
     [DefaultExecutionOrder(ExecutionOrder)]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [TlpDefaultExecutionOrder(typeof(PlayerAudioController), ExecutionOrder)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class PlayerAudioController : Controller
     {
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = VoiceUtilsExecutionOrder.AudioStart;
+        public new const int ExecutionOrder = PlayerOcclusionStrategy.ExecutionOrder + 10;
 
         #region General settings
         [Header("General settings")]

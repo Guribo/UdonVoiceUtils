@@ -11,15 +11,16 @@ using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(VoiceOverrideRoom), ExecutionOrder)]
     public class VoiceOverrideRoom : TlpBaseBehaviour
     {
         #region ExecutionOrder
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerAudioOverride.ExecutionOrder + 1;
+        public new const int ExecutionOrder = MicActivation.ExecutionOrder + 10;
         #endregion
 
         #region State

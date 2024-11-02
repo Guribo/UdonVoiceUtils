@@ -1,12 +1,21 @@
-﻿using TLP.UdonUtils.Runtime;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime;
 using UdonSharp;
 using UnityEngine;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerOcclusion
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(PlayerOcclusionStrategy), ExecutionOrder)]
     public abstract class PlayerOcclusionStrategy : TlpBaseBehaviour
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = TlpExecutionOrder.AudioStart + 100;
+
+
         /// <param name="listenerHead"></param>
         /// <param name="direction"></param>
         /// <param name="distance"></param>

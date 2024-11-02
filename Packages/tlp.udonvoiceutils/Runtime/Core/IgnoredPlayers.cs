@@ -1,14 +1,27 @@
-﻿using TLP.UdonUtils.Runtime;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Extensions;
+using TLP.UdonUtils.Runtime.Player;
 using UdonSharp;
+using UnityEngine;
 using VRC.SDK3.Data;
 using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core
 {
+    /// <summary>
+    /// TODO Use Blacklist instead?
+    /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(IgnoredPlayers), ExecutionOrder)]
     public class IgnoredPlayers : TlpBaseBehaviour
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = PlayerBlackList.ExecutionOrder + 1;
+
         #region State
         internal readonly DataDictionary IgnoredPlayerIds = new DataDictionary();
         #endregion

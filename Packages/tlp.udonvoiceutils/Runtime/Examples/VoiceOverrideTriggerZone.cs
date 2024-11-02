@@ -15,15 +15,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     /// All players that are in contact with the trigger are affected. Exiting the trigger removes the player from the
     /// associated voice override.
     /// </summary>
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(VoiceOverrideTriggerZone), ExecutionOrder)]
     public class VoiceOverrideTriggerZone : TlpBaseBehaviour
     {
         #region ExecutionOrder
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerAudioOverride.ExecutionOrder + 1;
+        public new const int ExecutionOrder = VoiceOverrideRoomEnterButton.ExecutionOrder + 1;
         #endregion
 
         #region Mandatory references

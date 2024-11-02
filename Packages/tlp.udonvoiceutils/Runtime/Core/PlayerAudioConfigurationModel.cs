@@ -16,7 +16,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = Model.ExecutionOrder;
+        public new const int ExecutionOrder = Model.ExecutionOrder + 10;
 
         #region Constants
         public const int EnvironmentLayerMask = 1 << 11;

@@ -1,4 +1,5 @@
-﻿using TLP.UdonUtils.Runtime.Testing;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime.Testing;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;
@@ -9,9 +10,16 @@ using VRC.Udon.Common.Interfaces;
 
 namespace TLP.UdonVoiceUtils.Runtime.Testing
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(PlayerAudioVoiceFalloffTest), ExecutionOrder)]
     public class PlayerAudioVoiceFalloffTest : TestCase
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = TestCase.ExecutionOrder + 101;
+
         [FormerlySerializedAs("samples")]
         public int Samples = 100;
 

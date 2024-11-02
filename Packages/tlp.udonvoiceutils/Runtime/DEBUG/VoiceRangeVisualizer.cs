@@ -1,14 +1,12 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime.Adapters.Cyan;
-using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Player;
 using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Examples;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
 
 namespace TLP.UdonVoiceUtils.Runtime.Debugging
 {
@@ -19,12 +17,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerAudioController.ExecutionOrder + 1;
+        public new const int ExecutionOrder = VoiceOverrideTriggerZone.ExecutionOrder + 1;
 
         #region State
         private TrackingDataFollowerUI _playerFollower;
         #endregion
-
 
         [SerializeField]
         private Transform Near;

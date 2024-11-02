@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
+using TLP.UdonVoiceUtils.Runtime.Examples.Microphone;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,9 +9,18 @@ using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(PlayerAudioView), ExecutionOrder)]
     public class PlayerAudioView : View
     {
+
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = View.ExecutionOrder + 100;
+
+
         #region Ui Elements
         #region General Settings
         [Header("General Settings")]

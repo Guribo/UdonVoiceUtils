@@ -1,7 +1,9 @@
-﻿using TLP.UdonUtils.Runtime.Common;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
 using TLP.UdonUtils.Runtime.Sync;
 using TLP.UdonUtils.Runtime.Sync.SyncedEvents;
+using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -9,8 +11,15 @@ using VRC.SDKBase;
 namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(MicModel), ExecutionOrder)]
     public class MicModel : Model
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = SyncedPlayerAudioConfigurationModel.ExecutionOrder + 1;
+
         [SerializeField]
         internal SyncedEventInt PlayerHoldingMic;
 
@@ -18,7 +27,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         internal SyncedEventBool MicIsOnEvent;
 
         #region Public API
-
         /// <summary>
         /// Id of the player holding the mic, -1 if not held
         /// </summary>

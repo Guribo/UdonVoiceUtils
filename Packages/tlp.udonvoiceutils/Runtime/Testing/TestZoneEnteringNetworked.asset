@@ -707,7 +707,7 @@ MonoBehaviour:
       Data: 46|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: TestResult, TLP.UdonUtils.Runtime
+      Data: TLP.UdonUtils.Runtime.Testing.TestResult, TLP.UdonUtils.Runtime
     - Name: 
       Entry: 8
       Data: 

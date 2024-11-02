@@ -9,15 +9,16 @@ using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(VoiceOverrideRoomExitButton), ExecutionOrder)]
     public class VoiceOverrideRoomExitButton : TlpBaseBehaviour
     {
         #region ExecutionOrder
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = VoiceOverrideRoom.ExecutionOrder + 1;
+        public new const int ExecutionOrder = VoiceOverrideDoor.ExecutionOrder + 1;
         #endregion
         #region Teleport settings
         [FormerlySerializedAs("optionalExitLocation")]

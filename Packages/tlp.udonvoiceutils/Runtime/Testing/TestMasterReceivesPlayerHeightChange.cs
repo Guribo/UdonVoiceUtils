@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Testing;
 using UdonSharp;
@@ -10,8 +11,15 @@ using VRC.Udon.Common.Interfaces;
 namespace TLP.UdonVoiceUtils.Runtime.Testing
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(TestMasterReceivesPlayerHeightChange), ExecutionOrder)]
     public class TestMasterReceivesPlayerHeightChange : TestCase
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = PlayerAudioVoiceFalloffTest.ExecutionOrder + 1;
+
         [UdonSynced]
         [HideInInspector]
         public bool TestIsRunning;

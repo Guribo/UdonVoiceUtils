@@ -16,7 +16,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = TlpExecutionOrder.AudioStart;
+        public new const int ExecutionOrder = PlayerAudioOverrideList.ExecutionOrder + 1;
 
         [SerializeField]
         private UdonEvent LocalPlayerAdded;

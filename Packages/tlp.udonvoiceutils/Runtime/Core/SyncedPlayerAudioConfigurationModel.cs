@@ -14,7 +14,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerAudioConfigurationModel.ExecutionOrder;
+        public new const int ExecutionOrder = PlayerAudioConfigurationModel.ExecutionOrder + 1;
 
         public override void Start() {
             base.Start();

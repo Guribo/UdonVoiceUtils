@@ -405,7 +405,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 return false;
             }
 
-            bool ignored = LocallyAddedPlayers.Remove(playerToRemove.playerId);
+            bool unused = LocallyAddedPlayers.Remove(playerToRemove.playerId);
             var playerListResult = PlayerSet.RemovePlayer(playerToRemove);
             switch (playerListResult) {
                 case PlayerListResult.Success:
@@ -474,7 +474,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             bool containsLocal = false;
             var localPlayer = Networking.LocalPlayer;
 
-            if (!Assert(Utilities.IsValid(localPlayer), "Local player invalid", this)) {
+            if (!Utilities.IsValid(localPlayer)) {
+                Error($"{nameof(Refresh)}.{nameof(localPlayer)} invalid");
                 return;
             }
 
@@ -531,6 +532,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             DebugLog(nameof(ForceNoSynchronization));
 #endif
             #endregion
+
             if (!Initialized) {
                 Error("Not initialized");
                 return false;
@@ -551,6 +553,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             DebugLog(nameof(AllowSynchronization));
 #endif
             #endregion
+
             if (!Initialized) {
                 Error("Not initialized");
 
@@ -684,7 +687,5 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             }
         }
         #endregion
-
-
     }
 }

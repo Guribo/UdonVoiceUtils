@@ -1,12 +1,21 @@
-﻿using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
 using UdonSharp;
+using UnityEngine;
 using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(MicController), ExecutionOrder)]
     public class MicController : Controller
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = Controller.ExecutionOrder + 10;
+
         #region State
         private MicModel _micModel;
         private MicView _micView;

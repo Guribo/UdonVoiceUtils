@@ -13,13 +13,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(PickupMicrophone), ExecutionOrder)]
     public class PickupMicrophone : TlpBaseBehaviour
     {
         #region ExecutionOrder
         protected override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerAudioOverride.ExecutionOrder + 1;
+        public new const int ExecutionOrder = DynamicPrivacy.ExecutionOrder + 1;
         #endregion
 
         #region State

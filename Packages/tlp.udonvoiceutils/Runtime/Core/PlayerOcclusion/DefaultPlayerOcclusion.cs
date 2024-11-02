@@ -1,9 +1,17 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerOcclusion
 {
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(DefaultPlayerOcclusion), ExecutionOrder)]
     public class DefaultPlayerOcclusion : PlayerOcclusionStrategy
     {
+        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = NullPlayerOcclusion.ExecutionOrder + 1;
+
         #region State
         private readonly RaycastHit[] _rayHits = new RaycastHit[2];
         #endregion
