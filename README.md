@@ -335,6 +335,12 @@ This includes:
 
 All notable changes to this project will be documented in this file.
 
+### [2.0.1] - 2024-12-11
+
+#### 🐛 Bug Fixes
+
+- Prevent update to incompatible sdks
+
 ### [2.0.0] - 2024-12-11
 
 #### ⚙️ Miscellaneous Tasks
