@@ -335,6 +335,12 @@ This includes:
 
 All notable changes to this project will be documented in this file.
 
+### [2.0.0] - 2024-12-11
+
+#### ⚙️ Miscellaneous Tasks
+
+- Bump version
+
 ### [2.0.0-rc.2] - 2024-11-02
 
 #### 🚀 Features
