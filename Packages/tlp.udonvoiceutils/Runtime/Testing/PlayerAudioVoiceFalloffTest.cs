@@ -15,7 +15,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
     [TlpDefaultExecutionOrder(typeof(PlayerAudioVoiceFalloffTest), ExecutionOrder)]
     public class PlayerAudioVoiceFalloffTest : TestCase
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = TestCase.ExecutionOrder + 101;

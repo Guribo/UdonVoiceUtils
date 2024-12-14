@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
+using TLP.UdonVoiceUtils.Runtime.Examples.Microphone;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -12,10 +13,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     public abstract class MicActivation : TlpBaseBehaviour
     {
         #region ExecutionOrder
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PickupMicrophone.ExecutionOrder + 1;
+        public new const int ExecutionOrder = MicModel.ExecutionOrder + 1;
         #endregion
 
         #region Dependencies

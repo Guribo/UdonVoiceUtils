@@ -21,7 +21,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     public class PlayerAudioOverride : TlpBaseBehaviour
     {
         #region ExecutionOrder
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = PlayerAudioController.ExecutionOrder + 1;
@@ -283,15 +283,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         #endregion
 
         #region State
-        internal bool Initialized { get; private set; }
         internal readonly DataDictionary LocallyAddedPlayers = new DataDictionary();
         #endregion
 
         #region Udon Lifecycle
         internal void OnEnable() {
-            if (Initialized) {
-                ApplyToAffectedPlayers();
+            if (!HasStartedOk) {
+                Error($"{nameof(OnEnable)}: Not initialized");
+                return;
             }
+
+            ApplyToAffectedPlayers();
         }
 
 
@@ -302,7 +304,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
+            if (!HasStartedOk) {
                 Warn($"Was not initialized, skipping removal from {nameof(PlayerAudioController)}");
                 return;
             }
@@ -341,8 +343,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(AddPlayer)}: Not initialized");
                 return false;
             }
 
@@ -367,7 +369,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     return false;
             }
 
-            if (!IsActiveAndEnabled()) {
+            if (!IsActiveAndEnabled) {
                 Warn($"Override {gameObject.name} is not enabled for {playerToAffect.displayName}");
                 return true;
             }
@@ -395,8 +397,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #if TLP_DEBUG
             DebugLog(nameof(RemovePlayer));
 #endif
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(RemovePlayer)}: Not initialized");
                 return false;
             }
 
@@ -418,7 +420,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     return false;
             }
 
-            if (!IsActiveAndEnabled()) {
+            if (!IsActiveAndEnabled) {
                 Warn($"Override {gameObject.name} is not enabled for {playerToRemove.displayName}");
                 return true;
             }
@@ -445,20 +447,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #if TLP_DEBUG
             DebugLog(nameof(IsAffected));
 #endif
-            if (Initialized) {
-                return IsActiveAndEnabled() && PlayerSet.Contains(player);
+            if (!HasStartedOk) {
+                Error($"{nameof(IsAffected)}: Not initialized");
+                return false;
             }
 
-            Error("Not initialized");
-            return false;
+            return IsActiveAndEnabled && PlayerSet.Contains(player);
         }
 
         public void Refresh() {
 #if TLP_DEBUG
             DebugLog(nameof(Refresh));
 #endif
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(Refresh)}: Not initialized");
                 return;
             }
 
@@ -502,12 +504,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(Clear)}: Not initialized");
                 return false;
             }
 
-            if (IsActiveAndEnabled()) {
+            if (IsActiveAndEnabled) {
                 ClearPlayerOverrides();
             }
 
@@ -533,8 +535,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(ForceNoSynchronization)}: Not initialized");
                 return false;
             }
 
@@ -554,9 +556,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
-
+            if (!HasStartedOk) {
+                Error($"{nameof(AllowSynchronization)}: Not initialized");
                 return false;
             }
 
@@ -578,7 +579,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             }
 
             if (!Utilities.IsValid(PlayerSet)) {
-                Error($"{nameof(PlayerSet)} is not set");
+                Error($"{nameof(PlayerSet)} not set");
                 return false;
             }
 
@@ -596,8 +597,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 Error($"Failed to listen to {PlayerSet.GetScriptPathInScene()}.{nameof(OnPlayerListUpdated)}");
                 return false;
             }
-
-            Initialized = true;
 
             ApplyToAffectedPlayers();
             return true;
@@ -630,11 +629,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
-                return;
-            }
-
             Refresh();
         }
         #endregion
@@ -654,14 +648,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 if (!Utilities.IsValid(player)) continue;
                 PlayerAudioController.ClearPlayerOverride(this, player);
             }
-        }
-
-        internal bool IsActiveAndEnabled() {
-#if UNITY_INCLUDE_TESTS
-            return Utilities.IsValid(this) && enabled;
-#else
-            return Utilities.IsValid(this) && enabled && gameObject.activeInHierarchy;
-#endif
         }
 
         internal void ApplyToAffectedPlayers() {

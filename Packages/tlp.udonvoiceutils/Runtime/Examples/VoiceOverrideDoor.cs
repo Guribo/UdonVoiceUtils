@@ -16,7 +16,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     public class VoiceOverrideDoor : TlpBaseBehaviour
     {
         #region ExecutionOrder
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = VoiceOverrideRoom.ExecutionOrder + 1;
@@ -49,7 +49,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         // used to allow proper enter/exit detection for horizontal triggers (e.g. a water surface)
         private readonly Vector3 _playerColliderGroundOffset = new Vector3(0, 0.2f, 0);
 
-        internal bool Initialized { get; private set; }
         #endregion
 
         #region Local Player behaviour
@@ -60,8 +59,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(OnPlayerRespawn)}: Not initialized");
                 return;
             }
 
@@ -84,8 +83,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(OnPlayerTriggerEnter)}: Not initialized");
                 return;
             }
 
@@ -114,11 +113,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(OnPlayerTriggerExit)}: Not initialized");
                 return;
             }
-
             if (!player.IsLocalSafe()) {
 #if TLP_DEBUG
                 DebugLog($"{nameof(OnPlayerTriggerExit)}: ignoring {player.ToStringSafe()}");
@@ -184,7 +182,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 Warn($"{nameof(BoxCollider)} center was changed to Vector3.zero");
             }
 
-            Initialized = true;
             return true;
         }
         #endregion

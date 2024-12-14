@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Extensions;
-using TLP.UdonUtils.Runtime.Player;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDK3.Data;
@@ -17,10 +16,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     [TlpDefaultExecutionOrder(typeof(IgnoredPlayers), ExecutionOrder)]
     public class IgnoredPlayers : TlpBaseBehaviour
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerBlackList.ExecutionOrder + 1;
+        public new const int ExecutionOrder = TlpExecutionOrder.AudioStart + 10;
 
         #region State
         internal readonly DataDictionary IgnoredPlayerIds = new DataDictionary();

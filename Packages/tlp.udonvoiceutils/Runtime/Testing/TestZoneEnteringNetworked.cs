@@ -20,7 +20,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
     [TlpDefaultExecutionOrder(typeof(TestZoneEnteringNetworked), ExecutionOrder)]
     public class TestZoneEnteringNetworked : TestCase
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = TestPlayersReceiveMasterHeightChange.ExecutionOrder + 1;
@@ -59,7 +59,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
                 }
             }
 
-            RequestSerialization();
             MarkNetworkDirty();
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PrepareLocalPlayer));
 

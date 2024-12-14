@@ -10,11 +10,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerOcclusion
     [TlpDefaultExecutionOrder(typeof(PlayerOcclusionStrategy), ExecutionOrder)]
     public abstract class PlayerOcclusionStrategy : TlpBaseBehaviour
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = TlpExecutionOrder.AudioStart + 100;
-
+        public new const int ExecutionOrder = IgnoredPlayers.ExecutionOrder + 1;
 
         /// <param name="listenerHead"></param>
         /// <param name="direction"></param>

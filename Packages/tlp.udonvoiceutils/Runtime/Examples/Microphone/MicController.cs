@@ -11,10 +11,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
     [TlpDefaultExecutionOrder(typeof(MicController), ExecutionOrder)]
     public class MicController : Controller
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = Controller.ExecutionOrder + 10;
+        public new const int ExecutionOrder = MicModel.ExecutionOrder + 10;
 
         #region State
         private MicModel _micModel;

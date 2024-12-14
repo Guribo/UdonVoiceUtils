@@ -7,7 +7,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerOcclusion
     [TlpDefaultExecutionOrder(typeof(DefaultPlayerOcclusion), ExecutionOrder)]
     public class DefaultPlayerOcclusion : PlayerOcclusionStrategy
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = NullPlayerOcclusion.ExecutionOrder + 1;

@@ -14,7 +14,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     [TlpDefaultExecutionOrder(typeof(VoiceOverrideRoomEnterButton), ExecutionOrder)]
     public class VoiceOverrideRoomEnterButton : TlpBaseBehaviour
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = VoiceOverrideRoomExitButton.ExecutionOrder + 1;
@@ -55,9 +55,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (VoiceOverrideRoom.Contains(localPlayer)) {
-#if TLP_DEBUG
                 Warn($"{localPlayer.ToStringSafe()} already in room");
-#endif
 
                 if (Utilities.IsValid(OptionalEnterLocation)) {
                     localPlayer.TeleportTo(

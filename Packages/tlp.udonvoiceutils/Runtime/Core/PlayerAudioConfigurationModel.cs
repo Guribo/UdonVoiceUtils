@@ -13,10 +13,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     [DefaultExecutionOrder(ExecutionOrder)]
     public class PlayerAudioConfigurationModel : Model
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = Model.ExecutionOrder + 10;
+        public new const int ExecutionOrder = PlayerAudioOverride.ExecutionOrder + 1;
 
         #region Constants
         public const int EnvironmentLayerMask = 1 << 11;
@@ -216,8 +216,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Warn($"Skipping {nameof(OnEnable)} as not yet initialized");
+            if (!IsModelInitialized) {
+                DebugLog($"{nameof(OnEnable)}: Skipping {nameof(NotifyIfDirty)} as not yet initialized");
                 return;
             }
 
@@ -226,11 +226,40 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         }
         #endregion
 
+        #region Callbacks
+        protected virtual void OnModelChanged() {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(OnModelChanged));
+#endif
+            #endregion
+        }
+        #endregion
+
         #region Overrides
+        public override void OnEvent(string eventName) {
+            switch (eventName) {
+                case nameof(OnModelChanged):
+
+                    #region TLP_DEBUG
+#if TLP_DEBUG
+                    DebugLog_OnEvent(eventName);
+#endif
+                    #endregion
+
+                    OnModelChanged();
+                    break;
+                default:
+                    base.OnEvent(eventName);
+                    break;
+            }
+        }
+
+
         public override void OnDeserialization(DeserializationResult deserializationResult) {
             base.OnDeserialization(deserializationResult);
 
-            if (!Initialized) {
+            if (!IsModelInitialized) {
                 Warn($"Skipping {nameof(OnDeserialization)} as not yet initialized");
                 return;
             }

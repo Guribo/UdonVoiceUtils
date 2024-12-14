@@ -13,10 +13,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     [DefaultExecutionOrder(ExecutionOrder)]
     public class DynamicPrivacy : TlpBaseBehaviour
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerAudioOverrideList.ExecutionOrder + 1;
+        public new const int ExecutionOrder = VoiceOverrideTriggerZone.ExecutionOrder + 1;
 
         [SerializeField]
         private UdonEvent LocalPlayerAdded;

@@ -14,7 +14,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
     [TlpDefaultExecutionOrder(typeof(TestPlayersReceiveMasterHeightChange), ExecutionOrder)]
     public class TestPlayersReceiveMasterHeightChange : TestCase
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = TestMasterReceivesPlayerHeightChange.ExecutionOrder + 1;

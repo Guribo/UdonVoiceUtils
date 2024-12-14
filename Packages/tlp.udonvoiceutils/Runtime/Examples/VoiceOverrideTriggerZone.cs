@@ -21,7 +21,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     public class VoiceOverrideTriggerZone : TlpBaseBehaviour
     {
         #region ExecutionOrder
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = VoiceOverrideRoomEnterButton.ExecutionOrder + 1;

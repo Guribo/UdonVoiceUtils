@@ -17,10 +17,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     public class PickupMicrophone : TlpBaseBehaviour
     {
         #region ExecutionOrder
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = DynamicPrivacy.ExecutionOrder + 1;
+        public new const int ExecutionOrder = SyncedPlayerAudioConfigurationModel.ExecutionOrder + 1;
         #endregion
 
         #region State

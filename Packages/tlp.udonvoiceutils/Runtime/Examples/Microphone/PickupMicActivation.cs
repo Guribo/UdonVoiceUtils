@@ -8,7 +8,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
     [TlpDefaultExecutionOrder(typeof(PickupMicActivation), ExecutionOrder)]
     public class PickupMicActivation : MicActivation
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = MicActivation.ExecutionOrder + 2;

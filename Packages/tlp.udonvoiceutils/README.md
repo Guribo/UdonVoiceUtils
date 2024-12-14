@@ -1,18 +1,5 @@
 # Udon Voice Utilities
 
-> IMPORTANT:
-> 
-> **Create a backup before testing 2.0.0!**
-> 
-> Feel free to give UVU 2.0.0-rc2 a try and create issue tickets if you run into any problems.
-> I will get these sorted out before the final release.
-> 
-> Migration from 1.0.x to 2.0.x should not require any additional work
-> unless you use custom scripts that interact with UVU components or are based on them:
-> **UdonVoiceUtils and other scripts based on TLP scripts MUST have a unique ExecutionOrder now!**
-> Use the `Tools/TLP/UdonUtils/TLP ExecutionOrder` menu to log the order to the console.
-> Please use other TLP based scripts as reference when defining new ExecutionOrder values for your scripts.
-
 [![Total downloads](https://img.shields.io/github/downloads/Guribo/UdonVoiceUtils/total?style=flat-square&logo=appveyor)](https://github.com/Guribo/UdonVoiceUtils/releases)
 
 <!-- TOC -->
@@ -25,7 +12,6 @@
     * [Versioning](#versioning)
     * [Installation](#installation)
     * [Minimal scene setup](#minimal-scene-setup)
-  * [Upgrading from BPAv0.8 to UVU](#upgrading-from-bpav08-to-uvu)
   * [Troubleshooting](#troubleshooting)
     * [Errors after installation](#errors-after-installation)
     * [*Something* is not working in the world](#something-is-not-working-in-the-world)
@@ -33,12 +19,6 @@
   * [FAQ](#faq)
     * [Can I use MeshColliders for occlusion?](#can-i-use-meshcolliders-for-occlusion)
     * [How can I change the default/globally active settings?](#how-can-i-change-the-defaultglobally-active-settings)
-  * [2.0.0 Change Notes](#200-change-notes)
-  * [1.0.0 Change Notes](#100-change-notes)
-    * [Additions](#additions)
-    * [Fixes](#fixes)
-    * [Deletions](#deletions)
-    * [Other](#other)
   * [References](#references)
 <!-- TOC -->
 
@@ -110,7 +90,7 @@ The used pattern MAJOR.MINOR.PATCH indicates:
 
 ### Installation
 
-1. Install/Add VRChat World SDK 3.6 to your project
+1. Install/Add VRChat World SDK 3.7 to your project
 2. Install/Add CyanPlayerObjectPool to your project: https://cyanlaser.github.io/CyanPlayerObjectPool/
 3. Install/Add TLP UdonVoiceUtils to your project: https://guribo.github.io/TLP/
 4. Start your project and open the scene `Packages/tlp.udonvoiceutils/Runtime/Scenes/Demo.unity`
@@ -135,64 +115,15 @@ into account when integrating UVU into a VRChat world.**
 
 1. In your **Project** windows in the search window type in "**TLP_**"
 2. Filter the search results using the **Dropdown menu**, select: **In Packages**
-3. From the now displayed search result add two prefabs to your scene:
+3. Add **TLP_Essentials** prefab to your scene to get the core components
+   - Note: `WorldVersionCheck` inside the prefab is optional and can be deleted from the scene
+4. Add **TLP_PlayerAudioController** - *core system of UVU (mandatory)*
+   - Alternatively you can use the prefab **TLP_PlayerAudioCompleteWithUi** if you want the menu as well
 
-    1. TLPLogger - *for logging anything TLP related (mandatory)*
-    2. TLP_PlayerAudioController - *core system of UVU (mandatory)*
-        - Alternatively you can use the prefab **TLP_PlayerAudioCompleteWithUi** if you want the menu as well
-
-4. The minimum setup is now complete, but has no effect on any player by default.
-5. From here on out you can either modify the global settings or add some of the example prefabs and connect them to the
+5. The minimum setup is now complete, but has no effect on any player by default.
+6. From here on out you can either modify the global settings or add some of the example prefabs and connect them to the
    controller to create what you need. In addition, you can also create your own custom solutions that rely on UVU's
    audio overriding capabilities.
-
-## Upgrading from BPAv0.8 to UVU
-
-Please follow these steps in order and read all the instructions first before executing on them
-
-1. **Backup your project and ensure that you can revert to the backed up version without breaking anything!**
-2. If you have custom override values either make screenshots or duplicate the project so that you can easily set the
-   same values again (note that occlusion values have changed)
-3. Open a new empty scene
-4. Import the latest release from the creator companion
-5. Check if there is any errors on the console after importing. This can help diagnose problems that have occurred.
-    1. If you get the error:
-       ````
-       (...) does not belong to a U# assembly, have you made a U# assembly definition for the assembly the script is a part of?
-       ````
-        - restart the Unity editor and they should be gone
-
-6. Open your scene that used BPAv0.8
-7. Check the console, there is most likely messages like:
-    1. `[UdonSharp] Scene behaviour 'SyncedPlayers' needed UnityEngine.Object upgrade pass`. This means the upgrade was
-       successful.
-    2. If you see the error `Can't remove AudioListener because AudioReverbFilter depends on it` please ignore it, it is
-       an "exploit" to get reverb to work on voices.
-
-8. If there is warnings like `[UdonSharp] Empty UdonBehaviour found on (...)`
-    1. Click on the message to navigate to the GameObject that caused the warning
-    2. Find the UdonBehaviours that are empty (Program Source is set to `None`)
-    3. Delete these UdonBehaviours
-9. Add the prefab `Assets/TLP/UdonUtils/Prefabs/TLP_Logger.prefab` to your scene
-10. Find the `PlayerAudioController` and if you had it unpacked replace the entire GameObject with the
-    prefab `TLP_PlayerAudioController`
-11. Open the hierarchy of the prefab and navigate to the `Configurations` GameObject
-12. Make your changes that shall be applied by default to every player to both the `LocalConfiguration`
-    and `DefaultConfiguration`
-13. The most painful part:
-    1. Navigate through your hierarchy and check every `UVU` component for unset variables
-    2. During testing, I experienced that some references to e.g. `SyncedIntegerArray` were empty after the upgrade
-    3. If these variables are part of a prefab right-click on them and try the `Revert` option if available, otherwise,
-       select the corresponding component from the child GameObjects or replace the entire GameObject with one of the
-       prefabs that come with `UVU` and set it up again.
-    4. Finding may be simplified by using ClientSim and testing every AudioZone/-Room in your world and checking the
-       console for errors.
-14. Lastly, there is some scripts that no longer exist in the shape of UdonBehaviours, thus there might be some empty
-    UdonBehaviours in your scene. The console will tell you about them.
-    1. UdonMath
-    2. UdonCommon
-    3. UdonDebug
-       Unless any prefab was unpacked they should have been removed automatically during the upgrade process.
 
 ## Troubleshooting
 
@@ -238,94 +169,6 @@ Please follow these steps in order and read all the instructions first before ex
 4. when using the menu: apply the same settings to the `Configurations/DefaultConfiguration`
    GameObject (this allows resetting the global settings back to your particular default values)
 
-## 2.0.0 Change Notes
-
-This is a quality of life update, improving ease-of-use and updates all systems.
-This includes:
-
- - improved error handling and extensive checks during startup
- - update to almost the entire code base to use the more recent UdonSharp features
- - various small improvements and checks for more reliable operation
- - recreated almost all example prefabs to fix scene setup errors with prefabs
- - automatically set up references (no more manually setting of PlayerAudioController)
-
-## 1.0.0 Change Notes
-
-### Additions
-
-* Add `PlayerAudioConfigurationModel` component
-    * One is used for current global configuration
-    * One is used as default settings
-        * *used when the `Reset All` button on the example menu is pressed*
-    * One is used to synchronize the master with all other players
-        * *when UVU is used combination with the example menu*
-* Rely on new Execution Order defined in `UdonUtils`
-* Add AnimationCurve `HeightToVoiceCorrelation` to change voice range automatically in relation to avatar height (off by
-  default)
-    * Add to global `PlayerAudioConfigurationModel`
-    * Add to `PlayerAudioOverride`
-* Add support for de-/activating UVU at runtime
-    * Disable/Enable either the GameObject with the `PlayerAudioController` or the `PlayerAudioController` component
-      itself
-* Add `DataDictionary` of UdonBehaviours mapped to PlayerIds (`int`) that can be used to get notified whenever a player
-  is updated
-    * DataDictionary name: `PlayerUpdateListeners`
-    * Keys: playerIds (integer)
-    * Values: UdonBehaviour
-    * Expected public Variables on listening UdonBehaviours:
-        * `public bool VoiceLowpass`
-        * `public float VoiceGain`
-        * `public float VoiceDistanceFar`
-        * `public float VoiceDistanceNear`
-        * `public float VoiceVolumetricRadius`
-    * Expected functions on listening UdonBehaviours:
-        * `public void VoiceValuesUpdate()`
-* Add `PlayerAudioView` component which takes care of receiving input from the example menu and takes care of updating
-  the menu in return
-* Add `VoiceRangeVisualizer` prefab that updates and displays each players voice range in real time for
-  debugging/testing purposes
-* Add `DynamicPrivacy` script that can update the privacy channel of another `PlayerAudioOverride` upon receiving
-  a `LocalPlayerAdded` or `LocalPlayerRemoved` event from a given `PlayeraudioOverride`
-    * Allows creating complex privacy channel setup, e.g. stages with private production areas (please check the demo
-      world for such an example)
-
-### Fixes
-
-- Fix "memory leak" in which new GameObjects would get instantiated every time a player entered a zone leading to
-  decreased performance in long-running instances which relied on zones
-    - The objects are now pooled and re-used
-- Fix bug in `VoiceOverrideRoom` that caused in rare cases the list of players to not being updated
-- Fix issue making players already inside of triggers not being affected by `PlayerAudioOverride` when entering the
-  world by briefly toggling all relevant triggers off and on again upon `Start`
-
-### Deletions
-
-- Remove `UdonCommon` and other, similar library scripts from prefabs and use code statically
-- Remove `AutoPlayerRange` script (now part of `UdonUtils`)
-- Remove `CustomAudioFalloff` script (now part of `UdonUtils`)
-
-### Other
-
-- Rename from **UdonBetterAudio** to **UdonVoiceUtils**
-- Move from `Assets/Guribo/UdonBetterAudio` to `Packages/tlp.udonvoiceutils`
-- Convert to VRChat Creator Companion package
-- Update to latest Udon API where appropriate
-- Rely on GUIDs instead of Assembly names in Assembly Definitions
-- Rename `PrivateZones` demo scene into `Demo` and move to `Packages/tlp.udonvoiceutils/Runtime/Scenes/Demo`
-- Rework of example Menu and underlying architecture
-    - Relies on MVC pattern introduced in `UdonUtils`
-- Move settings from former `BetterPlayerAudio` component to `PlayerAudioConfigurationModel`
-- Simplify usage and explanations of occlusion values
-- Change update rate to no longer depend on time but on rendered frames --> more predictable performance on slower
-  PCs/Quest
-- Extensive rework of main `PlayerAudiController`
-- Remove workaround to determine avatar height and use avatar eye height of `VrcPlayerApi` instead
-- Change behaviour of private channels to only mute people on the outside if the boolean `muteOutsiders` is set to true
-    - *previously just being in a private channel muted all players on the outside by default*
-- Change previous event handling to use new class `UdonEvent` from `UdonUtils`
-- Renamed core prefabs to start with "`TLP_`"
-- Upgrade to Unity 2022.3, dropping support for Unity 2019
-
 ## References
 
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
@@ -334,6 +177,13 @@ This includes:
 ## Changelog
 
 All notable changes to this project will be documented in this file.
+
+### [3.0.0] - 2024-12-14
+
+#### 🚀 Features
+
+- [**breaking**] Migrate to more robust initialization, make executionOrder values unique
+- [**breaking**] Deterministic execution order of all scripts, add AdjustableGain example
 
 ### [2.0.1] - 2024-12-11
 

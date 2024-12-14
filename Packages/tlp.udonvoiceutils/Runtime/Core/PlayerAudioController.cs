@@ -20,10 +20,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class PlayerAudioController : Controller
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerOcclusionStrategy.ExecutionOrder + 10;
+        public new const int ExecutionOrder = PlayerAudioOverrideList.ExecutionOrder + 1;
 
         #region General settings
         [Header("General settings")]
@@ -110,17 +110,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!AreMandatoryReferencesValid()) {
-                ErrorAndDisableComponent($"Setup incomplete");
-                return;
+            if (!HasStartedOk) {
+                Error($"{nameof(OnEnable)}: Not initialized");
             }
-
-            if (!ValidateAndSetupMvc()) {
-                ErrorAndDisableComponent($"MVC setup failed");
-                return;
-            }
-
-            EnableCurrentReverbSettings();
         }
 
         public void OnDisable() {
@@ -130,29 +122,36 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Warn("Not initialized, nothing to do");
-                return;
-            }
-
             UseReverbSettings(null);
             ResetAllPlayerVoices();
 
-            if (!Menu.DeInitialize()) {
-                Error($"DeInitialization of {nameof(Menu)} failed");
+            if (!HasStartedOk) {
+                Warn($"{nameof(OnDisable)}: Not initialized, nothing to do");
+                HasReceivedStart = false; // allow re-start
+                return;
+            }
+
+            HasStartedOk = false;
+
+            if (Menu.HasStartedOk
+                && Menu.IsViewInitialized
+                && !Menu.DeInitialize()) {
+                Error($"{nameof(OnDisable)}: {nameof(DeInitialize)} of {nameof(Menu)} failed");
             }
 
             if (!DeInitialize()) {
-                Error($"DeInitialization of {GetUdonTypeName()} failed");
+                Error($"{nameof(OnDisable)} {nameof(DeInitialize)} of {GetUdonTypeName()} failed");
             }
 
-            if (LocalConfiguration.Initialized && !LocalConfiguration.DeInitialize()) {
+            if (LocalConfiguration.HasStartedOk
+                && LocalConfiguration.IsModelInitialized
+                && !LocalConfiguration.DeInitialize()) {
                 Error($"DeInitialization of {nameof(LocalConfiguration)} failed");
             }
         }
 
         public override void PostLateUpdate() {
-            if (!Initialized) {
+            if (!HasStartedOk) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
                 Warn($"{nameof(PostLateUpdate)}: Not initialized");
@@ -193,10 +192,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
         #region Public API
         public void AddPlayerUpdateListener(TlpBaseBehaviour listener, int playerId) {
+            if (!HasStartedOk) {
+                Error($"{nameof(AddPlayerUpdateListener)}: Not initialized");
+                return;
+            }
+
             PlayerUpdateListeners[playerId] = listener;
         }
 
         public bool RemovePlayerUpdateListener(int playerId) {
+            if (!HasStartedOk) {
+                Error($"{nameof(RemovePlayerUpdateListener)}: Not initialized");
+                return false;
+            }
+
             return PlayerUpdateListeners.Remove(playerId);
         }
 
@@ -215,8 +224,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(IgnorePlayer)}: Not initialized");
+                return false;
+            }
+
+            if (!IsControllerInitialized) {
+                Error($"{nameof(IgnorePlayer)}: MVC not initialized");
                 return false;
             }
 
@@ -236,8 +250,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(UnIgnorePlayer)}: Not initialized");
+                return false;
+            }
+
+            if (!IsControllerInitialized) {
+                Error($"{nameof(UnIgnorePlayer)}: MVC not initialized");
                 return false;
             }
 
@@ -251,8 +270,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #if TLP_DEBUG
             DebugLog(nameof(OverridePlayerSettings));
 #endif
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(OverridePlayerSettings)}: Not initialized");
+                return false;
+            }
+
+            if (!IsControllerInitialized) {
+                Error($"{nameof(OverridePlayerSettings)}: MVC not initialized");
                 return false;
             }
 
@@ -285,8 +309,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #if TLP_DEBUG
             DebugLog(nameof(ClearPlayerOverride));
 #endif
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(ClearPlayerOverride)}: Not initialized");
+                return false;
+            }
+
+            if (!IsControllerInitialized) {
+                Error($"{nameof(ClearPlayerOverride)}: MVC not initialized");
                 return false;
             }
 
@@ -306,9 +335,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     return true;
                 }
 
-                Warn(
+                DebugLog(
                         $"{playerToClear.ToStringSafe()} didn't have the local override {playerAudioOverride.GetScriptPathInScene()}");
-
                 return false;
             }
 
@@ -338,8 +366,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!IsReceivingStart && !HasStartedOk) {
+                Error($"{nameof(GetMaxPriorityOverride)}: Not initialized");
+                return null;
+            }
+
+            if (!IsControllerInitialized) {
+                Error($"{nameof(GetMaxPriorityOverride)}: MVC not initialized");
                 return null;
             }
 
@@ -414,7 +447,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         }
 
         private bool ValidateAndSetupMvc() {
-            if (!LocalConfiguration.Initialized &&
+            if (!LocalConfiguration.IsModelInitialized &&
                 !LocalConfiguration.Initialize(LocalConfiguration.gameObject.GetComponent<UdonEvent>())) {
                 ErrorAndDisableComponent($"Failed to initialize {nameof(LocalConfiguration)}");
                 return false;
@@ -443,7 +476,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 return false;
             }
 
-            if (!SyncedMasterConfiguration.Initialized &&
+            if (!SyncedMasterConfiguration.IsModelInitialized &&
                 !SyncedMasterConfiguration.Initialize(masterConfigChangeEvent)) {
                 ErrorAndDisableComponent($"Failed to initialize {nameof(SyncedMasterConfiguration)}");
                 return false;
@@ -469,7 +502,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 return false;
             }
 
-            if (!Utilities.IsValid(Menu) || Menu.Initialized) {
+            if (!Utilities.IsValid(Menu) || Menu.IsViewInitialized) {
                 ErrorAndDisableComponent($"{nameof(Menu)} is already initialized");
                 return false;
             }
@@ -950,8 +983,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!IsControllerInitialized) {
+                Error($"{nameof(OnEvent)}: MVC not initialized");
                 return;
             }
 
@@ -1016,8 +1049,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(OnOwnershipTransferred)}: Not initialized");
+                return;
+            }
+
+            if (!IsControllerInitialized) {
+                Error($"{nameof(OnOwnershipTransferred)}: MVC not initialized");
                 return;
             }
 
@@ -1074,13 +1112,22 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
+            if (player.IsLocalSafe()) {
+                // don't bother doing anything
+                return;
+            }
+
+            if (!HasStartedOk) {
+                Error($"{nameof(OnPlayerLeft)}: Not initialized");
+                return;
+            }
 
             if (Utilities.IsValid(player)) {
                 ExistingRemotePlayerIds.RemoveAll(player.playerId);
             }
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!IsControllerInitialized) {
+                Error($"{nameof(OnPlayerLeft)}: MVC not initialized");
                 return;
             }
 
@@ -1102,11 +1149,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// <param name="player"></param>
         /// <returns>True when a player is not ignored and is affected only by global effects</returns>
         public bool UsesDefaultEffects(VRCPlayerApi player) {
-            if (Initialized) {
+            if (!HasStartedOk) {
+                Error($"{nameof(UsesDefaultEffects)}: Not initialized");
+                return false;
+            }
+
+            if (IsControllerInitialized) {
                 return !IgnoredPlayers.Contains(player.PlayerIdSafe()) && !HasActiveVoiceOverrides(player);
             }
 
-            Error("Not initialized");
+            Error($"{nameof(UsesDefaultEffects)}: MVC not initialized");
             return false;
         }
 
@@ -1116,22 +1168,32 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// <param name="player"></param>
         /// <returns>true when a player is not affected global nor by override effects</returns>
         public bool IsIgnored(VRCPlayerApi player) {
-            if (Initialized) {
+            if (!HasStartedOk) {
+                Error($"{nameof(IsIgnored)}: Not initialized");
+                return false;
+            }
+
+            if (IsControllerInitialized) {
                 return IgnoredPlayers.Contains(player.PlayerIdSafe());
             }
 
-            Error("Not initialized");
+            Error($"{nameof(IsIgnored)}: MVC not initialized");
             return false;
         }
 
         /// <param name="player"></param>
         /// <returns>true if the player is not ignored and is assigned to at least one override</returns>
         public bool UsesVoiceOverride(VRCPlayerApi player) {
-            if (Initialized) {
+            if (!HasStartedOk) {
+                Error($"{nameof(UsesVoiceOverride)}: Not initialized");
+                return false;
+            }
+
+            if (IsControllerInitialized) {
                 return !IgnoredPlayers.Contains(player.PlayerIdSafe()) && HasActiveVoiceOverrides(player);
             }
 
-            Error("Not initialized");
+            Error($"{nameof(UsesVoiceOverride)}: MVC not initialized");
             return false;
         }
 
@@ -1141,8 +1203,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// <param name="player"></param>
         /// <returns>true if the player is assigned to at least one override</returns>
         public bool HasActiveVoiceOverrides(VRCPlayerApi player) {
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
+                Error($"{nameof(HasActiveVoiceOverrides)}: Not initialized");
+                return false;
+            }
+
+            if (!IsControllerInitialized) {
+                Error($"{nameof(HasActiveVoiceOverrides)}: MVC not initialized");
                 return false;
             }
 
@@ -1174,11 +1241,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #if TLP_DEBUG
             DebugLog(nameof(GetNonLocalPlayersWithOverrides));
 #endif
-            if (Initialized) {
+            if (!HasStartedOk) {
+                Error($"{nameof(HasActiveVoiceOverrides)}: Not initialized");
+                return new DataList();
+            }
+
+
+            if (IsControllerInitialized) {
                 return PlayersToOverride.GetKeys();
             }
 
-            Error("Not initialized");
+            Error($"{nameof(GetNonLocalPlayersWithOverrides)}: MVC not initialized");
             return new DataList();
         }
 
@@ -1275,12 +1348,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 gameObject.name = expectedName;
             }
 
-            if (Initialized) {
-                return true;
+            if (!AreMandatoryReferencesValid()) {
+                ErrorAndDisableComponent($"Setup incomplete");
+                return false;
             }
 
-            Error("MVC setup is incomplete");
-            return false;
+            if (!IsControllerInitialized && !ValidateAndSetupMvc()) {
+                ErrorAndDisableComponent($"MVC setup failed");
+                return false;
+            }
+
+            EnableCurrentReverbSettings();
+            return true;
         }
         #endregion
     }

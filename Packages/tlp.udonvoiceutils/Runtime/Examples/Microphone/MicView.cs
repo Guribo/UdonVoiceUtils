@@ -12,7 +12,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
     [TlpDefaultExecutionOrder(typeof(MicView), ExecutionOrder)]
     public class MicView : View
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = PlayerAudioView.ExecutionOrder + 1;
@@ -65,7 +65,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 #endif
             #endregion
 
-            if (!Initialized) {
+            if (!HasStartedOk) {
                 Error("Not initialized");
                 return;
             }

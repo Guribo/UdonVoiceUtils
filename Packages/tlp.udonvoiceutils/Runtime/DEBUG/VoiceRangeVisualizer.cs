@@ -14,10 +14,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
     [DefaultExecutionOrder(ExecutionOrder)]
     public class VoiceRangeVisualizer : CyanPooledObject
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = VoiceOverrideTriggerZone.ExecutionOrder + 1;
+        public new const int ExecutionOrder = AdjustableGain.ExecutionOrder + 1;
 
         #region State
         private TrackingDataFollowerUI _playerFollower;

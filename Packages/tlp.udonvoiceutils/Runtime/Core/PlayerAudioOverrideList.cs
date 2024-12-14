@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Extensions;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerOcclusion;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -13,10 +14,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     [TlpDefaultExecutionOrder(typeof(PlayerAudioOverrideList), ExecutionOrder)]
     public class PlayerAudioOverrideList : TlpBaseBehaviour
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = PlayerAudioOverride.ExecutionOrder + 1;
+        public new const int ExecutionOrder = PlayerOcclusionStrategy.ExecutionOrder + 10;
 
         // start with an initial size of 3
         internal PlayerAudioOverride[] PlayerAudioOverrides;

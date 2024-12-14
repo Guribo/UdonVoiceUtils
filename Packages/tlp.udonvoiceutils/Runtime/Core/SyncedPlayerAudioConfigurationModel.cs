@@ -11,18 +11,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     [DefaultExecutionOrder(ExecutionOrder)]
     public class SyncedPlayerAudioConfigurationModel : PlayerAudioConfigurationModel
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = PlayerAudioConfigurationModel.ExecutionOrder + 1;
 
-        public override void Start() {
-            base.Start();
+        protected override bool SetupAndValidate() {
+            if (!base.SetupAndValidate()) {
+                return false;
+            }
 
             // ensuring that ownership always remains with master
             if (!this.TransferOwnershipToMaster()) {
                 Error("Failed to transfer ownership to current master");
+                return false;
             }
+
+            return true;
         }
 
         public override void OnOwnershipTransferred(VRCPlayerApi player) {

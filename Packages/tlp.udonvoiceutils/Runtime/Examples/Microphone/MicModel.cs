@@ -15,10 +15,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
     [TlpDefaultExecutionOrder(typeof(MicModel), ExecutionOrder)]
     public class MicModel : Model
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
-        public new const int ExecutionOrder = SyncedPlayerAudioConfigurationModel.ExecutionOrder + 1;
+        public new const int ExecutionOrder = PickupMicrophone.ExecutionOrder + 1;
 
         [SerializeField]
         internal SyncedEventInt PlayerHoldingMic;
@@ -75,8 +75,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 #endif
             #endregion
 
-            if (!IsReady()) {
-                Error("Not Ready");
+            if (!HasStartedOk) {
+                Error("Not initialized");
                 return;
             }
 
@@ -120,8 +120,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 
         #region Internal
         internal void SetIsOnState(bool value) {
-            if (!IsReady()) {
-                Error("Not ready");
+            if (!HasStartedOk) {
+                Error("Not initialized");
                 return;
             }
 
@@ -140,8 +140,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         }
 
         internal bool GetIsOnState() {
-            if (!IsReady()) {
-                Error("Not ready");
+            if (!HasStartedOk) {
+                Error("Not initialized");
                 return false;
             }
 
@@ -149,8 +149,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         }
 
         internal int GetUserId() {
-            if (!IsReady()) {
-                Error("Not ready");
+            if (!HasStartedOk) {
+                Error("Not initialized");
                 return -1;
             }
 
@@ -158,8 +158,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         }
 
         internal void SetUserId(int value) {
-            if (!IsReady()) {
-                Error("Not ready");
+            if (!HasStartedOk) {
+                Error("Not initialized");
                 return;
             }
 

@@ -13,7 +13,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
     [TlpDefaultExecutionOrder(typeof(MockLocalPlayerChangeEventListener), ExecutionOrder)]
     public class MockLocalPlayerChangeEventListener : TlpBaseBehaviour
     {
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = TestCase.ExecutionOrder + 100;

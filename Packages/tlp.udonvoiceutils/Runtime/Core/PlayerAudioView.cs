@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
-using TLP.UdonVoiceUtils.Runtime.Examples.Microphone;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +14,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
     public class PlayerAudioView : View
     {
 
-        protected override int ExecutionOrderReadOnly => ExecutionOrder;
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
 
         [PublicAPI]
         public new const int ExecutionOrder = View.ExecutionOrder + 100;
@@ -149,7 +148,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
+            if (!IsViewInitialized) {
                 Warn(
                         $"Skipping {nameof(OnSettingsChanged)} event as {nameof(PlayerAudioView)} is not ready"
                 );
@@ -288,7 +287,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 #endif
             #endregion
 
-            if (!Initialized) {
+            if (!IsViewInitialized) {
                 Error($"Not initialized, did you reference it correctly on the {nameof(PlayerAudioController)}?");
                 return;
             }
