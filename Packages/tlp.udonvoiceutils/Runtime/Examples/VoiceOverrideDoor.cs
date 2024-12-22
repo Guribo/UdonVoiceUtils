@@ -11,8 +11,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     [RequireComponent(typeof(BoxCollider))]
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    [DefaultExecutionOrder(ExecutionOrder)]
     [TlpDefaultExecutionOrder(typeof(VoiceOverrideDoor), ExecutionOrder)]
+    [DefaultExecutionOrder(ExecutionOrder)]
     public class VoiceOverrideDoor : TlpBaseBehaviour
     {
         #region ExecutionOrder

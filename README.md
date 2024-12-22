@@ -178,6 +178,12 @@ into account when integrating UVU into a VRChat world.**
 
 All notable changes to this project will be documented in this file.
 
+### [3.0.1] - 2024-12-22
+
+#### ⚙️ Miscellaneous Tasks
+
+- Support newer, compatible UdonUtils versions, add minimum supported VRC SDK version
+
 ### [3.0.0] - 2024-12-14
 
 #### 🚀 Features

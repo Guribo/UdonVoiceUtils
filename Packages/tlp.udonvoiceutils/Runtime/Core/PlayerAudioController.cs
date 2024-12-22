@@ -15,8 +15,8 @@ using VRC.SDKBase;
 namespace TLP.UdonVoiceUtils.Runtime.Core
 {
     [RequireComponent(typeof(DummyView))]
-    [DefaultExecutionOrder(ExecutionOrder)]
     [TlpDefaultExecutionOrder(typeof(PlayerAudioController), ExecutionOrder)]
+    [DefaultExecutionOrder(ExecutionOrder)]
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class PlayerAudioController : Controller
     {
