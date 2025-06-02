@@ -13,10 +13,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerOcclusion
         [PublicAPI]
         public new const int ExecutionOrder = PlayerOcclusionStrategy.ExecutionOrder + 1;
 
-        public override float CalculateOcclusion(
+        public override float GetRemainingAudioRange(
                 Vector3 listenerHead,
-                Vector3 direction,
-                float distance,
+                Vector3 listenerLookDirection,
+                float distanceBetweenPlayerHeads,
                 float occlusionFactor,
                 float playerOcclusionFactor,
                 int playerOcclusionMask

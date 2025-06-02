@@ -29,6 +29,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         [Header("General settings")]
         public const int ChannelNoPrivacy = -1;
 
+        private const float MaxRelativeAudioRange = 1f;
+        private const float SmallNumber = 0.001f;
+        private const float MinRelativeAudioRange = 0f;
+
         /// <summary>
         /// How many player updates should be performed every frame.
         /// Controls how responsive the system is.
@@ -562,7 +566,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
             var listenerToPlayer = otherHeadPosition - listenerHeadPosition;
             var direction = listenerToPlayer.normalized;
-            float distance = listenerToPlayer.magnitude;
+            float distanceBetweenPlayerHeads = listenerToPlayer.magnitude;
 
             bool localPlayerInPrivateChannel = privacyChannelId != ChannelNoPrivacy;
             if (Utilities.IsValid(playerOverride)) {
@@ -578,10 +582,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                             listenerHeadPosition,
                             listenerHeadRotation,
                             direction,
-                            distance,
+                            distanceBetweenPlayerHeads,
                             playerOverride,
                             otherHeadRotation
                     );
+                    NotifyVoiceUpdateListeners(otherPlayer);
                     return;
                 }
 
@@ -599,11 +604,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     listenerHeadPosition,
                     listenerHeadRotation,
                     direction,
-                    distance,
+                    distanceBetweenPlayerHeads,
                     otherHeadRotation,
                     _currentConfiguration,
                     LocalConfiguration.HeightToVoiceCorrelation
             );
+            NotifyVoiceUpdateListeners(otherPlayer);
         }
 
 
@@ -631,25 +637,51 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
                 Vector3 direction,
-                float distance,
+                float distanceBetweenPlayerHeads,
                 Quaternion otherPlayerHeadRotation,
                 PlayerAudioConfigurationModel configuration,
                 AnimationCurve heightToVoiceCorrelation
         ) {
-            float avatarEyeHeightAsMeters = otherPlayer.GetAvatarEyeHeightAsMeters();
+            float heightBasedMultiplier = heightToVoiceCorrelation.Evaluate(otherPlayer.GetAvatarEyeHeightAsMeters());
+            float relativeAudioRange = GetGlobalRelativeAudioRange(
+                    listenerHeadPosition,
+                    listenerHeadRotation,
+                    direction,
+                    distanceBetweenPlayerHeads,
+                    otherPlayerHeadRotation,
+                    configuration);
+            ApplyGlobalPlayerVoiceRangeReduction(
+                    otherPlayer,
+                    distanceBetweenPlayerHeads,
+                    configuration,
+                    relativeAudioRange,
+                    heightBasedMultiplier);
+            ApplyGlobalAvatarAudioRangeReduction(
+                    otherPlayer,
+                    distanceBetweenPlayerHeads,
+                    configuration,
+                    relativeAudioRange,
+                    heightBasedMultiplier);
+        }
 
-            float heightBasedMultiplier = heightToVoiceCorrelation.Evaluate(avatarEyeHeightAsMeters);
-
-            float occlusionFactor = PlayerOcclusionStrategy.CalculateOcclusion(
+        private float GetGlobalRelativeAudioRange(
+                Vector3 listenerHeadPosition,
+                Quaternion listenerHeadRotation,
+                Vector3 direction,
+                float distanceBetweenPlayerHeads,
+                Quaternion otherPlayerHeadRotation,
+                PlayerAudioConfigurationModel configuration
+        ) {
+            float rangeReducedByOcclusion = PlayerOcclusionStrategy.GetRemainingAudioRange(
                     listenerHeadPosition,
                     direction,
-                    distance,
+                    distanceBetweenPlayerHeads,
                     1f - configuration.OcclusionFactor,
                     1f - configuration.PlayerOcclusionFactor,
                     configuration.OcclusionMask
             );
 
-            float directionality = CalculateDirectionality(
+            float rangeReducedByDirection = CalculateDirectionality(
                     listenerHeadRotation,
                     otherPlayerHeadRotation,
                     direction,
@@ -657,28 +689,44 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     configuration.PlayerDirectionality
             );
 
-            float distanceReduction = directionality * occlusionFactor;
+            return rangeReducedByDirection * rangeReducedByOcclusion;
+        }
 
-            float voiceDistanceFactor = CalculateRangeReduction(
-                    distance,
-                    distanceReduction,
-                    configuration.VoiceDistanceFar
+        private void ApplyGlobalPlayerVoiceRangeReduction(
+                VRCPlayerApi otherPlayer,
+                float distanceBetweenPlayerHeads,
+                PlayerAudioConfigurationModel configuration,
+                float relativeAudioRange,
+                float heightBasedMultiplier
+        ) {
+            float voiceDistanceFactor = GetAbsoluteRangeReduction(
+                    distanceBetweenPlayerHeads,
+                    relativeAudioRange,
+                    configuration.VoiceDistanceFar * heightBasedMultiplier
             );
 
             UpdateVoiceAudio(
                     otherPlayer,
-                    voiceDistanceFactor * heightBasedMultiplier,
+                    voiceDistanceFactor,
                     configuration.EnableVoiceLowpass,
                     configuration.VoiceGain,
-                    configuration.VoiceDistanceFar,
-                    configuration.VoiceDistanceNear,
-                    configuration.VoiceVolumetricRadius
+                    configuration.VoiceDistanceFar * heightBasedMultiplier,
+                    configuration.VoiceDistanceNear * heightBasedMultiplier,
+                    configuration.VoiceVolumetricRadius * heightBasedMultiplier
             );
+        }
 
-            float avatarDistanceFactor = CalculateRangeReduction(
-                    distance,
-                    distanceReduction,
-                    configuration.AvatarFarRadius
+        private void ApplyGlobalAvatarAudioRangeReduction(
+                VRCPlayerApi otherPlayer,
+                float distanceBetweenPlayerHeads,
+                PlayerAudioConfigurationModel configuration,
+                float relativeAudioRange,
+                float heightBasedMultiplier
+        ) {
+            float avatarDistanceFactor = GetAbsoluteRangeReduction(
+                    distanceBetweenPlayerHeads,
+                    relativeAudioRange,
+                    configuration.AvatarFarRadius * heightBasedMultiplier
             );
 
             UpdateAvatarAudio(
@@ -687,9 +735,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     configuration.ForceAvatarSpatialAudio,
                     configuration.AllowAvatarCustomAudioCurves,
                     configuration.AvatarGain,
-                    configuration.AvatarFarRadius,
-                    configuration.AvatarNearRadius,
-                    configuration.AvatarVolumetricRadius
+                    configuration.AvatarFarRadius * heightBasedMultiplier,
+                    configuration.AvatarNearRadius * heightBasedMultiplier,
+                    configuration.AvatarVolumetricRadius * heightBasedMultiplier
             );
         }
 
@@ -698,24 +746,101 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
                 Vector3 direction,
-                float distance,
+                float distanceBetweenPlayerHeads,
                 PlayerAudioOverride playerOverride,
                 Quaternion otherHeadRotation
         ) {
             float heightBasedMultiplier = playerOverride
                     .HeightToVoiceCorrelation
                     .Evaluate(otherPlayer.GetAvatarEyeHeightAsMeters());
+            float relativeAudioRange = GetOverrideRelativeAudioRange(
+                    listenerHeadPosition,
+                    listenerHeadRotation,
+                    direction,
+                    distanceBetweenPlayerHeads,
+                    playerOverride,
+                    otherHeadRotation);
+            ApplyOverrideVoiceRangeReduction(
+                    otherPlayer,
+                    distanceBetweenPlayerHeads,
+                    playerOverride,
+                    relativeAudioRange,
+                    heightBasedMultiplier);
+            ApplyOverrideAvatarRangeReduction(
+                    otherPlayer,
+                    distanceBetweenPlayerHeads,
+                    playerOverride,
+                    relativeAudioRange,
+                    heightBasedMultiplier);
+        }
 
-            float occlusionFactor = PlayerOcclusionStrategy.CalculateOcclusion(
+        private void ApplyOverrideAvatarRangeReduction(
+                VRCPlayerApi otherPlayer,
+                float distanceBetweenPlayerHeads,
+                PlayerAudioOverride playerOverride,
+                float relativeAudioRange,
+                float heightBasedMultiplier
+        ) {
+            float avatarDistanceFactor = GetAbsoluteRangeReduction(
+                    distanceBetweenPlayerHeads,
+                    relativeAudioRange,
+                    playerOverride.TargetAvatarFarRadius * heightBasedMultiplier
+            );
+
+            UpdateAvatarAudio(
+                    otherPlayer,
+                    avatarDistanceFactor,
+                    playerOverride.ForceAvatarSpatialAudio,
+                    playerOverride.AllowAvatarCustomAudioCurves,
+                    playerOverride.TargetAvatarGain,
+                    playerOverride.TargetAvatarFarRadius * heightBasedMultiplier,
+                    playerOverride.TargetAvatarNearRadius * heightBasedMultiplier,
+                    playerOverride.TargetAvatarVolumetricRadius * heightBasedMultiplier
+            );
+        }
+
+        private void ApplyOverrideVoiceRangeReduction(
+                VRCPlayerApi otherPlayer,
+                float distanceBetweenPlayerHeads,
+                PlayerAudioOverride playerOverride,
+                float relativeAudioRange,
+                float heightBasedMultiplier
+        ) {
+            float voiceDistanceFactor = GetAbsoluteRangeReduction(
+                    distanceBetweenPlayerHeads,
+                    relativeAudioRange,
+                    playerOverride.VoiceDistanceFar * heightBasedMultiplier
+            );
+
+            UpdateVoiceAudio(
+                    otherPlayer,
+                    voiceDistanceFactor,
+                    playerOverride.EnableVoiceLowpass,
+                    playerOverride.VoiceGain,
+                    playerOverride.VoiceDistanceFar * heightBasedMultiplier,
+                    playerOverride.VoiceDistanceNear * heightBasedMultiplier,
+                    playerOverride.VoiceVolumetricRadius * heightBasedMultiplier
+            );
+        }
+
+        private float GetOverrideRelativeAudioRange(
+                Vector3 listenerHeadPosition,
+                Quaternion listenerHeadRotation,
+                Vector3 direction,
+                float distanceBetweenPlayerHeads,
+                PlayerAudioOverride playerOverride,
+                Quaternion otherHeadRotation
+        ) {
+            float rangeReducedByOcclusion = PlayerOcclusionStrategy.GetRemainingAudioRange(
                     listenerHeadPosition,
                     direction,
-                    distance,
+                    distanceBetweenPlayerHeads,
                     1f - playerOverride.OcclusionFactor,
                     1f - playerOverride.PlayerOcclusionFactor,
                     playerOverride.OcclusionMask
             );
 
-            float directionality = CalculateDirectionality(
+            float rangeReducedByDirection = CalculateDirectionality(
                     listenerHeadRotation,
                     otherHeadRotation,
                     direction,
@@ -723,51 +848,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     playerOverride.PlayerDirectionality
             );
 
-            float distanceReduction = directionality * occlusionFactor;
-
-            float voiceDistanceFactor = CalculateRangeReduction(
-                    distance,
-                    distanceReduction,
-                    playerOverride.VoiceDistanceFar
-            );
-
-            UpdateVoiceAudio(
-                    otherPlayer,
-                    voiceDistanceFactor * heightBasedMultiplier,
-                    playerOverride.EnableVoiceLowpass,
-                    playerOverride.VoiceGain,
-                    playerOverride.VoiceDistanceFar,
-                    playerOverride.VoiceDistanceNear,
-                    playerOverride.VoiceVolumetricRadius
-            );
-
-            float avatarDistanceFactor = CalculateRangeReduction(
-                    distance,
-                    distanceReduction,
-                    playerOverride.TargetAvatarFarRadius
-            );
-
-            UpdateAvatarAudio(
-                    otherPlayer,
-                    avatarDistanceFactor * heightBasedMultiplier,
-                    playerOverride.ForceAvatarSpatialAudio,
-                    playerOverride.AllowAvatarCustomAudioCurves,
-                    playerOverride.TargetAvatarGain,
-                    playerOverride.TargetAvatarFarRadius,
-                    playerOverride.TargetAvatarNearRadius,
-                    playerOverride.TargetAvatarVolumetricRadius
-            );
+            return rangeReducedByDirection * rangeReducedByOcclusion;
         }
 
         private void MutePlayer(VRCPlayerApi otherPlayer) {
             UpdateVoiceAudio(
                     otherPlayer,
-                    0f,
+                    MinRelativeAudioRange,
                     false,
-                    0f,
-                    0f,
-                    0f,
-                    0f
+                    MinRelativeAudioRange,
+                    MinRelativeAudioRange,
+                    MinRelativeAudioRange,
+                    MinRelativeAudioRange
             );
 
             UpdateAvatarAudio(
@@ -775,10 +867,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     0,
                     false,
                     false,
-                    0f,
-                    0f,
-                    0f,
-                    0f
+                    MinRelativeAudioRange,
+                    MinRelativeAudioRange,
+                    MinRelativeAudioRange,
+                    MinRelativeAudioRange
             );
         }
 
@@ -793,21 +885,32 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         }
 
 
-        private float CalculateRangeReduction(float distance, float distanceReduction, float maxAudibleRange) {
-            if (maxAudibleRange <= 0f || Mathf.Abs(distanceReduction - 1f) < 0.01f) {
-                return 1f;
+        private float GetAbsoluteRangeReduction(
+                float distanceBetweenPlayerHeads,
+                float relativeAudioRange,
+                float maxAudibleRange
+        ) {
+            if (relativeAudioRange < SmallNumber) {
+                return MinRelativeAudioRange;
             }
 
-            float remainingDistanceToFarRadius = maxAudibleRange - distance;
-            bool playerCouldBeAudible = remainingDistanceToFarRadius > 0f;
-
-            float occlusion = 1f;
-            if (playerCouldBeAudible) {
-                float postOcclusionFarDistance = remainingDistanceToFarRadius * distanceReduction + distance;
-                occlusion = postOcclusionFarDistance / maxAudibleRange;
+            if (PlayerCanNotBeHeard(maxAudibleRange)
+                || PlayerIsOutOfHearingRange(distanceBetweenPlayerHeads, maxAudibleRange)) {
+                return MaxRelativeAudioRange;
             }
 
-            return occlusion;
+            float remainingDistanceToFarRadius = maxAudibleRange - distanceBetweenPlayerHeads;
+            float postOcclusionFarDistance =
+                    remainingDistanceToFarRadius * relativeAudioRange + distanceBetweenPlayerHeads;
+            return postOcclusionFarDistance / maxAudibleRange;
+        }
+
+        private static bool PlayerCanNotBeHeard(float maxAudibleRange) {
+            return maxAudibleRange == 0;
+        }
+
+        private static bool PlayerIsOutOfHearingRange(float distanceBetweenPlayerHeads, float maxAudibleRange) {
+            return maxAudibleRange < distanceBetweenPlayerHeads;
         }
 
         private float CalculateDirectionality(
@@ -847,16 +950,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             vrcPlayerApi.SetVoiceDistanceFar(targetVoiceDistanceFar * distanceFactor);
             vrcPlayerApi.SetVoiceDistanceNear(targetVoiceDistanceNear * distanceFactor);
             vrcPlayerApi.SetVoiceVolumetricRadius(targetVoiceVolumetricRadius * distanceFactor);
+        }
 
-            if (!PlayerUpdateListeners.TryGetValue(vrcPlayerApi.playerId, out var value)) {
+        private void NotifyVoiceUpdateListeners(VRCPlayerApi otherPlayer) {
+            if (!PlayerUpdateListeners.TryGetValue(otherPlayer.playerId, out var value)) {
                 // nothing to do as no-one is listening for changes of the player
                 return;
             }
 
             var behaviour = (TlpBaseBehaviour)value.Reference;
             if (!Utilities.IsValid(behaviour)) {
-                Error($"Listener of {vrcPlayerApi.ToStringSafe()} is no {nameof(TlpBaseBehaviour)}: Removing.");
-                PlayerUpdateListeners.Remove(vrcPlayerApi.playerId);
+                Error($"Listener of {otherPlayer.ToStringSafe()} is no {nameof(TlpBaseBehaviour)}: Removing.");
+                PlayerUpdateListeners.Remove(otherPlayer.playerId);
                 return;
             }
 

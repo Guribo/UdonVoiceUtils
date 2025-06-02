@@ -16,16 +16,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerOcclusion
         public new const int ExecutionOrder = IgnoredPlayers.ExecutionOrder + 1;
 
         /// <param name="listenerHead"></param>
-        /// <param name="direction"></param>
-        /// <param name="distance"></param>
+        /// <param name="listenerLookDirection"></param>
+        /// <param name="distanceBetweenPlayerHeads"></param>
         /// <param name="occlusionFactor"></param>
         /// <param name="playerOcclusionFactor"></param>
         /// <param name="playerOcclusionMask"></param>
         /// <returns>multiplier in range 0 to 1</returns>
-        public abstract float CalculateOcclusion(
+        public abstract float GetRemainingAudioRange(
                 Vector3 listenerHead,
-                Vector3 direction,
-                float distance,
+                Vector3 listenerLookDirection,
+                float distanceBetweenPlayerHeads,
                 float occlusionFactor,
                 float playerOcclusionFactor,
                 int playerOcclusionMask

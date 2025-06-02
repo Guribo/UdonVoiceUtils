@@ -178,6 +178,32 @@ into account when integrating UVU into a VRChat world.**
 
 All notable changes to this project will be documented in this file.
 
+### [3.0.2] - 2025-06-02
+
+#### 🚀 Features
+
+- Ensure players are completely muted when occlusion is maxed out
+
+#### 🐛 Bug Fixes
+
+- Fix not working player occlusion layer enabled-check
+- Correct distance factor calculation by considering height-based-multiplier
+
+#### 🚜 Refactor
+
+- Cleanup test a bit
+- Modularize audio range reduction logic
+- Extracted and moved player update notification code
+- Rename methods and variables for clarity in audio range
+
+#### 🧪 Testing
+
+- Create runtime test for reported bug by Ziggor
+
+#### ⚙️ Miscellaneous Tasks
+
+- Update package version and add support for SDK 3.8
+
 ### [3.0.1] - 2024-12-22
 
 #### ⚙️ Miscellaneous Tasks
