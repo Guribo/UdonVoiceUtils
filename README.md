@@ -90,7 +90,7 @@ The used pattern MAJOR.MINOR.PATCH indicates:
 
 ### Installation
 
-1. Install/Add VRChat World SDK 3.7 to your project
+1. Install/Add VRChat World SDK 3.8.x to your project
 2. Install/Add CyanPlayerObjectPool to your project: https://cyanlaser.github.io/CyanPlayerObjectPool/
 3. Install/Add TLP UdonVoiceUtils to your project: https://guribo.github.io/TLP/
 4. Start your project and open the scene `Packages/tlp.udonvoiceutils/Runtime/Scenes/Demo.unity`
