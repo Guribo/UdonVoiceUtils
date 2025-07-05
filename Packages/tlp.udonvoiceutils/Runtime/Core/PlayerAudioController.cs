@@ -522,12 +522,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         internal void UpdateOtherPlayer(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer) {
             var playerOverride = GetMaxPriorityOverride(otherPlayer);
 
-            int privacyChannelId = ChannelNoPrivacy;
+            DataList localPrivacyChannels = null;
             bool muteOutsiders = false;
             bool disallowListeningToChannel = false;
 
             if (Utilities.IsValid(_localOverride)) {
-                privacyChannelId = _localOverride.PrivacyChannelId;
+                localPrivacyChannels = _localOverride.PrivacyChannelIdsList;
                 muteOutsiders = _localOverride.MuteOutsiders;
                 disallowListeningToChannel = _localOverride.DisallowListeningToChannel;
             }
@@ -539,7 +539,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             if (isLocalPlayerHumanoid) {
                 listenerHeadPosition = listenerHead.position;
                 listenerHeadRotation = listenerHead.rotation;
-            } else {
+            }
+            else
+            {
                 // create a fake head position/rotation (no pitch and roll)
                 var avatarRootRotation = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.AvatarRoot).rotation;
                 var playerUp = avatarRootRotation * Vector3.up;
@@ -555,7 +557,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             if (isOtherPlayerHumanoid) {
                 otherHeadPosition = otherPlayerHead.position;
                 otherHeadRotation = otherPlayerHead.rotation;
-            } else {
+            }
+            else
+            {
                 // create a fake head position/rotation (no pitch and roll)
                 var avatarRootRotation = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.AvatarRoot).rotation;
                 var playerUp = avatarRootRotation * Vector3.up;
@@ -568,12 +572,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             var direction = listenerToPlayer.normalized;
             float distanceBetweenPlayerHeads = listenerToPlayer.magnitude;
 
-            bool localPlayerInPrivateChannel = privacyChannelId != ChannelNoPrivacy;
+            bool localPlayerInPrivateChannel = HasPrivacyChannels(localPrivacyChannels);
             if (Utilities.IsValid(playerOverride)) {
                 if (OtherPlayerWithOverrideCanBeHeard(
                             playerOverride,
                             localPlayerInPrivateChannel,
-                            privacyChannelId,
+                            localPrivacyChannels,
                             muteOutsiders,
                             disallowListeningToChannel
                     )) {
@@ -612,19 +616,19 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             NotifyVoiceUpdateListeners(otherPlayer);
         }
 
-
         internal static bool OtherPlayerWithOverrideCanBeHeard(
                 PlayerAudioOverride playerOverride,
                 bool localPlayerInPrivateChannel,
-                int currentPrivacyChannel,
+                DataList localPrivacyChannels,
                 bool muteOutsiders,
                 bool disallowLocalPlayerListening
         ) {
-            // ReSharper disable once PossibleNullReferenceException (invalid warning because of IsValid check)
-            bool playerInSamePrivateChannel = playerOverride.PrivacyChannelId == currentPrivacyChannel;
-            bool playerInSamePrivateChannelAllowedToBeHeard =
-                    playerInSamePrivateChannel && !disallowLocalPlayerListening;
-            bool otherPlayerNotInAnyPrivateChannel = playerOverride.PrivacyChannelId == ChannelNoPrivacy;
+            // Check if players share any privacy channels
+            bool playersSharePrivateChannels = SharesAnyPrivacyChannels(localPrivacyChannels, playerOverride.PrivacyChannelIdsList);
+            bool playerInSamePrivateChannelAllowedToBeHeard = playersSharePrivateChannels && !disallowLocalPlayerListening;
+
+            // Check if other player is not in any private channel
+            bool otherPlayerNotInAnyPrivateChannel = !HasPrivacyChannels(playerOverride.PrivacyChannelIdsList);
             bool isOutsiderAndCanBeHeard = localPlayerInPrivateChannel
                                            && otherPlayerNotInAnyPrivateChannel
                                            && !muteOutsiders;
@@ -1465,6 +1469,54 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
             EnableCurrentReverbSettings();
             return true;
+        }
+        #endregion
+        
+        #region Privacy Channel Helper Methods
+        /// <summary>
+        /// Check if a DataList contains any privacy channels
+        /// </summary>
+        /// <param name="privacyChannels">The DataList to check</param>
+        /// <returns>true if the list has privacy channels</returns>
+        private static bool HasPrivacyChannels(DataList privacyChannels) {
+            return privacyChannels != null && privacyChannels.Count > 0;
+        }
+
+        /// <summary>
+        /// Check if two DataLists share any privacy channel IDs
+        /// </summary>
+        /// <param name="channelsA">First list of privacy channels</param>
+        /// <param name="channelsB">Second list of privacy channels</param>
+        /// <returns>true if they share any channel IDs</returns>
+        private static bool SharesAnyPrivacyChannels(DataList channelsA, DataList channelsB) {
+            if (!HasPrivacyChannels(channelsA) || !HasPrivacyChannels(channelsB)) 
+                return false;
+            
+            for (int i = 0; i < channelsA.Count; i++) {
+                int channelA = channelsA[i].Int;
+                for (int j = 0; j < channelsB.Count; j++) {
+                    if (channelsB[j].Int == channelA)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a privacy channel list contains a specific channel ID
+        /// </summary>
+        /// <param name="privacyChannels">The list to check</param>
+        /// <param name="channelId">The channel ID to look for</param>
+        /// <returns>true if the channel ID is found</returns>
+        private static bool ContainsPrivacyChannel(DataList privacyChannels, int channelId) {
+            if (!HasPrivacyChannels(privacyChannels)) 
+                return false;
+            
+            for (int i = 0; i < privacyChannels.Count; i++) {
+                if (privacyChannels[i].Int == channelId)
+                    return true;
+            }
+            return false;
         }
         #endregion
     }

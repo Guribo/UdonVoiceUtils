@@ -222,11 +222,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         [FormerlySerializedAs("privacyChannelId")]
         [Header("Privacy settings")]
         [Tooltip(
-                "Players affected by different overrides with the same privacy channel id can hear each other and " +
-                "can't be heard by non-affected players. If set to -1 the feature is turned off and all players affected " +
-                "by this override can be heard."
+                "Players affected by different overrides with channels that overlap can hear each other and " +
+                "can't be heard by non-affected players. If empty, the feature is turned off and all players affected " +
+                "by this override can be heard by everyone."
         )]
-        public int PrivacyChannelId = PlayerAudioController.ChannelNoPrivacy;
+        public int[] PrivacyChannelIds;
+
+        [HideInInspector]
+        public DataList PrivacyChannelIdsList = new DataList();
 
 
         /// <summary>
@@ -291,6 +294,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             if (!HasStartedOk) {
                 Error($"{nameof(OnEnable)}: Not initialized");
                 return;
+            }
+            
+            for (int i = 0; i < PrivacyChannelIds.LengthSafe(); i++) {
+                PrivacyChannelIdsList.Add(new DataToken(PrivacyChannelIds[i]));
             }
 
             ApplyToAffectedPlayers();
@@ -563,6 +570,86 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
             PlayerSet.SyncPaused = false;
             return true;
+        }
+        #endregion
+
+        #region Privacy Channel Helper Methods
+        /// <summary>
+        /// Check if this override has any privacy channels configured
+        /// </summary>
+        /// <returns>true if privacy channels are configured</returns>
+        public bool HasPrivacyChannels()
+        {
+            return PrivacyChannelIdsList != null && PrivacyChannelIdsList.Count > 0;
+        }
+
+        /// <summary>
+        /// Check if this override contains a specific privacy channel ID
+        /// </summary>
+        /// <param name="channelId">The channel ID to check for</param>
+        /// <returns>true if the channel ID is in this override's list</returns>
+        public bool ContainsPrivacyChannel(int channelId)
+        {
+            if (!HasPrivacyChannels()) return false;
+            
+            for (int i = 0; i < PrivacyChannelIdsList.Count; i++)
+            {
+                if (PrivacyChannelIdsList[i].Int == channelId)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check if this override shares any privacy channels with another override
+        /// </summary>
+        /// <param name="otherOverride">The other override to check against</param>
+        /// <returns>true if there are any shared privacy channels</returns>
+        public bool SharesPrivacyChannelsWith(PlayerAudioOverride otherOverride)
+        {
+            if (!HasPrivacyChannels() || !otherOverride.HasPrivacyChannels()) return false;
+            
+            for (int i = 0; i < PrivacyChannelIdsList.Count; i++)
+            {
+                if (otherOverride.ContainsPrivacyChannel(PrivacyChannelIdsList[i].Int))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Add a privacy channel ID to this override
+        /// </summary>
+        /// <param name="channelId">The channel ID to add</param>
+        public void AddPrivacyChannel(int channelId)
+        {
+            if (PrivacyChannelIdsList == null)
+                PrivacyChannelIdsList = new DataList();
+            
+            if (!ContainsPrivacyChannel(channelId))
+            {
+                PrivacyChannelIdsList.Add(new DataToken(channelId));
+            }
+        }
+
+        /// <summary>
+        /// Remove a privacy channel ID from this override
+        /// </summary>
+        /// <param name="channelId">The channel ID to remove</param>
+        /// <returns>true if the channel was removed</returns>
+        public bool RemovePrivacyChannel(int channelId)
+        {
+            if (!HasPrivacyChannels()) return false;
+            
+            for (int i = 0; i < PrivacyChannelIdsList.Count; i++)
+            {
+                if (PrivacyChannelIdsList[i].Int == channelId)
+                {
+                    PrivacyChannelIdsList.RemoveAt(i);
+                    return true;
+                }
+            }
+            return false;
         }
         #endregion
 
