@@ -27,6 +27,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public new const int ExecutionOrder = VoiceOverrideRoomEnterButton.ExecutionOrder + 1;
         #endregion
 
+        [Tooltip("If true, the player must have a clear line of sight to the trigger center to be affected")]
+        public bool requireLineOfSight = false;
+
+        [Tooltip("Layer mask to check for obstacles between player and trigger center")]
+        public LayerMask obstacleLayerMask = -1;
+
         #region Mandatory references
         [FormerlySerializedAs("playerAudioOverride")]
         [Header("Mandatory references")]
@@ -63,6 +69,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             if (!Utilities.IsValid(player)) {
                 Error($"{nameof(OnPlayerTriggerEnter)}: Invalid player entered");
+                return;
+            }
+
+            // Verify the player should actually trigger this
+            if (!ShouldPlayerTrigger(player)) {
                 return;
             }
 
@@ -143,5 +154,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
         }
         #endregion
+
+        #region Helpers
+        private bool ShouldPlayerTrigger(VRCPlayerApi player) {
+            Vector3 playerHeadPos = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
+            
+            // Get the closest point on the trigger's collider surface
+            Vector3 closestPoint = GetComponent<Collider>().ClosestPoint(playerHeadPos);
+            
+            // Line of sight check to the closest accessible point
+            if (requireLineOfSight) {
+                if (Physics.Linecast(playerHeadPos, closestPoint, obstacleLayerMask)) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        #endregion
     }
+    
 }
