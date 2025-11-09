@@ -10,14 +10,40 @@ using UnityEngine.Serialization;
 using VRC.SDK3.Data;
 using VRC.SDKBase;
 
+#if UNITY_EDITOR
+using UnityEditor;
+using TLP.UdonVoiceUtils.Runtime.Core;
+#endif
+
+#if UNITY_EDITOR
+namespace TLP.UdonVoiceUtils.Editor.Core
+{
+    [CustomEditor(typeof(PlayerAudioOverride))]
+    public class PlayerAudioOverrideEditor : TlpBehaviourEditor
+    {
+        protected override string GetDescription() {
+            return "Overrides default audio settings for a group of players. " +
+                   "Configure voice and avatar audio properties like distance, " +
+                   "gain, occlusion, and privacy channels. " +
+                   "Higher priority overrides take precedence over lower ones. " +
+                   "If the priority is equal the last added override will take precedence.";
+        }
+    }
+}
+#endif
 namespace TLP.UdonVoiceUtils.Runtime.Core
 {
     /// <summary>
     /// This override contains values that can be used to override the default audio settings in
     /// <see cref="PlayerAudioController"/> for a group of players.
     /// </summary>
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(
+            typeof(PlayerAudioOverride),
+            ExecutionOrder,
+            TlpExecutionOrder.AudioStart,
+            TlpExecutionOrder.AudioEnd)]
     public class PlayerAudioOverride : TlpBaseBehaviour
     {
         #region ExecutionOrder
@@ -219,6 +245,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// If set to -1 the feature is turned off for this override component and only players affected by this
         /// override can hear each other.
         /// </summary>
+        [SerializeField]
         [FormerlySerializedAs("privacyChannelId")]
         [Header("Privacy settings")]
         [Tooltip(
@@ -226,8 +253,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 "can't be heard by non-affected players. If set to -1 the feature is turned off and all players affected " +
                 "by this override can be heard."
         )]
-        public int PrivacyChannelId = PlayerAudioController.ChannelNoPrivacy;
+        internal int PrivacyChannelId = PlayerAudioController.ChannelNoPrivacy;
 
+        [SerializeField]
+        [Tooltip(
+                "Combined with PrivacyChannelId. " +
+                "AudioOverrides containing at least one same channel id are considered in the same channel. " +
+                "Allows creating AudioOverrides that can 'listen' to multiple channels at once.")]
+        internal int[] AdditionalPrivacyChannelIds;
 
         /// <summary>
         /// If set to true affected players also can't hear non-affected players.
@@ -239,14 +272,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         )]
         public bool MuteOutsiders = true;
 
-        /// <summary>
-        /// prevents the local player from listening to any other player in the same channel, can be used to talk to
-        /// players in a private room without being able to hear what is going on inside
-        /// </summary>
         [FormerlySerializedAs("disallowListeningToChannel")]
         [Tooltip(
                 "Prevents the local player from listening to any other player in the same channel, can be used to " +
-                "talk to players in a private room without being able to hear what is going on inside"
+                "talk to players in a private room without being able to hear what is going on inside. " +
+                "Only in effect if the local player is currently added to this override."
         )]
         public bool DisallowListeningToChannel;
         #endregion
@@ -284,6 +314,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
         #region State
         internal readonly DataDictionary LocallyAddedPlayers = new DataDictionary();
+
+        /// <summary>
+        /// keys: ChannelIds [int]
+        /// values: unused [empty DataToken]
+        /// </summary>
+        internal readonly DataDictionary PrivacyChannelIds = new DataDictionary();
         #endregion
 
         #region Udon Lifecycle
@@ -564,6 +600,54 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             PlayerSet.SyncPaused = false;
             return true;
         }
+
+        public bool HasOverlappingChannels(PlayerAudioOverride audioOverride) {
+            if (!HasStartedOk) {
+                return false;
+            }
+
+            if (!Utilities.IsValid(audioOverride)) {
+                // treat invalid overrides as NoPrivacyChannel
+                return PrivacyChannelIds.ContainsKey(PlayerAudioController.ChannelNoPrivacy);
+            }
+
+            if (!audioOverride.HasStartedOk) {
+                // treat failed scripts always as private channel
+                return false;
+            }
+
+            var other = audioOverride.PrivacyChannelIds;
+            var shorter = PrivacyChannelIds.Count > other.Count ? other : PrivacyChannelIds;
+            var longer = ReferenceEquals(shorter, PrivacyChannelIds) ? other : PrivacyChannelIds;
+
+            // optimized lookup of any potential matches by iterating over the shorter of the two dictionaries
+            // Complexity best case: O(1) * O(key lookup) - first entry is found instantly
+            // Worst case: O(n) * O(key lookup) - entire first (shorter) dictionary needed to be iterated
+            var privacyChannelIds = shorter.GetKeys();
+            for (int i = 0; i < privacyChannelIds.Count; i++) {
+                if (longer.ContainsKey(privacyChannelIds[i].Int)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsPrivateChannel() {
+            if (!HasStartedOk) {
+                return false;
+            }
+
+            switch (PrivacyChannelIds.Count) {
+                case 0:
+                    return false;
+                case 1:
+                    return !PrivacyChannelIds.ContainsKey(PlayerAudioController.ChannelNoPrivacy);
+                default:
+                    // with more then one entry there MUST to be a private channel due to unique keys in dictionaries
+                    return true;
+            }
+        }
         #endregion
 
         #region Overrides
@@ -571,6 +655,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             if (!base.SetupAndValidate()) {
                 return false;
             }
+
+            MergePrivacyChannelsIntoDictionary();
 
             PlayerAudioController = VoiceUtils.FindPlayerAudioController();
             if (!Utilities.IsValid(PlayerAudioController)) {
@@ -645,7 +731,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             int players = playerIds.LengthSafe();
             for (int i = 0; i < players; i++) {
                 var player = playerIds[i].IdToVrcPlayer();
-                if (!Utilities.IsValid(player)) continue;
+                if (!Utilities.IsValid(player)) {
+                    continue;
+                }
+
                 PlayerAudioController.ClearPlayerOverride(this, player);
             }
         }
@@ -661,7 +750,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             int players = playerIds.LengthSafe();
             for (int i = 0; i < players; i++) {
                 var player = playerIds[i].IdToVrcPlayer();
-                if (!Utilities.IsValid(player)) continue;
+                if (!Utilities.IsValid(player)) {
+                    continue;
+                }
+
                 if (!PlayerAudioController.OverridePlayerSettings(this, player)) {
                     Error($"Overriding settings of {player.ToStringSafe()} failed");
                 }
@@ -671,6 +763,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     LocalPlayerAdded.Raise(this);
                 }
             }
+        }
+
+        private void MergePrivacyChannelsIntoDictionary() {
+            RegisterPrivacyChannel(PrivacyChannelId);
+
+            if (AdditionalPrivacyChannelIds.LengthSafe() == 0) {
+                return;
+            }
+
+            foreach (int additionalPrivacyChannelId in AdditionalPrivacyChannelIds) {
+                RegisterPrivacyChannel(additionalPrivacyChannelId);
+            }
+        }
+
+        private void RegisterPrivacyChannel(int privacyChannelId) {
+            if (!PrivacyChannelIds.ContainsKey(privacyChannelId)) {
+                PrivacyChannelIds.Add(privacyChannelId, new DataToken());
+                return;
+            }
+
+            Warn($"{nameof(RegisterPrivacyChannel)}: Privacy channel {privacyChannelId} already registered.");
         }
         #endregion
     }

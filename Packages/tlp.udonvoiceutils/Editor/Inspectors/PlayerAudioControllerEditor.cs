@@ -1,8 +1,8 @@
 ﻿#if !COMPILER_UDONSHARP && UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TLP.UdonUtils.Runtime.Common;
+using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UdonSharpEditor;
@@ -11,19 +11,20 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRC.SDKBase;
 using VRC.Udon;
-using VRC.Udon.Serialization.OdinSerializer.Utilities;
 
 namespace TLP.UdonVoiceUtils.Editor.Inspectors
 {
     [CustomEditor(typeof(PlayerAudioController))]
-    public class PlayerAudioControllerEditor : UnityEditor.Editor
+    public class PlayerAudioControllerEditor : TlpBehaviourEditor
     {
         private readonly HashSet<PlayerAudioOverride> _relevantBehaviours =
                 new HashSet<PlayerAudioOverride>();
 
-        public override void OnInspectorGUI() {
-            UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target);
-            DrawDefaultInspector();
+        protected override string GetDescription() {
+            return "Main controller for any player audio override. Only one allowed per scene/world. " +
+                   "Can be disabled to turn of all effects (resets every player to configured default). " +
+                   "Can provide global effects (configurable via PlayerAudioConfigurationModels). " +
+                   "Can be used to tweak performance and quality of audio effects.";
         }
 
         public void OnSceneGUI() {
@@ -76,12 +77,15 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
             _relevantBehaviours.Clear();
 
             var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
-            Debug.Log($"Roots: {rootGameObjects.Count()}");
+#if TLP_DEBUG
+            Debug.Log($"Roots: {rootGameObjects.Length}");
+#endif
 
             foreach (var rootGameObject in rootGameObjects) {
                 var udonBehaviours = rootGameObject.GetComponentsInChildren<UdonBehaviour>();
-                Debug.Log($"{rootGameObject.transform.GetPathInScene()}: {udonBehaviours.Count()}");
-
+#if TLP_DEBUG
+                Debug.Log($"{rootGameObject.transform.GetPathInScene()}: {udonBehaviours.Length}");
+#endif
                 foreach (var udonBehaviour in udonBehaviours) {
                     try {
                         var udonSharpBehaviour = UdonSharpEditorUtility.GetProxyBehaviour(udonBehaviour);
@@ -106,8 +110,9 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     }
                 }
             }
-
+#if TLP_DEBUG
             Debug.Log($"{nameof(_relevantBehaviours)}: {_relevantBehaviours.Count}");
+#endif
         }
 
         private void HandleInput(Event guiEvent, UdonSharpBehaviour destination) {

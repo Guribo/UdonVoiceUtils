@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UdonSharp;
 using UdonSharpEditor;
@@ -10,16 +11,24 @@ using VRC.Udon;
 namespace TLP.UdonVoiceUtils.Editor.Inspectors
 {
     [CustomEditor(typeof(VoiceOverrideRoom))]
-    public class VoiceOverrideRoomEditor : UnityEditor.Editor
+    public class VoiceOverrideRoomEditor : TlpBehaviourEditor
     {
         private readonly HashSet<UdonSharpBehaviour> _relevantBehaviours = new HashSet<UdonSharpBehaviour>();
 
-        private int refreshInterval = 60;
+        private const int RefreshInterval = 60;
         private int _refreshCount;
 
-        public override void OnInspectorGUI() {
-            UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target);
-            DrawDefaultInspector();
+        protected override string GetDescription() {
+            return "Example script using a PlayerAudioOverride to define a space/zone in which every player " +
+                   "has specific audio/voice properties. " +
+                   "Players must be added explicitly through other scripts (e.g. VoiceOverrideDoor). " +
+                   "All added players are automatically synchronized over the network.\n\n" +
+                   "Note: please make sure that if the room is a physical space, that players can only enter/exit " +
+                   "through means (e.g. VoiceOverrideDoor) that add/remove players from the VoiceOverrideRoom!\n\n" +
+                   "Use cases: rooms, vehicles (cockpits), " +
+                   "spaces with complex geometry (not suited for trigger based zones).\n\n" +
+                   "Pitfall: players being carried by other players (station on avatar) will not be added to a room " +
+                   "when the carrying player uses e.g. the example VoiceOverrideRoomEnter-/ExitButton scripts.";
         }
 
         public void OnSceneGUI() {
@@ -35,7 +44,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                 case EventType.Repaint:
                 {
                     // draw lines to each connected element
-                    _refreshCount = (_refreshCount + 1) % refreshInterval;
+                    _refreshCount = (_refreshCount + 1) % RefreshInterval;
                     if (_refreshCount == 0) {
                         UpdateRelevantBehaviours(voiceOverrideRoom);
                     }

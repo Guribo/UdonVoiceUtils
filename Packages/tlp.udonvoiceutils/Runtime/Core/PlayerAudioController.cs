@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
 using TLP.UdonUtils.Runtime.Events;
@@ -10,6 +9,7 @@ using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
 using VRC.SDK3.Data;
+using VRC.SDK3.Rendering;
 using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core
@@ -103,7 +103,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         private int _playerIndex;
 
         private PlayerAudioOverride _localOverride;
-        internal readonly DataDictionary PlayerUpdateListeners = new DataDictionary();
         #endregion
 
         #region Unity Lifecycle
@@ -156,28 +155,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
         public override void PostLateUpdate() {
             if (!HasStartedOk) {
-                #region TLP_DEBUG
-#if TLP_DEBUG
-                Warn($"{nameof(PostLateUpdate)}: Not initialized");
-#endif
-                #endregion
-
                 return;
             }
 
-            var localPlayer = Networking.LocalPlayer;
-            if (!Utilities.IsValid(localPlayer)) {
-                Error($"Local player is not valid");
-                return;
-            }
-
-            var newLocalOverride = LocalPlayerOverrideList.GetMaxPriority(localPlayer);
-            _localOverride = UpdateAudioFilters(newLocalOverride, _localOverride);
-
+            LocalPlayerOverrideList.GetMaxPriority(LocalPlayer, out var localPlayerOverride);
+            _localOverride = UpdateAudioFilters(localPlayerOverride, _localOverride);
             for (int playerUpdate = 0;
                  playerUpdate < GetPendingPlayerUpdates(ExistingRemotePlayerIds.Count);
                  ++playerUpdate) {
-                UpdateNextPlayer(localPlayer, ref playerUpdate);
+                UpdateNextPlayer(LocalPlayer, ref playerUpdate);
             }
         }
 
@@ -195,24 +181,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
 
         #region Public API
-        public void AddPlayerUpdateListener(TlpBaseBehaviour listener, int playerId) {
-            if (!HasStartedOk) {
-                Error($"{nameof(AddPlayerUpdateListener)}: Not initialized");
-                return;
-            }
-
-            PlayerUpdateListeners[playerId] = listener;
-        }
-
-        public bool RemovePlayerUpdateListener(int playerId) {
-            if (!HasStartedOk) {
-                Error($"{nameof(RemovePlayerUpdateListener)}: Not initialized");
-                return false;
-            }
-
-            return PlayerUpdateListeners.Remove(playerId);
-        }
-
         /// <summary>
         /// Add a player that shall not be affected by any effect of this script. Upon adding the player
         /// all values of the player will be set to the currently defined values on this script.
@@ -363,7 +331,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
         /// <param name="player"></param>
         /// <returns>null on error or if no overrides present</returns>
-        public PlayerAudioOverride GetMaxPriorityOverride(VRCPlayerApi player) {
+        public bool GetMaxPriorityOverride(VRCPlayerApi player, out PlayerAudioOverride playerAudioOverride) {
             #region TLP_DEBUG
 #if TLP_DEBUG
             DebugLog($"{nameof(GetMaxPriorityOverride)} {player.ToStringSafe()}");
@@ -372,29 +340,38 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
             if (!IsReceivingStart && !HasStartedOk) {
                 Error($"{nameof(GetMaxPriorityOverride)}: Not initialized");
-                return null;
+                playerAudioOverride = null;
+                return false;
             }
 
             if (!IsControllerInitialized) {
                 Error($"{nameof(GetMaxPriorityOverride)}: MVC not initialized");
-                return null;
+                playerAudioOverride = null;
+                return false;
             }
 
             if (!Utilities.IsValid(player)) {
                 Error($"{nameof(player)} invalid");
-                return null;
+                playerAudioOverride = null;
+                return false;
             }
 
             if (player.isLocal) {
-                return LocalPlayerOverrideList.GetMaxPriority(player);
+                return LocalPlayerOverrideList.GetMaxPriority(player, out playerAudioOverride);
             }
 
             if (!PlayersToOverride.TryGetValue(player.playerId, out var list)) {
-                return null;
+                playerAudioOverride = null;
+                return false;
             }
 
             var overrideList = (PlayerAudioOverrideList)list.Reference;
-            return Utilities.IsValid(overrideList) ? overrideList.GetMaxPriority(player) : null;
+            if (Utilities.IsValid(overrideList)) {
+                return overrideList.GetMaxPriority(player, out playerAudioOverride);
+            }
+
+            playerAudioOverride = null;
+            return false;
         }
         #endregion
 
@@ -447,7 +424,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 return;
             }
 
-            UpdateOtherPlayer(localPlayer, player);
+            UpdateOtherPlayer(player);
         }
 
         private bool ValidateAndSetupMvc() {
@@ -519,74 +496,74 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             return true;
         }
 
-        internal void UpdateOtherPlayer(VRCPlayerApi localPlayer, VRCPlayerApi otherPlayer) {
-            var playerOverride = GetMaxPriorityOverride(otherPlayer);
 
-            int privacyChannelId = ChannelNoPrivacy;
-            bool muteOutsiders = false;
-            bool disallowListeningToChannel = false;
+        internal bool GetLocalPlayerAudioListenerTransform(out Vector3 position, out Quaternion rotation) {
+#if TLP_UNIT_TESTING
+            GetRemotePlayerAudioListenerTransform(LocalPlayer, out position, out rotation);
+            return true;
+#else
+            var screenCamera = VRCCameraSettings.ScreenCamera;
 
-            if (Utilities.IsValid(_localOverride)) {
-                privacyChannelId = _localOverride.PrivacyChannelId;
-                muteOutsiders = _localOverride.MuteOutsiders;
-                disallowListeningToChannel = _localOverride.DisallowListeningToChannel;
+            if (!Utilities.IsValid(screenCamera) || !screenCamera.Active) {
+                Error(
+                        $"{nameof(GetLocalPlayerAudioListenerTransform)}: {nameof(VRCCameraSettings.ScreenCamera)} " +
+                        $"is unexpectedly invalid or not active)");
+                position = Vector3.zero;
+                rotation = Quaternion.identity;
+                return false;
             }
 
-            Vector3 listenerHeadPosition;
-            Quaternion listenerHeadRotation;
-            var listenerHead = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-            bool isLocalPlayerHumanoid = listenerHead.position.sqrMagnitude > 0.001f;
-            if (isLocalPlayerHumanoid) {
-                listenerHeadPosition = listenerHead.position;
-                listenerHeadRotation = listenerHead.rotation;
-            } else {
-                // create a fake head position/rotation (no pitch and roll)
-                var avatarRootRotation = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.AvatarRoot).rotation;
-                var playerUp = avatarRootRotation * Vector3.up;
+            position = screenCamera.Position;
+            rotation = screenCamera.Rotation;
+            return true;
+#endif
+        }
 
-                listenerHeadRotation = avatarRootRotation;
-                listenerHeadPosition = localPlayer.GetPosition() + playerUp * localPlayer.GetAvatarEyeHeightAsMeters();
-            }
-
-            Vector3 otherHeadPosition;
-            Quaternion otherHeadRotation;
+        public static void GetRemotePlayerAudioListenerTransform(
+                VRCPlayerApi otherPlayer,
+                out Vector3 position,
+                out Quaternion rotation
+        ) {
             var otherPlayerHead = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-            bool isOtherPlayerHumanoid = otherPlayerHead.position.sqrMagnitude > 0.001f;
+            bool isOtherPlayerHumanoid = otherPlayerHead.position.sqrMagnitude > SmallNumber;
             if (isOtherPlayerHumanoid) {
-                otherHeadPosition = otherPlayerHead.position;
-                otherHeadRotation = otherPlayerHead.rotation;
-            } else {
-                // create a fake head position/rotation (no pitch and roll)
-                var avatarRootRotation = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.AvatarRoot).rotation;
-                var playerUp = avatarRootRotation * Vector3.up;
-
-                otherHeadRotation = avatarRootRotation;
-                otherHeadPosition = otherPlayer.GetPosition() + playerUp * otherPlayer.GetAvatarEyeHeightAsMeters();
+                position = otherPlayerHead.position;
+                rotation = otherPlayerHead.rotation;
+                return;
             }
 
-            var listenerToPlayer = otherHeadPosition - listenerHeadPosition;
-            var direction = listenerToPlayer.normalized;
-            float distanceBetweenPlayerHeads = listenerToPlayer.magnitude;
+            // create a fake head position/rotation (no pitch and roll)
+            var avatarRootRotation = otherPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.AvatarRoot).rotation;
+            var playerUp = avatarRootRotation * Vector3.up;
 
-            bool localPlayerInPrivateChannel = privacyChannelId != ChannelNoPrivacy;
-            if (Utilities.IsValid(playerOverride)) {
+            position = otherPlayer.GetPosition() + playerUp * otherPlayer.GetAvatarEyeHeightAsMeters();
+            rotation = avatarRootRotation;
+        }
+
+
+        internal void UpdateOtherPlayer(VRCPlayerApi otherPlayer) {
+            if (!GetLocalPlayerAudioListenerTransform(out var listenerHeadPosition, out var listenerHeadRotation)) {
+                return;
+            }
+
+            GetRemotePlayerAudioListenerTransform(otherPlayer, out var otherHeadPosition, out var otherHeadRotation);
+
+            if (GetMaxPriorityOverride(otherPlayer, out var playerOverride)) {
+                bool localPlayerHasOverride = Utilities.IsValid(_localOverride) && _localOverride.HasStartedOk;
                 if (OtherPlayerWithOverrideCanBeHeard(
                             playerOverride,
-                            localPlayerInPrivateChannel,
-                            privacyChannelId,
-                            muteOutsiders,
-                            disallowListeningToChannel
+                            _localOverride,
+                            localPlayerHasOverride && _localOverride.MuteOutsiders,
+                            localPlayerHasOverride && _localOverride.DisallowListeningToChannel
                     )) {
                     ApplyAudioOverrides(
                             otherPlayer,
                             listenerHeadPosition,
                             listenerHeadRotation,
-                            direction,
-                            distanceBetweenPlayerHeads,
+                            otherHeadPosition - listenerHeadPosition,
                             playerOverride,
                             otherHeadRotation
                     );
-                    NotifyVoiceUpdateListeners(otherPlayer);
                     return;
                 }
 
@@ -594,7 +571,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 return;
             }
 
-            if (muteOutsiders) {
+            if (Utilities.IsValid(_localOverride) && _localOverride.HasStartedOk && _localOverride.MuteOutsiders) {
                 MutePlayer(otherPlayer);
                 return;
             }
@@ -603,45 +580,44 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                     otherPlayer,
                     listenerHeadPosition,
                     listenerHeadRotation,
-                    direction,
-                    distanceBetweenPlayerHeads,
+                    otherHeadPosition - listenerHeadPosition,
                     otherHeadRotation,
                     _currentConfiguration,
                     LocalConfiguration.HeightToVoiceCorrelation
             );
-            NotifyVoiceUpdateListeners(otherPlayer);
         }
 
-
-        internal static bool OtherPlayerWithOverrideCanBeHeard(
-                PlayerAudioOverride playerOverride,
-                bool localPlayerInPrivateChannel,
-                int currentPrivacyChannel,
+        internal bool OtherPlayerWithOverrideCanBeHeard(
+                PlayerAudioOverride otherPlayerOverride,
+                PlayerAudioOverride localPlayerOverride,
                 bool muteOutsiders,
                 bool disallowLocalPlayerListening
         ) {
-            // ReSharper disable once PossibleNullReferenceException (invalid warning because of IsValid check)
-            bool playerInSamePrivateChannel = playerOverride.PrivacyChannelId == currentPrivacyChannel;
-            bool playerInSamePrivateChannelAllowedToBeHeard =
-                    playerInSamePrivateChannel && !disallowLocalPlayerListening;
-            bool otherPlayerNotInAnyPrivateChannel = playerOverride.PrivacyChannelId == ChannelNoPrivacy;
-            bool isOutsiderAndCanBeHeard = localPlayerInPrivateChannel
-                                           && otherPlayerNotInAnyPrivateChannel
-                                           && !muteOutsiders;
+            bool playersShareChannels = otherPlayerOverride.HasOverlappingChannels(localPlayerOverride);
+            if (playersShareChannels) {
+                return !disallowLocalPlayerListening;
+            }
 
-            return playerInSamePrivateChannelAllowedToBeHeard || isOutsiderAndCanBeHeard;
+            bool otherPlayerInPrivateChannel = otherPlayerOverride.IsPrivateChannel();
+            if (otherPlayerInPrivateChannel && !Utilities.IsValid(localPlayerOverride)) {
+                // by default players are in NoPrivacyChannel, so the local player can't hear the other player
+                return false;
+            }
+
+            return localPlayerOverride.IsPrivateChannel() && !otherPlayerInPrivateChannel && !muteOutsiders;
         }
 
         internal void ApplyGlobalAudioSettings(
                 VRCPlayerApi otherPlayer,
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
-                Vector3 direction,
-                float distanceBetweenPlayerHeads,
+                Vector3 toOtherPlayer,
                 Quaternion otherPlayerHeadRotation,
                 PlayerAudioConfigurationModel configuration,
                 AnimationCurve heightToVoiceCorrelation
         ) {
+            var direction = toOtherPlayer.normalized;
+            float distanceBetweenPlayerHeads = toOtherPlayer.magnitude;
             float heightBasedMultiplier = heightToVoiceCorrelation.Evaluate(otherPlayer.GetAvatarEyeHeightAsMeters());
             float relativeAudioRange = GetGlobalRelativeAudioRange(
                     listenerHeadPosition,
@@ -745,11 +721,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 VRCPlayerApi otherPlayer,
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
-                Vector3 direction,
-                float distanceBetweenPlayerHeads,
+                Vector3 toOtherPlayer,
                 PlayerAudioOverride playerOverride,
                 Quaternion otherHeadRotation
         ) {
+            var direction = toOtherPlayer.normalized;
+            float distanceBetweenPlayerHeads = toOtherPlayer.magnitude;
             float heightBasedMultiplier = playerOverride
                     .HeightToVoiceCorrelation
                     .Evaluate(otherPlayer.GetAvatarEyeHeightAsMeters());
@@ -952,22 +929,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             vrcPlayerApi.SetVoiceVolumetricRadius(targetVoiceVolumetricRadius * distanceFactor);
         }
 
-        private void NotifyVoiceUpdateListeners(VRCPlayerApi otherPlayer) {
-            if (!PlayerUpdateListeners.TryGetValue(otherPlayer.playerId, out var value)) {
-                // nothing to do as no-one is listening for changes of the player
-                return;
-            }
-
-            var behaviour = (TlpBaseBehaviour)value.Reference;
-            if (!Utilities.IsValid(behaviour)) {
-                Error($"Listener of {otherPlayer.ToStringSafe()} is no {nameof(TlpBaseBehaviour)}: Removing.");
-                PlayerUpdateListeners.Remove(otherPlayer.playerId);
-                return;
-            }
-
-            behaviour.OnEvent("VoiceValuesUpdate");
-        }
-
         private void UpdateAvatarAudio(
                 VRCPlayerApi vrcPlayerApi,
                 float occlusion,
@@ -1048,19 +1009,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
 
                 UpdateVoiceAudio(playerApi, 1f, true, 15f, 25, 0, 0);
                 i++;
-            }
-        }
-
-        internal void EnableCurrentReverbSettings() {
-            #region TLP_DEBUG
-#if TLP_DEBUG
-            DebugLog(nameof(EnableCurrentReverbSettings));
-#endif
-            #endregion
-
-            var localOverride = GetMaxPriorityOverride(Networking.LocalPlayer);
-            if (Utilities.IsValid(localOverride)) {
-                UseReverbSettings(localOverride.OptionalReverb);
             }
         }
 
@@ -1324,7 +1272,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             }
 
             if (player.isLocal) {
-                return Utilities.IsValid(LocalPlayerOverrideList.GetMaxPriority(player));
+                return LocalPlayerOverrideList.GetMaxPriority(player, out var unused);
             }
 
             if (!PlayersToOverride.TryGetValue(player.playerId, out var list)) {
@@ -1332,7 +1280,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             }
 
             var overrideList = (PlayerAudioOverrideList)list.Reference;
-            return Utilities.IsValid(overrideList) && Utilities.IsValid(overrideList.GetMaxPriority(player));
+            return Utilities.IsValid(overrideList) && overrideList.GetMaxPriority(player, out var unused2);
         }
         #endregion
 
@@ -1442,6 +1390,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
             return $"TLP_{nameof(PlayerAudioController)}";
         }
 
+        internal void LogVrcDefaultAudioSettings() {
+            // TODO VRChat wtf?! why are the avatar settings not exposed as well???
+            var player = Networking.LocalPlayer;
+            if (!Utilities.IsValid(player)) {
+                Error($"{nameof(LogVrcDefaultAudioSettings)}: Local player invalid");
+                return;
+            }
+
+            Info(
+                    "VRChat client default player voice settings (BEFORE UdonVoiceUtils is activated):\n"
+                    + $"VoiceDistanceNear: {player.GetVoiceDistanceNear()} meter\n"
+                    + $"VoiceDistanceFar: {player.GetVoiceDistanceFar()} meter\n"
+                    + $"VoiceVolumetricRadius: {player.GetVoiceVolumetricRadius()} meter\n"
+                    + $"VoiceGain: {player.GetVoiceGain()} decibel\n"
+                    + $"VoiceLowPassFiltering: {(player.GetVoiceLowpass() ? "Yes" : "No")}\n");
+        }
+
         protected override bool SetupAndValidate() {
             if (!base.SetupAndValidate()) {
                 return false;
@@ -1463,7 +1428,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
                 return false;
             }
 
-            EnableCurrentReverbSettings();
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            LogVrcDefaultAudioSettings();
+#endif
+#endregion
+
+
+            if (GetMaxPriorityOverride(LocalPlayer, out var localOverride)) {
+                UseReverbSettings(localOverride.OptionalReverb);
+            }
+
             return true;
         }
         #endregion

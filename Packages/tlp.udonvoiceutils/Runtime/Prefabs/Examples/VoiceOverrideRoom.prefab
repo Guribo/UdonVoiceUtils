@@ -61,9 +61,13 @@ MonoBehaviour:
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
+  DefaultScheduler: {fileID: 0}
+  LimitToOncePerFrame: 0
   Listeners: []
   RaiseOnEnable: 0
   RaiseOnStart: 0
+  NotifyAsync: 0
+  UseAsyncEventQueue: 0
   ListenerMethod: OnPlayerListUpdated
   FastSync: 0
   Calls: 0
@@ -154,9 +158,13 @@ MonoBehaviour:
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
+  DefaultScheduler: {fileID: 0}
+  LimitToOncePerFrame: 0
   Listeners: []
   RaiseOnEnable: 0
   RaiseOnStart: 0
+  NotifyAsync: 0
+  UseAsyncEventQueue: 0
   ListenerMethod: OnLocalPlayerRemoved
 --- !u!114 &4775806422084197637
 MonoBehaviour:
@@ -245,9 +253,13 @@ MonoBehaviour:
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
+  DefaultScheduler: {fileID: 0}
+  LimitToOncePerFrame: 0
   Listeners: []
   RaiseOnEnable: 0
   RaiseOnStart: 0
+  NotifyAsync: 0
+  UseAsyncEventQueue: 0
   ListenerMethod: OnLocalPlayerAdded
 --- !u!114 &6806999307312105523
 MonoBehaviour:
@@ -387,6 +399,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   PrivacyChannelId: -1
+  AdditionalPrivacyChannelIds: 
   MuteOutsiders: 1
   DisallowListeningToChannel: 0
   LocalPlayerAdded: {fileID: 7083850898753453787}

@@ -1,7 +1,5 @@
 ﻿using JetBrains.Annotations;
-using TLP.UdonUtils.Runtime.Adapters.Cyan;
-using TLP.UdonUtils.Runtime.Extensions;
-using TLP.UdonUtils.Runtime.Player;
+using TLP.UdonUtils.Runtime;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UdonSharp;
@@ -10,9 +8,10 @@ using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Debugging
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
-    public class VoiceRangeVisualizer : CyanPooledObject
+    [TlpDefaultExecutionOrder(typeof(VoiceRangeVisualizer), ExecutionOrder)]
+    public class VoiceRangeVisualizer : TlpBaseBehaviour
     {
         public override int ExecutionOrderReadOnly => ExecutionOrder;
 
@@ -20,8 +19,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
         public new const int ExecutionOrder = AdjustableGain.ExecutionOrder + 1;
 
         #region State
-        private TrackingDataFollowerUI _playerFollower;
+        private VRCPlayerApi _owner;
         #endregion
+
+        public PlayerAudioController PlayerAudioController;
 
         [SerializeField]
         private Transform Near;
@@ -32,8 +33,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
         [SerializeField]
         private Transform NearField;
 
-        private PlayerAudioController _playerAudioController;
-        private int _playerId = -1;
         public bool Initialized { private set; get; }
 
         #region Overrides
@@ -42,15 +41,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
                 return false;
             }
 
-            _playerFollower = GetComponent<TrackingDataFollowerUI>();
-            if (!Utilities.IsValid(_playerFollower)) {
-                Error($"{nameof(TrackingDataFollowerUI)} component missing");
+            if (!IsSet(PlayerAudioController, nameof(PlayerAudioController))) {
                 return false;
             }
 
-            _playerAudioController = VoiceUtils.FindPlayerAudioController();
-            if (!Utilities.IsValid(_playerAudioController)) {
-                Error($"{nameof(_playerAudioController)} not found");
+            _owner = Networking.GetOwner(gameObject);
+            if (!IsSet(_owner, nameof(_owner))) {
                 return false;
             }
 
@@ -58,58 +54,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
             return true;
         }
 
-        public override void _OnOwnerSet() {
-            base._OnOwnerSet();
-
-            if (!Initialized && !SetupAndValidate()) {
-                Error("Not initialized");
+        public override void PostLateUpdate() {
+            base.PostLateUpdate();
+            if (!HasStartedOk) {
                 return;
             }
 
-            _playerId = Owner.PlayerIdSafe();
-            if (!Utilities.IsValid(Owner)) {
-                Error($"{nameof(Owner)} is invalid");
-                return;
-            }
-
-            if (!Utilities.IsValid(_playerAudioController)) {
-                Error($"{nameof(_playerAudioController)} is invalid");
-                return;
-            }
-
-            _playerAudioController.AddPlayerUpdateListener(this, _playerId);
-            gameObject.GetComponent<TrackingDataFollower>().Player = Owner;
-        }
-
-        public override void _OnCleanup() {
-            base._OnCleanup();
-            if (!Initialized) {
-                Error("Not initialized");
-                return;
-            }
-
-            gameObject.SetActive(false);
-            if (!Utilities.IsValid(_playerAudioController)) {
-                Error($"{nameof(_playerAudioController)} is invalid");
-                return;
-            }
-
-            if (!_playerAudioController.PlayerUpdateListeners.Remove(_playerId)) {
-                Error($"Failed to remove listener of player {_playerId}");
-            }
-
-            _playerId = -1;
-        }
-
-        public override void OnEvent(string eventName) {
-            switch (eventName) {
-                case nameof(VoiceValuesUpdate):
-                    VoiceValuesUpdate();
-                    break;
-                default:
-                    base.OnEvent(eventName);
-                    break;
-            }
+            PlayerAudioController.GetRemotePlayerAudioListenerTransform(_owner, out var pos, out var rot);
+            transform.SetPositionAndRotation(pos, rot);
+            VoiceValuesUpdate();
         }
         #endregion
 
@@ -121,24 +74,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
 #endif
             #endregion
 
-            if (!Utilities.IsValid(Owner)) {
-                return;
-            }
-
-            gameObject.SetActive(!Owner.isLocal);
+            gameObject.SetActive(!_owner.isLocal);
 
             if (Near) {
-                float voiceDistanceNear = Owner.GetVoiceDistanceNear();
+                float voiceDistanceNear = _owner.GetVoiceDistanceNear();
                 Near.localScale = new Vector3(voiceDistanceNear, voiceDistanceNear, voiceDistanceNear);
             }
 
             if (Far) {
-                float voiceDistanceFar = Owner.GetVoiceDistanceFar();
+                float voiceDistanceFar = _owner.GetVoiceDistanceFar();
                 Far.localScale = new Vector3(voiceDistanceFar, voiceDistanceFar, voiceDistanceFar);
             }
 
             if (NearField) {
-                float voiceVolumetricRadius = Owner.GetVoiceVolumetricRadius();
+                float voiceVolumetricRadius = _owner.GetVoiceVolumetricRadius();
                 NearField.localScale = new Vector3(voiceVolumetricRadius, voiceVolumetricRadius, voiceVolumetricRadius);
             }
         }

@@ -1334,6 +1334,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8668681945690673448, guid: 5e02bd79ae181d748aaad996ae881edf,
         type: 3}
+      propertyPath: MuteOutsiders
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8668681945690673448, guid: 5e02bd79ae181d748aaad996ae881edf,
+        type: 3}
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: -8668681945690673448, guid: 5e02bd79ae181d748aaad996ae881edf,

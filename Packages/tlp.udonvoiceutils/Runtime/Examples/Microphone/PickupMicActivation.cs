@@ -1,10 +1,12 @@
 ﻿
 using JetBrains.Annotations;
+using UdonSharp;
 using UnityEngine;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     [DefaultExecutionOrder(ExecutionOrder)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [TlpDefaultExecutionOrder(typeof(PickupMicActivation), ExecutionOrder)]
     public class PickupMicActivation : MicActivation
     {

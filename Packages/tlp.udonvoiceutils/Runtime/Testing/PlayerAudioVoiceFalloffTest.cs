@@ -4,6 +4,7 @@ using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon.Common.Enums;
 using VRC.Udon.Common.Interfaces;
@@ -95,7 +96,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
                     return;
                 }
 
-                SendCustomNetworkEvent(NetworkEventTarget.All, "SetAudioProperties");
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(RPC_SetAudioProperties));
             }
 
             // ensure both players can't move around
@@ -107,11 +108,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             TestController.TestInitialized(true);
         }
 
-        public void SetAudioProperties() {
+        [NetworkCallable]
+        public void RPC_SetAudioProperties() {
             #region TLP_DEBUG
 #if TLP_DEBUG
             DebugLog(
-                    $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(SetAudioProperties)}"
+                    $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(RPC_SetAudioProperties)}"
             );
 #endif
             #endregion DebugLog(
@@ -125,11 +127,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             PlayerAudio.enabled = true;
         }
 
-        public void ClearAudioProperties() {
+        [NetworkCallable]
+        public void RPC_ClearAudioProperties() {
             #region TLP_DEBUG
 #if TLP_DEBUG
             DebugLog(
-                    $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(ClearAudioProperties)}"
+                    $"[<color=#008000>UdonVoiceUtils</color>] [<color=#804500>Testing</color>] {nameof(RPC_ClearAudioProperties)}"
             );
 #endif
             #endregion
@@ -166,10 +169,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
 #endif
             #endregion
 
-            if (Utilities.IsValid(this) || !gameObject.activeInHierarchy) {
-                Error($"{name} is no longer valid");
-                TestController.TestCompleted(false);
-            }
+            if(Status != TestCaseStatus.Running) return;
 
             if (!Utilities.IsValid(_voiceEmitter)) {
                 Error("Voice emitting player is invalid");
@@ -202,12 +202,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             DebugLog(nameof(CleanUpTest));
 #endif
             #endregion
-
-            if (!Utilities.IsValid(this) || !gameObject.activeInHierarchy) {
-                Error($"{name} is no longer valid");
-                TestController.TestCleanedUp(false);
-            }
-
             if (!Utilities.IsValid(_voiceEmitter)) {
                 Error("Voice emitting player is invalid");
                 TestController.TestCleanedUp(false);
@@ -223,7 +217,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             EmitterTeleportInFrontOfListener(1);
 
             if (Utilities.IsValid(PlayerAudio)) {
-                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(ClearAudioProperties));
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(RPC_ClearAudioProperties));
             }
 
             _voiceEmitter.Immobilize(false);

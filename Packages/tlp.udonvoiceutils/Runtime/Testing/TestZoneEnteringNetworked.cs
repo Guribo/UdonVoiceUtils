@@ -93,18 +93,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
 
             Networking.LocalPlayer.Immobilize(true);
 
-
-            while (true) {
-                var betterPlayerAudioOverride =
-                        VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController.GetMaxPriorityOverride(
-                                Networking.LocalPlayer
-                        );
-                if (Utilities.IsValid(betterPlayerAudioOverride)) {
+            int limit = 1000;
+            int i = 0;
+            for (; i < limit; i++) {
+                if (VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController.GetMaxPriorityOverride(
+                            Networking.LocalPlayer,
+                            out var betterPlayerAudioOverride
+                    )) {
                     betterPlayerAudioOverride.RemovePlayer(Networking.LocalPlayer);
                     continue;
                 }
 
                 break;
+            }
+
+            if (i == limit) {
+                Error($"{nameof(PrepareLocalPlayer)}: Failed to remove player from all rooms: infinite loop?");
+                TestController.TestInitialized(false);
+                return;
             }
 
             SendCustomEventDelayedSeconds(
@@ -128,12 +134,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             int successCount = 0;
             foreach (var vrcPlayerApi in players) {
                 if (Utilities.IsValid(vrcPlayerApi)) {
-                    successCount +=
-                            VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController
-                                    .GetMaxPriorityOverride(vrcPlayerApi) ==
-                            VoiceOverrideRoom.PlayerAudioOverride
-                                    ? 1
-                                    : 0;
+                    VoiceOverrideRoom.PlayerAudioOverride.PlayerAudioController
+                            .GetMaxPriorityOverride(vrcPlayerApi, out var audioOverride);
+                    successCount += ReferenceEquals(audioOverride, VoiceOverrideRoom.PlayerAudioOverride) ? 1 : 0;
                 }
             }
 

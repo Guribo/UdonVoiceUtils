@@ -49,6 +49,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
         private Vector3 _initialPlayerPosition;
         private Quaternion _initialPlayerRotation;
         private VRCPlayerApi _otherPlayer;
+        private float _backupListenerDirectionality;
+        private float _backupPlayerDirectionality;
+        private float _backupOcclusionFactor;
         #endregion
 
         protected override bool SetupAndValidate() {
@@ -60,7 +63,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
                 return false;
             }
 
-            ConfigureAudioControllerSettings();
+
             ConfigureWallCollider();
             return true;
         }
@@ -72,18 +75,33 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
                 return;
             }
 
+            BackupAudioControllerSettings();
+            ConfigureAudioControllerSettings();
+
             _otherPlayer = null;
-            base.InitializeTest();
+            TestController.TestInitialized(true);
         }
 
+
+
         protected override void RunTest() {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(RunTest));
+#endif
+            #endregion
+
             PositionPlayersForOcclusionTest();
         }
 
         protected override void CleanUpTest() {
+
+            RecoverAudioSettings();
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(RPC_Cleanup));
             base.CleanUpTest();
         }
+
+
 
         #region RPCs
         [NetworkCallable]
@@ -94,19 +112,19 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
 #endif
             #endregion
 
-            var localPlayer = Networking.LocalPlayer;
-            if (!Utilities.IsValid(localPlayer)) {
-                Error("Local player invalid");
+            if (!HasStartedOk) {
                 return;
             }
 
-            SaveInitialPlayerPosition(localPlayer);
-            TeleportPlayer(position, rotation, localPlayer);
-
-            if (IsRemoteNetworkCall(localPlayer)) {
-                SendCustomNetworkEvent(NetworkEventTarget.Others, nameof(RPC_TeleportConfirmation));
+            if (!IsRemoteNetworkCall(LocalPlayer)) {
+                Error($"Unexpected call to {nameof(RPC_PositionPlayers)} from local player");
+                return;
             }
+
+            PositionLocalPlayer(position, rotation);
+            SendCustomNetworkEvent(NetworkEventTarget.Others, nameof(RPC_TeleportConfirmation));
         }
+
 
         [NetworkCallable]
         public void RPC_TeleportConfirmation() {
@@ -116,13 +134,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
 #endif
             #endregion
 
-            var localPlayer = Networking.LocalPlayer;
-            if (!Utilities.IsValid(localPlayer)) {
-                Error("Local player invalid");
+            if (!HasStartedOk) {
                 return;
             }
 
-            if (IsLocalNetworkCall(localPlayer)) {
+            if (IsLocalNetworkCall(LocalPlayer)) {
                 Error($"Unexpected call to {nameof(RPC_TeleportConfirmation)} from local player");
                 return;
             }
@@ -140,13 +156,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
 #endif
             #endregion
 
-            var localPlayer = Networking.LocalPlayer;
-            if (!Utilities.IsValid(localPlayer)) {
-                Error("Local player invalid");
+            if (!HasStartedOk) {
                 return;
             }
 
-            TeleportPlayer(_initialPlayerPosition, _initialPlayerRotation, localPlayer);
+            if (!Utilities.IsValid(NetworkCalling.CallingPlayer)) {
+                Error($"Unexpected call to {nameof(RPC_Cleanup)} from local player");
+                return;
+            }
+
+            TeleportPlayer(_initialPlayerPosition, _initialPlayerRotation, LocalPlayer);
         }
         #endregion
 
@@ -157,6 +176,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             DebugLog(nameof(Delayed_CheckOcclusion));
 #endif
             #endregion
+
+            if (!HasStartedOk) {
+                return;
+            }
 
             if (Status != TestCaseStatus.Running) {
                 Error($"{nameof(Delayed_CheckOcclusion)}: Test not running");
@@ -169,8 +192,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             }
 
             if (!IsPlayerMuted(_otherPlayer)) {
-                FailTest($"Player is not muted correctly. Near: {_otherPlayer.GetVoiceDistanceNear()}, " +
-                         $"Far: {_otherPlayer.GetVoiceDistanceFar()}");
+                FailTest(
+                        $"Player is not muted correctly. Near: {_otherPlayer.GetVoiceDistanceNear()}, " +
+                        $"Far: {_otherPlayer.GetVoiceDistanceFar()}");
                 return;
             }
 
@@ -247,15 +271,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
         }
 
         private void PositionPlayersForOcclusionTest() {
-            TeleportLocalPlayer(Player1Position.position, Player1Position.rotation);
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(PositionPlayersForOcclusionTest));
+#endif
+            #endregion
+
+            PositionLocalPlayer(Player1Position.position, Player1Position.rotation);
             TeleportRemotePlayerForTest(Player2Position.position, Player2Position.rotation);
         }
 
-        private void TeleportLocalPlayer(Vector3 position, Quaternion rotation) {
-            RPC_PositionPlayers(position, rotation);
-        }
-
         private void TeleportRemotePlayerForTest(Vector3 position, Quaternion rotation) {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(TeleportRemotePlayerForTest));
+#endif
+            #endregion
+
             SendCustomNetworkEvent(
                     NetworkEventTarget.Others,
                     nameof(RPC_PositionPlayers),
@@ -284,7 +316,39 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
         }
 
         private void ScheduleOcclusionCheck() {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(ScheduleOcclusionCheck));
+#endif
+#endregion
             SendCustomEventDelayedSeconds(nameof(Delayed_CheckOcclusion), CheckDelay);
+        }
+
+        private void PositionLocalPlayer(Vector3 position, Quaternion rotation) {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(PositionLocalPlayer));
+#endif
+            #endregion
+
+            SaveInitialPlayerPosition(LocalPlayer);
+            TeleportPlayer(position, rotation, LocalPlayer);
+        }
+
+        private void BackupAudioControllerSettings() {
+            _backupListenerDirectionality = _audioController.LocalConfiguration.ListenerDirectionality;
+            _backupPlayerDirectionality = _audioController.LocalConfiguration.PlayerDirectionality;
+            _backupOcclusionFactor = _audioController.LocalConfiguration.OcclusionFactor;
+        }
+
+        private void RecoverAudioSettings() {
+            if (!Utilities.IsValid(_audioController) || !Utilities.IsValid(_audioController.LocalConfiguration)) {
+                Error($"{nameof(PlayerAudioController)} or {nameof(PlayerAudioConfigurationModel)} not valid");
+                return;
+            }
+            _audioController.LocalConfiguration.ListenerDirectionality = _backupListenerDirectionality;
+            _audioController.LocalConfiguration.PlayerDirectionality = _backupPlayerDirectionality;
+            _audioController.LocalConfiguration.OcclusionFactor = _backupOcclusionFactor;
         }
         #endregion
     }

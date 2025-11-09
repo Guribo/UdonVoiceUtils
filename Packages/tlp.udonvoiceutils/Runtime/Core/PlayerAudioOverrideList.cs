@@ -95,25 +95,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         }
 
         [PublicAPI]
-        public PlayerAudioOverride GetMaxPriority(VRCPlayerApi player) {
-#if TLP_DEBUG
-            DebugLog(nameof(GetMaxPriority));
-#endif
-
+        public bool GetMaxPriority(VRCPlayerApi player, out PlayerAudioOverride playerAudioOverride) {
             for (int i = 0; i < Overrides; i++) {
                 var entry = Get(i);
-                if (!entry) {
-                    return null;
+                if (!Utilities.IsValid(entry)) {
+                    playerAudioOverride = null;
+                    return false;
                 }
 
                 if (entry.IsPlayerBlackListed(player)) {
                     continue;
                 }
 
-                return entry;
+                playerAudioOverride = entry;
+                return true;
             }
 
-            return null;
+            playerAudioOverride = null;
+            return false;
         }
 
         /// <summary>

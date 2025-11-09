@@ -1,5 +1,5 @@
+using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
-using UdonSharpEditor;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -7,11 +7,13 @@ using VRC.SDKBase;
 namespace TLP.UdonVoiceUtils.Editor.Inspectors
 {
     [CustomEditor(typeof(VoiceOverrideDoor))]
-    public class VoiceOverrideDoorEditor : UnityEditor.Editor
+    public class VoiceOverrideDoorEditor : TlpBehaviourEditor
     {
-        public override void OnInspectorGUI() {
-            UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target);
-            DrawDefaultInspector();
+        protected override string GetDescription() {
+            return "Example implementation of a door which adds a player to " +
+                   "a PlayerAudioOverride upon entering a room. " +
+                   "This works by checking player-trigger interactions with the doors box collider (trigger) " +
+                   "when the player walks through the door.";
         }
 
         public void OnSceneGUI() {

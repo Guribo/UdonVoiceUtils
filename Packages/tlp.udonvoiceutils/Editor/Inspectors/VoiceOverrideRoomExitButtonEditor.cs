@@ -1,5 +1,5 @@
+using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
-using UdonSharpEditor;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -7,11 +7,13 @@ using VRC.SDKBase;
 namespace TLP.UdonVoiceUtils.Editor.Inspectors
 {
     [CustomEditor(typeof(VoiceOverrideRoomExitButton))]
-    public class VoiceOverrideRoomExitButtonEditor : UnityEditor.Editor
+    public class VoiceOverrideRoomExitButtonEditor : TlpBehaviourEditor
     {
-        public override void OnInspectorGUI() {
-            UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target);
-            DrawDefaultInspector();
+        protected override string GetDescription() {
+            return "Example implementation of a door which removes a player from " +
+                   "a VoiceOverrideRoom when interacting with the button.\n\n" +
+                   "Pitfall: If the entering player carries another player, " +
+                   "then that player will not be removed from the VoiceOverrideRoom!";
         }
 
         public void OnSceneGUI() {

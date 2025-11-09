@@ -51,13 +51,16 @@ Jump to [Installation](#installation) to get started... but I really recommend y
 - [The Avali ShatterDome](https://vrchat.com/home/launch?worldId=wrld_f2c3ed62-7d02-416d-a450-753939a5f327) by
   RadioFoxWin - *Microphone, PlayerAudioController menu*
 - [The Black Cat](https://vrchat.com/home/world/wrld_4cf554b4-430c-4f8f-b53e-1f294eed230b) by spookyghostboo - *Voice
-  directionality*
+  directionality, Occlusion*
 - [The Great Pub](https://vrchat.com/home/world/wrld_6caf5200-70e1-46c2-b043-e3c4abe69e0f) by owlboy - *Occlusion, Voice
   directionality*
 - [The Pool Parlor](https://vrchat.com/home/world/wrld_99bdc4c6-b80c-49f3-aae0-5d67017d8340) by Toasterly - *Voice
   directionality, Audio zones*
 - [Virtual Performing Arts Theater](https://vrchat.com/home/world/wrld_f1ae5929-a881-4c21-acc0-8d5cb9bf919f) by
   DjembeDragon - *Private channels, Audio Zones, Reverb, Audience/Stage volume control*
+- [Hexahedron Estate](https://vrchat.com/home/world/wrld_b477c764-43a2-43f0-8355-d2871af3881d) by Ziggor - *Occlusion*
+- [Cool Party](https://vrchat.com/home/world/wrld_2a038385-c524-45f1-abbe-7c5d648bf0c0) by 
+  n8bits - *Private audio zones, Wall occlusion, custom default player audio settings*
 - ...
 
 > You can request to have your world added by sending **Guribo** a message on Discord or by creating a ticket on this
@@ -90,14 +93,13 @@ The used pattern MAJOR.MINOR.PATCH indicates:
 
 ### Installation
 
-1. Install/Add VRChat World SDK 3.7 to your project
-2. Install/Add CyanPlayerObjectPool to your project: https://cyanlaser.github.io/CyanPlayerObjectPool/
-3. Install/Add TLP UdonVoiceUtils to your project: https://guribo.github.io/TLP/
-4. Start your project and open the scene `Packages/tlp.udonvoiceutils/Runtime/Scenes/Demo.unity`
-5. With ClientSim enabled, click the Play button in Unity
-6. Check for any errors in the console (only one regarding AudioListener is expected)
-7. If there is any problems, please check the [Troubleshooting](#troubleshooting) section below
-8. To set up your own world, start with the [Minimal Scene Setup](#minimal-scene-setup)
+1. Install/Add VRChat World SDK 3.9.0 to your project
+2. Install/Add TLP UdonVoiceUtils to your project: https://guribo.github.io/TLP/
+3. Start your project and open the scene `Packages/tlp.udonvoiceutils/Runtime/Scenes/Demo.unity`
+4. With ClientSim enabled, click the Play button in Unity
+5. Check for any errors in the console (only one regarding AudioListener is expected)
+6. If there is any problems, please check the [Troubleshooting](#troubleshooting) section below
+7. To set up your own world, start with the [Minimal Scene Setup](#minimal-scene-setup)
 
 > **Additional Notes:**  
 > Please follow the official guides created by VRChat to create a Unity World Creation project using the VRChat Create
@@ -129,8 +131,7 @@ into account when integrating UVU into a VRChat world.**
 
 ### Errors after installation
 
-1. Make sure [Cyan.PlayerObjectPool](https://cyanlaser.github.io/CyanPlayerObjectPool/) is added to your project!
-2. You might have updated to a version of UdonUtils that is not yet compatible with UdonVoiceUtils
+1. You might have updated to a version of UdonUtils that is not yet compatible with UdonVoiceUtils
     1. Remove UdonVoiceUtils and UdonUtils from your project via the Creator companion
     2. Add **ONLY** UdonVoiceUtils again *(This will install the latest compatible version of UdonUtils for you as
        well)*
@@ -174,10 +175,55 @@ into account when integrating UVU into a VRChat world.**
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
-## Changelog
+### [4.0.0] - 2025-11-09
 
-All notable changes to this project will be documented in this file.
+#### 🚀 Features
 
+- *(PlayerAudioOverride)* Allow players to be part of multiple privacy channels
+- *(PlayerAudioOverrideList)* [**breaking**] Change signature of GetMaxPriority
+- *(VoiceRangeVisualizer)* [**breaking**] Simplify logic and improve head position accuracy
+- *(PlayerAudioController)* [**breaking**] Remove player update event functionality, refactor
+- *(PlayerAudioView)* Change event handling to UdonEvents, add debug logging for variable changes
+- *(PlayerAudioConfigurationModel)* Convert to safer sync approach with dedicated copies of network values
+- *(VoiceRangeVisualizer)* Simplify tracking logic
+
+#### 🐛 Bug Fixes
+
+- Broken prefab reference to UiButton
+- Broken mic prefab due to incorrect sync serialization (reported Manual despite being NoVariableSync)
+- Correct mute behaviour in demo scene to match description of bathroom
+- *(TestMaxOcclusionMutesPlayers)* Ensure test reverts to initially encountered Audio Configuration, move modification to test setup
+- *(PlayerAudioOverride)* Fix sanity check
+- *(Menu)* Fix warnings caused by new event not being pre-initialized
+- *(Prefabs)* Dissallow multiple PlayerAudioController prefabs in the scene
+
+#### 🚜 Refactor
+
+- *(core)* Remove debug logging from GetMaxPriority method
+
+#### 📚 Documentation
+
+- *(Readme)* Update to VRC SDK 3.9.0
+- Add world by n8bits
+
+#### 🧪 Testing
+
+- *(TestMaxOcclusionMutesPlayers)* Improve logging of errors
+- *(TestZoneEntering)* At protection agains infinite loop
+- Update to test latest changes
+
+#### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update README with new world entry and SDK version
+- Bump version and minimum VRC World SDK version to 3.8.2
+- Fix missing separator in package.json
+- Disable some log spam in release mode
+- Add script descriptions, update scene
+- Update demo scene and prefabs
+- Speed up
+- Improve log message about vrc default audio settings
+- Update License
+- Update to UdonUtils 12.0.0
 ### [3.0.2] - 2025-06-02
 
 #### 🚀 Features
@@ -203,38 +249,32 @@ All notable changes to this project will be documented in this file.
 #### ⚙️ Miscellaneous Tasks
 
 - Update package version and add support for SDK 3.8
-
 ### [3.0.1] - 2024-12-22
 
 #### ⚙️ Miscellaneous Tasks
 
 - Support newer, compatible UdonUtils versions, add minimum supported VRC SDK version
-
 ### [3.0.0] - 2024-12-14
 
 #### 🚀 Features
 
 - [**breaking**] Migrate to more robust initialization, make executionOrder values unique
 - [**breaking**] Deterministic execution order of all scripts, add AdjustableGain example
-
 ### [2.0.1] - 2024-12-11
 
 #### 🐛 Bug Fixes
 
 - Prevent update to incompatible sdks
-
 ### [2.0.0] - 2024-12-11
 
 #### ⚙️ Miscellaneous Tasks
 
 - Bump version
-
 ### [2.0.0-rc.2] - 2024-11-02
 
 #### 🚀 Features
 
 - [**breaking**] Deterministic execution order to address known VRC-bug
-
 ### [2.0.0-rc.1] - 2024-08-21
 
 #### 🚀 Features
@@ -279,7 +319,6 @@ All notable changes to this project will be documented in this file.
 #### ⚙️ Miscellaneous Tasks
 
 - Recompile
-
 ### [1.0.1] - 2024-08-18
 
 #### 📚 Documentation
@@ -290,13 +329,11 @@ All notable changes to this project will be documented in this file.
 
 - Support UdonUtils 8.2.0
 - Add support for com.vrchat.worlds 3.7.x
-
 ### [1.0.0] - 2024-05-25
 
 #### ⚙️ Miscellaneous Tasks
 
 - Migrate to UdonUtils 8.1.0, go into full release state
-
 ### [1.0.0-rc.6] - 2024-05-16
 
 #### 🚀 Features
@@ -312,19 +349,16 @@ All notable changes to this project will be documented in this file.
 #### 🎨 Styling
 
 - *(Demo)* Bake light of demo scene, add light probes
-
 ### [1.0.0-rc.5] - 2024-05-12
 
 #### 📚 Documentation
 
 - *(Readme)* Add new world listings, add links to VRC worlds
-
 ### [1.0.0-rc.4] - 2024-05-10
 
 #### ⚙️ Miscellaneous Tasks
 
 - Support com.vrchat.worlds 3.6.x and Unity 2022.3.22
-
 ### [1.0.0-rc.3] - 2024-05-03
 
 #### 🚀 Features
@@ -339,7 +373,6 @@ All notable changes to this project will be documented in this file.
 #### ⚙️ Miscellaneous Tasks
 
 - Update git configuration and setup script
-
 ### [1.0.0-rc.1] - 2023-11-19
 
 #### 🚀 Features
@@ -448,7 +481,6 @@ All notable changes to this project will be documented in this file.
 - Update package.json and add release issue template
 - Move serializedUdonPrograms
 - Remove programs
-
 ### [0.8.0] - 2022-02-27
 
 #### 🚀 Features
@@ -469,7 +501,6 @@ All notable changes to this project will be documented in this file.
 - Update
 - Convert to lfs
 - Update package.json and Readme
-
 ### [BPAv0.8] - 2021-09-26
 
 #### 🚀 Features
@@ -481,7 +512,6 @@ All notable changes to this project will be documented in this file.
 
 - Add temp. workaround for some avatars not having a head position/rotation
 - Export of example scene
-
 ### [BPAv0.7] - 2021-08-06
 
 #### 🚀 Features
@@ -499,7 +529,6 @@ All notable changes to this project will be documented in this file.
 #### 🧪 Testing
 
 - Increase coverage
-
 ### [BPAv0.7_beta] - 2021-07-12
 
 #### 🚀 Features
@@ -524,7 +553,6 @@ All notable changes to this project will be documented in this file.
 #### 🚜 Refactor
 
 - Restructure content
-
 ### [BPAv0.6] - 2021-06-12
 
 #### 🚀 Features
@@ -537,7 +565,6 @@ All notable changes to this project will be documented in this file.
 #### 🚜 Refactor
 
 - Use udonUtil libraries, audio link testing
-
 ### [BPAv0.5] - 2021-04-10
 
 #### 🚀 Features
@@ -555,7 +582,6 @@ All notable changes to this project will be documented in this file.
 
 - Prepare next version
 - Rename
-
 ### [BPAv0.4] - 2021-03-15
 
 #### 🚀 Features
@@ -563,7 +589,6 @@ All notable changes to this project will be documented in this file.
 - Add is valid checks, refactoring
 - Add exporter, update mic with override
 - V0.4
-
 ### [BPAv0.3] - 2021-01-15
 
 #### 🚀 Features
@@ -576,7 +601,6 @@ All notable changes to this project will be documented in this file.
 #### 🐛 Bug Fixes
 
 - Prevent exception when menu is not is use
-
 ### [BPAv0.2] - 2020-12-19
 
 #### 🚀 Features
@@ -587,7 +611,6 @@ All notable changes to this project will be documented in this file.
 #### 🚜 Refactor
 
 - Add log coloring, add sample audio
-
 ### [BPAv0.1] - 2020-11-21
 
 #### 🚀 Features
@@ -605,5 +628,3 @@ All notable changes to this project will be documented in this file.
 #### 📚 Documentation
 
 - Fix variable name
-
-<!-- generated by git-cliff -->
