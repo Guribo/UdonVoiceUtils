@@ -1,8 +1,8 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
+using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Sync;
-using TLP.UdonUtils.Runtime.Sync.SyncedEvents;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples.Microphone;
 using UdonSharp;
@@ -24,48 +24,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         #endregion
 
         #region State
-        internal bool WorkingIsOn;
-        private int _playerId = NoUser;
-        internal bool Initialized { private set; get; }
+        private int _currentUser = NoUser;
         #endregion
-
-        private int PlayerIdProperty
-        {
-            set
-            {
-                DebugLog($"Set {nameof(PlayerIdProperty)} = {value}");
-                bool valueUnchanged = _playerId == value;
-                if (valueUnchanged) {
-                    return;
-                }
-
-                int oldPlayerId = _playerId;
-                _playerId = value;
-
-                CleanUpOldUser(oldPlayerId);
-                NewUserStartUsingMic(_playerId);
-
-                if (!(Utilities.IsValid(PlayerIdSync)
-                      && Networking.IsOwner(gameObject))) {
-                    return;
-                }
-
-                if (!Networking.IsOwner(PlayerIdSync.gameObject)) {
-                    Networking.SetOwner(Networking.LocalPlayer, PlayerIdSync.gameObject);
-                }
-
-                PlayerIdSync.WorkingValue = _playerId;
-                PlayerIdSync.Raise(this);
-            }
-            get => _playerId;
-        }
 
         #region Mandatory references
         [Header("Mandatory references")]
         public PlayerAudioOverride PlayerAudioOverride;
 
-        public SyncedEventInt PlayerIdSync;
-        public SyncedEventBool MicIsOnEvent;
         public MicModel MicModel;
 
         public MicActivation MicActivation;
@@ -79,8 +44,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
-            var localPlayer = Networking.LocalPlayer;
-            if (!Utilities.IsValid(localPlayer)) {
+            if (!HasStartedOk) {
                 return;
             }
 
@@ -89,7 +53,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            PlayerIdProperty = localPlayer.playerId;
+            MicModel.UserId = LocalPlayer.playerId;
         }
 
         public override void OnDrop() {
@@ -99,43 +63,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
+            if (!HasStartedOk) {
+                return;
+            }
 
             if (Networking.IsOwner(gameObject)) {
-                PlayerIdProperty = NoUser;
+                MicModel.UserId = NoUser;
             }
         }
         #endregion
-
 
         #region Lifecycle
         public void OnEnable() {
-            if (Initialized) {
-                NewUserStartUsingMic(_playerId);
+            if (HasStartedOk) {
+                OnModelChanged();
             }
         }
-
 
         public void OnDisable() {
-            if (Initialized) {
-                CleanUpOldUser(_playerId);
+            if (HasStartedOk) {
+                RemoveUserFromAudioOverride(_currentUser);
             }
-        }
-        #endregion
-
-
-        #region Callbacks
-        private void OnMicOnEvent() {
-        }
-
-        private void OnUserChanged() {
-            #region TLP_DEBUG
-#if TLP_DEBUG
-            DebugLog(nameof(OnUserChanged));
-#endif
-            #endregion
-
-            PlayerIdProperty = PlayerIdSync.WorkingValue;
-            MicModel.IsOn = PlayerIdProperty != NoUser;
         }
         #endregion
 
@@ -145,49 +93,31 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return false;
             }
 
-            if (!Utilities.IsValid(MicModel)) {
-                Error($"{nameof(MicModel)} not set");
+            if (!IsSet(MicModel, nameof(MicModel))) {
                 return false;
             }
 
-            if (!Utilities.IsValid(PlayerAudioOverride)) {
-                Error($"{nameof(PlayerAudioOverride)} not set");
+            if (!IsSet(PlayerAudioOverride, nameof(PlayerAudioOverride))) {
                 return false;
             }
 
-            if (!Utilities.IsValid(MicActivation)) {
-                Error($"{nameof(MicActivation)} not set");
+            if (!IsSet(MicActivation, nameof(MicActivation))) {
                 return false;
             }
 
-            if (!Utilities.IsValid(PlayerIdSync)) {
-                Error($"{nameof(PlayerIdSync)} not set");
+            if (!MicModel.HasStartedOk) {
+                Error($"Failed to start {nameof(MicModel)}");
                 return false;
             }
 
-            if (!Utilities.IsValid(MicIsOnEvent)) {
-                Error($"{nameof(MicIsOnEvent)} not set");
+            if (!MicModel.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
+                Error($"Failed to listen to '{MicModel.GetScriptPathInScene()}.{nameof(MicModel.ChangeEvent)}' event");
                 return false;
             }
 
-            if (!MicIsOnEvent.AddListenerVerified(this, nameof(OnMicOnEvent), true)) {
-                Error($"Failed to listen to '{MicIsOnEvent.GetScriptPathInScene()}.{nameof(OnMicOnEvent)}' event");
-                return false;
-            }
+            MicActivation.MicModel = MicModel;
 
-            if (!PlayerIdSync.AddListenerVerified(this, nameof(OnUserChanged), true)) {
-                Error($"Failed to listen to '{PlayerIdSync.GetScriptPathInScene()}.{nameof(OnUserChanged)}' event");
-                return false;
-            }
-
-            if (Networking.IsOwner(PlayerIdSync.gameObject)) {
-                PlayerIdSync.WorkingValue = NoUser;
-            }
-
-            MicActivation.PickupMicrophone = this;
-            Initialized = true;
-
-            NewUserStartUsingMic(_playerId);
+            OnModelChanged();
             return true;
         }
 
@@ -198,12 +128,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
+            if (!HasStartedOk) {
+                return;
+            }
+
             switch (eventName) {
-                case nameof(OnUserChanged):
-                    OnUserChanged();
-                    break;
-                case nameof(OnMicOnEvent):
-                    OnMicOnEvent();
+                case nameof(OnModelChanged):
+                    OnModelChanged();
                     break;
                 default:
                     base.OnEvent(eventName);
@@ -216,10 +147,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         /// <summary>
         /// let the given user be affected by the mic
         /// </summary>
-        private void NewUserStartUsingMic(int newUser) {
+        private void AddUserToAudioOverride(int newUser) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(NewUserStartUsingMic));
+            DebugLog(nameof(AddUserToAudioOverride));
 #endif
             #endregion
 
@@ -240,23 +171,51 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         /// <summary>
         /// if the mic is still held by the given user let that person no longer be affected by the mic
         /// </summary>
-        private void CleanUpOldUser(int oldUser) {
+        private void RemoveUserFromAudioOverride(int user) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(CleanUpOldUser));
+            DebugLog(nameof(RemoveUserFromAudioOverride));
 #endif
             #endregion
 
-            if (oldUser == NoUser) {
+            if (user == NoUser) {
                 return;
             }
 
-            var currentMicUser = VRCPlayerApi.GetPlayerById(oldUser);
-            if (Utilities.IsValid(currentMicUser)) {
-                if (Utilities.IsValid(PlayerAudioOverride)) {
-                    PlayerAudioOverride.RemovePlayer(currentMicUser);
-                }
+            var currentMicUser = VRCPlayerApi.GetPlayerById(user);
+            if (!Utilities.IsValid(currentMicUser)) {
+                return;
             }
+
+            if (!PlayerAudioOverride.RemovePlayer(currentMicUser)) {
+                Warn(
+                        $"Failed to remove player {currentMicUser.DisplayNameUnique()} " +
+                        $"{PlayerAudioOverride.GetScriptPathInScene()} " +
+                        $"(was never added in the first place?)");
+            }
+        }
+
+        private void OnModelChanged() {
+            #region TLP_DEBUG
+#if TLP_DEBUG
+            DebugLog(nameof(OnModelChanged));
+#endif
+            #endregion
+
+            if (MicIsOffOrUserChanged()) {
+                RemoveUserFromAudioOverride(_currentUser);
+                _currentUser = MicModel.UserId;
+            }
+
+            if (!MicModel.IsOn) {
+                return;
+            }
+
+            AddUserToAudioOverride(MicModel.UserId);
+        }
+
+        private bool MicIsOffOrUserChanged() {
+            return !MicModel.IsOn || _currentUser != MicModel.UserId;
         }
         #endregion
     }

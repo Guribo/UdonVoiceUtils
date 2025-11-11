@@ -33,11 +33,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
                 return false;
             }
 
+            if (!IsSet(OnIndicator, nameof(OnIndicator))) {
+                return false;
+            }
+
+            if (!IsSet(OffIndicator, nameof(OffIndicator))) {
+                return false;
+            }
+
             if (!InitializeMvcSingleGameObject(gameObject)) {
                 Error("Failed to initialize Model-View-Controller");
                 return false;
             }
 
+            UpdateVisuals();
             return true;
         }
 
@@ -82,9 +91,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 #endif
             #endregion
 
-            bool isOn = _micModel.IsOn;
-            OnIndicator.SetActive(isOn);
-            OffIndicator.SetActive(!isOn);
+            OnIndicator.SetActive(_micModel.IsOn);
+            OffIndicator.SetActive(!_micModel.IsOn);
         }
         #endregion
     }

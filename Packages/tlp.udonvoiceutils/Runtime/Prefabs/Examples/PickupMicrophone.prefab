@@ -490,6 +490,7 @@ MonoBehaviour:
   PoolableInUse: 0
   PlayerHoldingMic: {fileID: 539934516628095183}
   MicIsOnEvent: {fileID: 2414478265534862136}
+  Change: {fileID: 3660142111522920400}
 --- !u!114 &6641591067677981752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1039,7 +1040,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   PrivacyChannelId: -1
   AdditionalPrivacyChannelIds: 
-  MuteOutsiders: 1
+  MuteOutsiders: 0
   DisallowListeningToChannel: 0
   LocalPlayerAdded: {fileID: 0}
   LocalPlayerRemoved: {fileID: 0}
@@ -1074,8 +1075,6 @@ MonoBehaviour:
   Pool: {fileID: 0}
   PoolableInUse: 0
   PlayerAudioOverride: {fileID: 8069365171889708193}
-  PlayerIdSync: {fileID: 539934516628095183}
-  MicIsOnEvent: {fileID: 2414478265534862136}
   MicModel: {fileID: 4216655069016842928}
   MicActivation: {fileID: 8317123929927436317}
 --- !u!114 &8317123929927436317
@@ -1106,7 +1105,6 @@ MonoBehaviour:
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
-  PickupMicrophone: {fileID: 5237064173859901745}
 --- !u!114 &6304727246407199583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1125,8 +1123,8 @@ MonoBehaviour:
   ExactGrip: {fileID: 0}
   allowManipulationWhenEquipped: 1
   orientation: 0
-  AutoHold: 1
-  InteractionText: Pickup to speak to everyone
+  AutoHold: 3
+  InteractionText: Pickup Microphone (Hold in hand to turn ON)
   UseText: 
   useEventBroadcastType: 0
   UseDownEventName: 
@@ -1139,6 +1137,7 @@ MonoBehaviour:
   currentlyHeldBy: {fileID: 0}
   pickupable: 1
   proximity: 2
+  version: 1
 --- !u!114 &6277356356116935421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1224,7 +1223,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: a3b4f89f116ed914ea19bbc75afd49b0,
     type: 2}
   programSource: {fileID: 11400000, guid: df28128702ff35643981e315b0e8a974, type: 2}

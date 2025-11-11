@@ -3,7 +3,7 @@ using TLP.UdonUtils.Runtime;
 using TLP.UdonVoiceUtils.Runtime.Examples.Microphone;
 using UdonSharp;
 using UnityEngine;
-using VRC.SDKBase;
+
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
@@ -19,13 +19,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public new const int ExecutionOrder = MicModel.ExecutionOrder + 1;
         #endregion
 
-        #region Dependencies
-        [Header("Mandatory references")]
-        public PickupMicrophone PickupMicrophone;
-        #endregion
-
         #region State
-        protected internal bool Initialized { get; private set; }
+        internal MicModel MicModel;
         #endregion
 
         #region Overrides
@@ -34,17 +29,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return false;
             }
 
-            if (!Utilities.IsValid(PickupMicrophone)) {
-                Error($"{nameof(PickupMicrophone)} not set");
+            if (!IsSet(MicModel, nameof(MicModel))) {
                 return false;
             }
 
-            Initialized = true;
             return true;
         }
         #endregion
 
-        #region Internal
+        #region Overrides
+
+        public bool IsOn => MicModel.IsOn;
+
         protected internal bool Activate() {
             #region TLP_DEBUG
 #if TLP_DEBUG
@@ -52,38 +48,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
                 return false;
             }
 
-            UpdateMicOnState(true);
+            MicModel.IsOn = true;
             return true;
         }
 
         protected internal bool Deactivate() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(Activate));
+            DebugLog(nameof(Deactivate));
 #endif
             #endregion
 
-            if (!Initialized) {
-                Error("Not initialized");
+            if (!HasStartedOk) {
                 return false;
             }
 
-            UpdateMicOnState(false);
+            MicModel.IsOn = false;
             return true;
-        }
-
-        private void UpdateMicOnState(bool newOn) {
-            PickupMicrophone.WorkingIsOn = newOn;
-            if (!Networking.IsOwner(PickupMicrophone.gameObject)) {
-                Networking.SetOwner(Networking.LocalPlayer, PickupMicrophone.gameObject);
-            }
-
-            PickupMicrophone.MarkNetworkDirty();
         }
         #endregion
     }

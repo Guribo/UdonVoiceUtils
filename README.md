@@ -175,6 +175,11 @@ into account when integrating UVU into a VRChat world.**
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
+### [5.0.0] - 2025-11-11
+
+#### 🚀 Features
+
+- *(Microphone)* [**breaking**] Add new mic activation (push-to-talk, toggle), rework/simplify mic logic, add 3 new mic prefabs
 ### [4.0.0] - 2025-11-09
 
 #### 🚀 Features

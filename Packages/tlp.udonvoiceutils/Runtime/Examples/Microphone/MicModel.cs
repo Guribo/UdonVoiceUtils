@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
+using TLP.UdonUtils.Runtime.Events;
 using TLP.UdonUtils.Runtime.Sync;
 using TLP.UdonUtils.Runtime.Sync.SyncedEvents;
 using TLP.UdonVoiceUtils.Runtime.Core;
@@ -20,11 +21,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         [PublicAPI]
         public new const int ExecutionOrder = PickupMicrophone.ExecutionOrder + 1;
 
+        #region Dependencies
+
         [SerializeField]
         internal SyncedEventInt PlayerHoldingMic;
 
         [SerializeField]
         internal SyncedEventBool MicIsOnEvent;
+
+        [SerializeField]
+        internal UdonEvent Change;
+        #endregion
 
         #region Public API
         /// <summary>
@@ -44,9 +51,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         #endregion
 
         #region Overrides
-        protected override bool InitializeInternal() {
-            if (!Utilities.IsValid(PlayerHoldingMic)) {
-                Error($"{nameof(PlayerHoldingMic)} not set");
+        protected override bool SetupAndValidate() {
+            if (!base.SetupAndValidate()) {
+                return false;
+            }
+
+            if (!IsSet(MicIsOnEvent, nameof(MicIsOnEvent))) {
+                return false;
+            }
+
+            if (!IsSet(PlayerHoldingMic, nameof(PlayerHoldingMic))) {
                 return false;
             }
 
@@ -55,8 +69,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
                 return false;
             }
 
-            if (!Utilities.IsValid(MicIsOnEvent)) {
-                Error($"{nameof(MicIsOnEvent)} not set");
+            if (!IsSet(Change, nameof(Change))) {
                 return false;
             }
 
@@ -65,7 +78,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
                 return false;
             }
 
-            return base.InitializeInternal();
+            return true;
         }
 
         public override void OnEvent(string eventName) {
@@ -137,6 +150,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 
             MicIsOnEvent.WorkingValue = value;
             MicIsOnEvent.Raise(this);
+            Dirty = true;
+            NotifyIfDirty();
         }
 
         internal bool GetIsOnState() {
@@ -175,6 +190,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 
             PlayerHoldingMic.WorkingValue = value;
             PlayerHoldingMic.Raise(this);
+            Dirty = true;
+            NotifyIfDirty();
         }
         #endregion
     }
