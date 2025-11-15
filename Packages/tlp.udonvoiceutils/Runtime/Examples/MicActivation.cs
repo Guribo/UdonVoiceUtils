@@ -35,9 +35,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             return true;
         }
-        #endregion
-
-        #region Overrides
 
         public bool IsOn => MicModel.IsOn;
 

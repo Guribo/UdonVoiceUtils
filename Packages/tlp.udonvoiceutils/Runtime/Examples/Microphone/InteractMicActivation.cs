@@ -180,7 +180,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         }
         #endregion
 
-
         #region Internal
         private void UpdateInteractionText() {
             VrcPickup.UseText = $"Turn {(IsOn ? "OFF" : "ON")}";

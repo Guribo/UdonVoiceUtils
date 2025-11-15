@@ -163,8 +163,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (Utilities.IsValid(PlayerAudioOverride)) {
-                PlayerAudioOverride.AddPlayer(newMicUser);
+            if (PlayerAudioOverride.IsAffected(newMicUser)) {
+                return; // already added, nothing to do
+            }
+
+            if (!PlayerAudioOverride.AddPlayer(newMicUser)) {
+                Error($"Failed to add player {newMicUser.DisplayNameUnique()} " +
+                      $"to {PlayerAudioOverride.GetScriptPathInScene()}");
             }
         }
 
@@ -185,6 +190,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             var currentMicUser = VRCPlayerApi.GetPlayerById(user);
             if (!Utilities.IsValid(currentMicUser)) {
                 return;
+            }
+
+            if (!PlayerAudioOverride.IsAffected(currentMicUser)) {
+                return; // not affected, nothing to do
             }
 
             if (!PlayerAudioOverride.RemovePlayer(currentMicUser)) {

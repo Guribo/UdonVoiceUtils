@@ -139,7 +139,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
             }
 
             if (value == MicIsOnEvent.WorkingValue) {
-                Warn($"{MicIsOnEvent.GetScriptPathInScene()} value is already {value}");
+                #region TLP_DEBUG
+#if TLP_DEBUG
+                DebugLog($"{MicIsOnEvent.GetScriptPathInScene()} value is already {value}");
+#endif
+#endregion
                 return;
             }
 
@@ -179,7 +183,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
             }
 
             if (value == PlayerHoldingMic.WorkingValue) {
-                Warn($"{PlayerHoldingMic.GetScriptPathInScene()} value is already {value}");
+                #region TLP_DEBUG
+#if TLP_DEBUG
+                DebugLog($"{PlayerHoldingMic.GetScriptPathInScene()} value is already {value}");
+#endif
+#endregion
                 return;
             }
 
