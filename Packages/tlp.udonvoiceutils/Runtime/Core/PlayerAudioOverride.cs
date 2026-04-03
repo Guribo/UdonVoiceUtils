@@ -319,7 +319,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core
         /// keys: ChannelIds [int]
         /// values: unused [empty DataToken]
         /// </summary>
-        internal readonly DataDictionary PrivacyChannelIds = new DataDictionary();
+        public readonly DataDictionary PrivacyChannelIds = new DataDictionary();
         #endregion
 
         #region Udon Lifecycle
