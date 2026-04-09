@@ -20,7 +20,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         #endregion
 
         #region State
-        internal MicModel MicModel;
+        public MicModel MicModel;
         #endregion
 
         #region Overrides
