@@ -175,6 +175,11 @@ into account when integrating UVU into a VRChat world.**
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
+### [5.0.3] - 2026-04-09
+
+#### ⚙️ Miscellaneous Tasks
+
+- Change MicModel field to public in MicActivation (#43)
 ### [5.0.2] - 2026-04-03
 
 #### ⚙️ Miscellaneous Tasks
