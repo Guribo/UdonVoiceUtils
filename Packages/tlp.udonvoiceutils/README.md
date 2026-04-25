@@ -235,6 +235,12 @@ It will enable certain workarounds for parts of the VRChat SDK that can not easi
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
+### [5.1.2] - 2026-04-25
+
+#### ⚙️ Miscellaneous Tasks
+
+- Update to UdonUtils 13.0.0
+- Bump version to 5.1.2
 ### [5.1.1] - 2026-04-25
 
 #### ⚙️ Miscellaneous Tasks
