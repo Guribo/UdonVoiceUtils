@@ -12,6 +12,12 @@
     * [Versioning](#versioning)
     * [Installation](#installation)
     * [Minimal scene setup](#minimal-scene-setup)
+    * [Uninstall](#uninstall)
+      * [Via Tools (recommended)](#via-tools-recommended)
+      * [Manually via Filesystem](#manually-via-filesystem)
+    * [Enable Debug Mode](#enable-debug-mode)
+    * [Disable Debug Mode](#disable-debug-mode)
+    * [Test Mode](#test-mode)
   * [Troubleshooting](#troubleshooting)
     * [Errors after installation](#errors-after-installation)
     * [*Something* is not working in the world](#something-is-not-working-in-the-world)
@@ -127,6 +133,60 @@ into account when integrating UVU into a VRChat world.**
    controller to create what you need. In addition, you can also create your own custom solutions that rely on UVU's
    audio overriding capabilities.
 
+### Uninstall
+
+#### Via Tools (recommended)
+
+1. Remove TLP UdonUtils from your project via VCC or [ALCOM](https://vrc-get.anatawa12.com/alcom/)
+2. Go to **Edit > Project Settings > Player > Script Compilation** and remove `TLP_UDONVOICEUTILS` from the list
+3. You may also remove anything else starting with `TLP_`
+    1. Only applies if you used other TLP packages or enabled debug/test mode
+
+#### Manually via Filesystem
+
+1. Remove the `Packages/tlp.udonvoiceutils` folder from your project
+2. Remove the following lines from `Packages/packages-lock.json`:
+   ```json
+    "tlp.udonvoiceutils": {
+      "version": "file:tlp.udonvoiceutils",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+   ```
+3. Remove in a similar fassion from the `Packages/vpm-manifest.json` if present in there
+4. In the Unity project go to **Edit > Project Settings > Player > Script Compilation** and remove `TLP_UDONVOICEUTILS` from the list
+5. You may also remove anything else starting with `TLP_`
+    1. Only applies if you used other TLP packages or enabled debug/test mode
+
+### Enable Debug Mode
+
+> Disclaimer: There is no negative performance impact when debug mode is disabled
+> as the logging code is not compiled into builds.
+
+Debug mode is disabled by default. When enabled it will log additional information to the console.
+This logging is quite excessive and should only be enabled for debugging purposes.
+If you see no debug logs in the console/log files, ensure that the
+
+1. Go to **Edit > Project Settings > Player > Script Compilation** and add `TLP_DEBUG` to the list
+2. Find the `TLP_Logger` prefab in your scene
+3. Set to logging severity `Debug`, be default it is set to `Info`.
+
+### Disable Debug Mode
+
+1. Go to **Edit > Project Settings > Player > Script Compilation** and remove `TLP_DEBUG` from the list
+2. Find the `TLP_Logger` prefab in your scene and set to logging severity `Info` or higher
+
+### Test Mode
+
+Similar to debug mode, test mode is disabled by default but can be enabled
+by adding `TLP_UNIT_TESTING` to the list of script compilation symbols.
+
+Test mode is intended to be used for unit testing and should not be enabled in production builds.
+It will enable certain workarounds for parts of the VRChat SDK that can not easily be mocked.
+
+> Note: Releases of UdonUtils don't contain the unit tests used for development as they are not relevant for 99% of users.
+
 ## Troubleshooting
 
 ### Errors after installation
@@ -175,16 +235,17 @@ into account when integrating UVU into a VRChat world.**
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
-### [5.0.3] - 2026-04-09
+### [5.1.0] - 2026-04-25
+
+#### 🚀 Features
+
+- *(Editor)* Add TLP_UDONVOICETILS define whenever UdonUtils is added to a project
 
 #### ⚙️ Miscellaneous Tasks
 
+- *(PlayerAudioOverride)* Make PrivacyChannelIds public
 - Change MicModel field to public in MicActivation (#43)
-### [5.0.2] - 2026-04-03
-
-#### ⚙️ Miscellaneous Tasks
-
-- Make PrivacyChannelIds public, bump version to 5.0.2, and update README installation steps
+- Improve release automation
 ### [5.0.1] - 2025-11-15
 
 #### 🐛 Bug Fixes
