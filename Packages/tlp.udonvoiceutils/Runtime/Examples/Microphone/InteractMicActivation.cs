@@ -4,6 +4,7 @@ using UnityEngine;
 using VRC.SDKBase;
 
 #if UNITY_EDITOR
+using TLP.UdonUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UnityEditor;

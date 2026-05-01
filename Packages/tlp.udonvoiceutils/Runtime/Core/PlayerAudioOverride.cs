@@ -12,6 +12,7 @@ using VRC.SDKBase;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using TLP.UdonUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Core;
 #endif
 

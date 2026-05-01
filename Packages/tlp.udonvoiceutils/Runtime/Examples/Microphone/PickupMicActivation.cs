@@ -3,7 +3,7 @@ using UdonSharp;
 using UnityEngine;
 
 #if UNITY_EDITOR
-using TLP.UdonVoiceUtils.Editor.Core;
+using TLP.UdonUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UnityEditor;
 #endif

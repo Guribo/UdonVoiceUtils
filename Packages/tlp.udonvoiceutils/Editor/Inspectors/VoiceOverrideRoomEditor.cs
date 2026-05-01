@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using TLP.UdonVoiceUtils.Editor.Core;
+using TLP.UdonUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UdonSharp;
-using UdonSharpEditor;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;

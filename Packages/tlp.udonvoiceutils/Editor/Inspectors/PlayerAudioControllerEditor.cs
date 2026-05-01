@@ -1,8 +1,8 @@
 ﻿#if !COMPILER_UDONSHARP && UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using TLP.UdonUtils.Editor.Core;
 using TLP.UdonUtils.Runtime.Common;
-using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UdonSharpEditor;

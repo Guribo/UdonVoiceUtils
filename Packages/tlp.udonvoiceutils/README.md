@@ -99,7 +99,7 @@ The used pattern MAJOR.MINOR.PATCH indicates:
 
 ### Installation
 
-1. Install/Add VRChat World SDK 3.9.0 or higher to your project
+1. Install/Add VRChat World SDK 3.10.3 or higher to your project
 2. Install/Add TLP UdonVoiceUtils to your project: https://guribo.github.io/TLP/
 3. Start your project and open the scene `Packages/tlp.udonvoiceutils/Runtime/Scenes/Demo.unity`
 4. With ClientSim enabled, click the Play button in Unity
@@ -235,6 +235,15 @@ It will enable certain workarounds for parts of the VRChat SDK that can not easi
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
+### [5.1.3] - 2026-05-01
+
+#### 🐛 Bug Fixes
+
+- Update field definitions and references for consistency with UdonUtils update
+
+#### ⚙️ Miscellaneous Tasks
+
+- *(dependencies)* Update VRChat SDK and TLP UdonUtils versions
 ### [5.1.2] - 2026-04-25
 
 #### ⚙️ Miscellaneous Tasks
