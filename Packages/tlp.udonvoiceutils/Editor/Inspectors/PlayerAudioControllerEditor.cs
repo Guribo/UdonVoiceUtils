@@ -91,15 +91,11 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                         var udonSharpBehaviour = UdonSharpEditorUtility.GetProxyBehaviour(udonBehaviour);
 
                         if (!udonSharpBehaviour) {
-                            Debug.LogWarning(
-                                    $"{udonBehaviour.GetComponentPathInScene()} has no backing {nameof(UdonSharpBehaviour)}");
                             continue;
                         }
 
-                        var playerAudioOverride = (PlayerAudioOverride)udonSharpBehaviour;
+                        var playerAudioOverride = udonSharpBehaviour as PlayerAudioOverride;
                         if (!playerAudioOverride) {
-                            Debug.LogWarning(
-                                    $"{udonSharpBehaviour.GetScriptPathInScene()} is no {nameof(PlayerAudioOverride)}");
                             continue;
                         }
 

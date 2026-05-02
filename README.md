@@ -235,6 +235,11 @@ It will enable certain workarounds for parts of the VRChat SDK that can not easi
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
+### [5.1.4] - 2026-05-02
+
+#### 🐛 Bug Fixes
+
+- *(inspectors)* Remove redundant warnings in PlayerAudioControllerEditor (closes #44)
 ### [5.1.3] - 2026-05-01
 
 #### 🐛 Bug Fixes
