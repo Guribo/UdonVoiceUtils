@@ -72,9 +72,6 @@ Full documentation lives on the [Wiki](https://github.com/Guribo/UdonVoiceUtils/
 
 ## Changelog
 
-
-## Changelog
-
 ### [5.1.4] - 2026-05-02
 
 #### 🐛 Bug Fixes
