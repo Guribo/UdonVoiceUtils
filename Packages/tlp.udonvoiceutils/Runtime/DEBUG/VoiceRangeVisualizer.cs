@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
-using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UdonSharp;
 using UnityEngine;
@@ -22,7 +22,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
         private VRCPlayerApi _owner;
         #endregion
 
-        public PlayerAudioController PlayerAudioController;
+        [SerializeField]
+        private PlayerAudioController PlayerAudioController;
 
         [SerializeField]
         private Transform Near;

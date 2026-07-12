@@ -1,6 +1,6 @@
 using TLP.UdonUtils.Editor.Core;
-using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
+using UdonSharp;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -8,7 +8,7 @@ using VRC.SDKBase;
 namespace TLP.UdonVoiceUtils.Editor.Inspectors
 {
     [CustomEditor(typeof(VoiceOverrideRoomEnterButton))]
-    public class VoiceOverrideEnterButtonEditor : TlpBehaviourEditor
+    public class VoiceOverrideRoomEnterButtonEditor : TlpBehaviourEditor
     {
         protected override string GetDescription() {
             return "Example implementation of a door which adds a player to " +
@@ -49,42 +49,16 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     break;
                 default:
                 {
-                    HandleInput(guiEvent, voiceOverrideRoomEnterButton);
+                    EditorGUIHelper.HandleInput(guiEvent, voiceOverrideRoomEnterButton, SelectRoom);
                 }
                     break;
             }
         }
 
-
-        private void HandleInput(Event guiEvent, VoiceOverrideRoomEnterButton voiceOverrideRoomEnterButton) {
-            var mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
-            float drawPlaneHeight = 0;
-            float dstToDrawPlane = (drawPlaneHeight - mouseRay.origin.y) / mouseRay.direction.y;
-            var mousePosition = mouseRay.GetPoint(dstToDrawPlane);
-
-            if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 &&
-                guiEvent.modifiers == EventModifiers.None) {
-                HandleLeftMouseDown(mousePosition, voiceOverrideRoomEnterButton);
-            }
-        }
-
-        private void HandleLeftMouseDown(
-                Vector3 mousePosition,
-                VoiceOverrideRoomEnterButton voiceOverrideRoomEnterButton
-        ) {
-            if (Utilities.IsValid(voiceOverrideRoomEnterButton.VoiceOverrideRoom)) {
-                var roomGuiPosition =
-                        HandleUtility.WorldToGUIPoint(
-                                voiceOverrideRoomEnterButton.VoiceOverrideRoom.transform.position);
-                var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
-                bool clickCloseToRoomGameObject = Vector2.Distance(roomGuiPosition, mouseGuiPosition) < 10f;
-                if (clickCloseToRoomGameObject) {
-                    Selection.SetActiveObjectWithContext(
-                            voiceOverrideRoomEnterButton.VoiceOverrideRoom.gameObject,
-                            voiceOverrideRoomEnterButton.VoiceOverrideRoom
-                    );
-                    EditorGUIUtility.PingObject(voiceOverrideRoomEnterButton.VoiceOverrideRoom);
-                }
+        private static void SelectRoom(Vector3 mousePosition, UdonSharpBehaviour destination) {
+            var enterButton = (VoiceOverrideRoomEnterButton)destination;
+            if (Utilities.IsValid(enterButton.VoiceOverrideRoom)) {
+                EditorGUIHelper.TrySelectAtClick(mousePosition, enterButton.VoiceOverrideRoom);
             }
         }
     }

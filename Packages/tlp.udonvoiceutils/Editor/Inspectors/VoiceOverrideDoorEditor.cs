@@ -1,5 +1,6 @@
 using TLP.UdonUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
+using UdonSharp;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -51,7 +52,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     break;
                 default:
                 {
-                    HandleInput(guiEvent, voiceOverrideDoor);
+                    EditorGUIHelper.HandleInput(guiEvent, voiceOverrideDoor, SelectRoom);
                 }
                     break;
             }
@@ -80,31 +81,10 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
             Handles.Label(doorPosition - exitDirection, "Inside");
         }
 
-        private void HandleInput(Event guiEvent, VoiceOverrideDoor voiceOverrideDoor) {
-            var mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
-            float drawPlaneHeight = 0;
-            float dstToDrawPlane = (drawPlaneHeight - mouseRay.origin.y) / mouseRay.direction.y;
-            var mousePosition = mouseRay.GetPoint(dstToDrawPlane);
-
-            if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 &&
-                guiEvent.modifiers == EventModifiers.None) {
-                HandleLeftMouseDown(mousePosition, voiceOverrideDoor);
-            }
-        }
-
-        private void HandleLeftMouseDown(Vector3 mousePosition, VoiceOverrideDoor voiceOverrideDoor) {
+        private static void SelectRoom(Vector3 mousePosition, UdonSharpBehaviour destination) {
+            var voiceOverrideDoor = (VoiceOverrideDoor)destination;
             if (Utilities.IsValid(voiceOverrideDoor.VoiceOverrideRoom)) {
-                var roomGuiPosition =
-                        HandleUtility.WorldToGUIPoint(voiceOverrideDoor.VoiceOverrideRoom.transform.position);
-                var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
-                bool clickCloseToRoomGameObject = Vector2.Distance(roomGuiPosition, mouseGuiPosition) < 10f;
-                if (clickCloseToRoomGameObject) {
-                    Selection.SetActiveObjectWithContext(
-                            voiceOverrideDoor.VoiceOverrideRoom.gameObject,
-                            voiceOverrideDoor.VoiceOverrideRoom
-                    );
-                    EditorGUIUtility.PingObject(voiceOverrideDoor.VoiceOverrideRoom);
-                }
+                EditorGUIHelper.TrySelectAtClick(mousePosition, voiceOverrideDoor.VoiceOverrideRoom);
             }
         }
     }

@@ -3,6 +3,7 @@ using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Events;
 using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -165,7 +166,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             if (OverrideWithDynamicPrivacy.PrivacyChannelIds.ContainsKey(PlayerAddedPrivacyChannelId)) {
                 Error(
                         $"{nameof(OnLocalPlayerAdded)}: {nameof(PlayerAddedPrivacyChannelId)} " +
-                        $"{PlayerAddedPrivacyChannelId}is already in use by " +
+                        $"{PlayerAddedPrivacyChannelId} is already in use by " +
                         $"{OverrideWithDynamicPrivacy.GetScriptPathInScene()}");
                 return;
             }
@@ -202,7 +203,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 #if TLP_DEBUG
             else {
                 DebugLog(
-                        $"{nameof(OnLocalPlayerAdded)}: removed channel {nameof(PlayerAddedPrivacyChannelId)} {PlayerAddedPrivacyChannelId}");
+                        $"{nameof(OnLocalPlayerRemoved)}: removed channel {nameof(PlayerAddedPrivacyChannelId)} {PlayerAddedPrivacyChannelId}");
             }
 
 #endif
@@ -210,7 +211,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             if (OverrideWithDynamicPrivacy.PrivacyChannelIds.ContainsKey(PlayerExitedPrivacyChannelId)) {
                 Warn(
-                        $"{nameof(OnLocalPlayerAdded)}: {nameof(PlayerExitedPrivacyChannelId)} " +
+                        $"{nameof(OnLocalPlayerRemoved)}: {nameof(PlayerExitedPrivacyChannelId)} " +
                         $"{PlayerExitedPrivacyChannelId} is already in use by " +
                         $"{OverrideWithDynamicPrivacy.GetScriptPathInScene()}");
                 return;
@@ -221,7 +222,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             #region TLP_DEBUG
 #if TLP_DEBUG
             DebugLog(
-                    $"{nameof(OnLocalPlayerAdded)}: added channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerExitedPrivacyChannelId}");
+                    $"{nameof(OnLocalPlayerRemoved)}: added channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerExitedPrivacyChannelId}");
 #endif
             #endregion;
         }

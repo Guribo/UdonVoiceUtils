@@ -67,8 +67,8 @@ MonoBehaviour:
   OcclusionMask:
     serializedVersion: 2
     m_Bits: 2080
-  OcclusionFactor: 0
-  PlayerOcclusionFactor: 0
+  OcclusionFactor: 0.6
+  PlayerOcclusionFactor: 0.3
   ListenerDirectionality: 0
   PlayerDirectionality: 0
   EnableVoiceLowpass: 1
@@ -77,8 +77,8 @@ MonoBehaviour:
   VoiceGain: 15
   VoiceVolumetricRadius: 0
   ForceAvatarSpatialAudio: 0
-  AllowAvatarCustomAudioCurves: 1
-  AvatarNearRadius: 40
+  AllowAvatarCustomAudioCurves: 0
+  AvatarNearRadius: 0
   AvatarFarRadius: 40
   AvatarGain: 10
   AvatarVolumetricRadius: 0
@@ -768,8 +768,8 @@ MonoBehaviour:
   OcclusionMask:
     serializedVersion: 2
     m_Bits: 2080
-  OcclusionFactor: 0
-  PlayerOcclusionFactor: 0
+  OcclusionFactor: 0.6
+  PlayerOcclusionFactor: 0.3
   ListenerDirectionality: 0
   PlayerDirectionality: 0
   EnableVoiceLowpass: 1
@@ -778,8 +778,8 @@ MonoBehaviour:
   VoiceGain: 15
   VoiceVolumetricRadius: 0
   ForceAvatarSpatialAudio: 0
-  AllowAvatarCustomAudioCurves: 1
-  AvatarNearRadius: 40
+  AllowAvatarCustomAudioCurves: 0
+  AvatarNearRadius: 0
   AvatarFarRadius: 40
   AvatarGain: 10
   AvatarVolumetricRadius: 0
@@ -1312,8 +1312,8 @@ MonoBehaviour:
   OcclusionMask:
     serializedVersion: 2
     m_Bits: 2080
-  OcclusionFactor: 0
-  PlayerOcclusionFactor: 0
+  OcclusionFactor: 0.6
+  PlayerOcclusionFactor: 0.3
   ListenerDirectionality: 0
   PlayerDirectionality: 0
   EnableVoiceLowpass: 1
@@ -1322,8 +1322,8 @@ MonoBehaviour:
   VoiceGain: 15
   VoiceVolumetricRadius: 0
   ForceAvatarSpatialAudio: 0
-  AllowAvatarCustomAudioCurves: 1
-  AvatarNearRadius: 40
+  AllowAvatarCustomAudioCurves: 0
+  AvatarNearRadius: 0
   AvatarFarRadius: 40
   AvatarGain: 10
   AvatarVolumetricRadius: 0

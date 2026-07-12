@@ -2,13 +2,32 @@
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Extensions;
-using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
 using VRC.SDKBase;
 using VRC.Udon.Common.Enums;
 
+#if UNITY_EDITOR
+using TLP.UdonUtils.Editor.Core;
+using TLP.UdonVoiceUtils.Runtime.Examples;
+using UnityEditor;
+#endif
+
+#if UNITY_EDITOR
+namespace TLP.UdonVoiceUtils.Editor.Examples
+{
+    [CustomEditor(typeof(VoiceOverrideTriggerZone))]
+    public class VoiceOverrideTriggerZoneEditor : TlpBehaviourEditor
+    {
+        protected override string GetDescription() {
+            return "Adds or removes players from a PlayerAudioOverride when " +
+                   "entering or exiting a trigger zone.";
+        }
+    }
+}
+#endif
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     /// <summary>
@@ -90,7 +109,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
         }
         #endregion
-
 
         #region Overrides
         protected override bool SetupAndValidate() {

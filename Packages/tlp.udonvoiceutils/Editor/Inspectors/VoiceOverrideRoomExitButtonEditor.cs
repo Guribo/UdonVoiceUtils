@@ -1,6 +1,6 @@
 using TLP.UdonUtils.Editor.Core;
-using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
+using UdonSharp;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -49,41 +49,16 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     break;
                 default:
                 {
-                    HandleInput(guiEvent, voiceOverrideRoomExitButton);
+                    EditorGUIHelper.HandleInput(guiEvent, voiceOverrideRoomExitButton, SelectRoom);
                 }
                     break;
             }
         }
 
-
-        private void HandleInput(Event guiEvent, VoiceOverrideRoomExitButton voiceOverrideRoomExitButton) {
-            var mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
-            float drawPlaneHeight = 0;
-            float dstToDrawPlane = (drawPlaneHeight - mouseRay.origin.y) / mouseRay.direction.y;
-            var mousePosition = mouseRay.GetPoint(dstToDrawPlane);
-
-            if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 &&
-                guiEvent.modifiers == EventModifiers.None) {
-                HandleLeftMouseDown(mousePosition, voiceOverrideRoomExitButton);
-            }
-        }
-
-        private void HandleLeftMouseDown(
-                Vector3 mousePosition,
-                VoiceOverrideRoomExitButton voiceOverrideRoomExitButton
-        ) {
-            if (Utilities.IsValid(voiceOverrideRoomExitButton.VoiceOverrideRoom)) {
-                var roomGuiPosition =
-                        HandleUtility.WorldToGUIPoint(voiceOverrideRoomExitButton.VoiceOverrideRoom.transform.position);
-                var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
-                bool clickCloseToRoomGameObject = Vector2.Distance(roomGuiPosition, mouseGuiPosition) < 10f;
-                if (clickCloseToRoomGameObject) {
-                    Selection.SetActiveObjectWithContext(
-                            voiceOverrideRoomExitButton.VoiceOverrideRoom.gameObject,
-                            voiceOverrideRoomExitButton.VoiceOverrideRoom
-                    );
-                    EditorGUIUtility.PingObject(voiceOverrideRoomExitButton.VoiceOverrideRoom);
-                }
+        private static void SelectRoom(Vector3 mousePosition, UdonSharpBehaviour destination) {
+            var exitButton = (VoiceOverrideRoomExitButton)destination;
+            if (Utilities.IsValid(exitButton.VoiceOverrideRoom)) {
+                EditorGUIHelper.TrySelectAtClick(mousePosition, exitButton.VoiceOverrideRoom);
             }
         }
     }

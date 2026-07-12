@@ -2,39 +2,9 @@
 
 [![Total downloads](https://img.shields.io/github/downloads/Guribo/UdonVoiceUtils/total?style=flat-square&logo=appveyor)](https://github.com/Guribo/UdonVoiceUtils/releases)
 
-<!-- TOC -->
-* [Udon Voice Utilities](#udon-voice-utilities)
-  * [What is UVU?](#what-is-uvu)
-    * [TL;DR](#tldr)
-    * [Example use cases](#example-use-cases)
-    * [Where is it being used?](#where-is-it-being-used)
-  * [Getting started](#getting-started)
-    * [Versioning](#versioning)
-    * [Installation](#installation)
-    * [Minimal scene setup](#minimal-scene-setup)
-    * [Uninstall](#uninstall)
-      * [Via Tools (recommended)](#via-tools-recommended)
-      * [Manually via Filesystem](#manually-via-filesystem)
-    * [Enable Debug Mode](#enable-debug-mode)
-    * [Disable Debug Mode](#disable-debug-mode)
-    * [Test Mode](#test-mode)
-  * [Troubleshooting](#troubleshooting)
-    * [Errors after installation](#errors-after-installation)
-    * [*Something* is not working in the world](#something-is-not-working-in-the-world)
-    * [Occlusion is not working](#occlusion-is-not-working)
-  * [FAQ](#faq)
-    * [Can I use MeshColliders for occlusion?](#can-i-use-meshcolliders-for-occlusion)
-    * [How can I change the default/globally active settings?](#how-can-i-change-the-defaultglobally-active-settings)
-  * [References](#references)
-<!-- TOC -->
-
 ## What is UVU?
 
 **UdonVoiceUtils** is a selection of scripts and prefabs that can modify player audio settings in real time.
-
-### TL;DR
-
-Jump to [Installation](#installation) to get started... but I really recommend you read the given information here :)
 
 ### Example use cases
 
@@ -79,162 +49,32 @@ Jump to [Installation](#installation) to get started... but I really recommend y
 >
 > Note: I won't accept worlds that are not submitted by the world creator themselves
 
-## Getting started
+## Getting Started
 
-Since **UdonVoiceUtils 1.0.0** the package can be added to your projects
-via the **VRChat Creator Companion**.
+1. Install via [VPM](https://guribo.github.io/TLP/) (VRChat Creator Companion or ALCOM) → [Installation Guide](https://github.com/Guribo/UdonVoiceUtils/wiki/Installation)
+2. Add to scene → [Minimal Scene Setup](https://github.com/Guribo/UdonVoiceUtils/wiki/Minimal-Scene-Setup)
+3. Play in editor with ClientSim
 
-### Versioning
+## Documentation
 
-This package is versioned using [Semantic Version](https://semver.org/).
+Full documentation lives on the [Wiki](https://github.com/Guribo/UdonVoiceUtils/wiki):
 
-The used pattern MAJOR.MINOR.PATCH indicates:
-
-1. MAJOR version: incompatible API changes occurred
-    - Implication: after updating backup, check and update your scenes/scripts as needed
-2. MINOR version: new functionality has been added in a backward compatible manner
-    - Implication: after updating check and update your usages if needed
-3. PATCH version: backward compatible bug fixes were implemented
-    - Implication: after updating remove potential workarounds you added
-
-### Installation
-
-1. Install/Add VRChat World SDK 3.10.3 or higher to your project
-2. Install/Add TLP UdonVoiceUtils to your project: https://guribo.github.io/TLP/
-3. Start your project and open the scene `Packages/tlp.udonvoiceutils/Runtime/Scenes/Demo.unity`
-4. With ClientSim enabled, click the Play button in Unity
-5. Check for any errors in the console (only one regarding AudioListener is expected)
-6. If there is any problems, please check the [Troubleshooting](#troubleshooting) section below
-7. To set up your own world, start with the [Minimal Scene Setup](#minimal-scene-setup)
-
-> **Additional Notes:**  
-> Please follow the official guides created by VRChat to create a Unity World Creation project using the VRChat Create
-> Companion.  
-> The example scripts and prefabs can be found in `Packages/tlp.udonvoiceutils/Runtime/Prefabs/Examples`.
->
->  **Please check out the [Wiki](https://github.com/Guribo/UdonVoiceUtils/wiki) for additional information on the
-available components, features and prefabs before creating your own worlds. It mentions limitations and things to take
-into account when integrating UVU into a VRChat world.**
->
-> To see (and hear) how any of these features can be used feel free to test the example world with a friend or visit the
-> public version [in VRChat](https://vrchat.com/home/launch?worldId=wrld_7ec7bbdd-ba81-4564-985a-c79dfc9eaca7).
-
-### Minimal scene setup
-
-1. In your **Project** windows in the search window type in "**TLP_**"
-2. Filter the search results using the **Dropdown menu**, select: **In Packages**
-3. Add **TLP_Essentials** prefab to your scene to get the core components
-   - Note: `WorldVersionCheck` inside the prefab is optional and can be deleted from the scene
-4. Add **TLP_PlayerAudioController** - *core system of UVU (mandatory)*
-   - Alternatively you can use the prefab **TLP_PlayerAudioCompleteWithUi** if you want the menu as well
-
-5. The minimum setup is now complete, but has no effect on any player by default.
-6. From here on out you can either modify the global settings or add some of the example prefabs and connect them to the
-   controller to create what you need. In addition, you can also create your own custom solutions that rely on UVU's
-   audio overriding capabilities.
-
-### Uninstall
-
-#### Via Tools (recommended)
-
-1. Remove TLP UdonUtils from your project via VCC or [ALCOM](https://vrc-get.anatawa12.com/alcom/)
-2. Go to **Edit > Project Settings > Player > Script Compilation** and remove `TLP_UDONVOICEUTILS` from the list
-3. You may also remove anything else starting with `TLP_`
-    1. Only applies if you used other TLP packages or enabled debug/test mode
-
-#### Manually via Filesystem
-
-1. Remove the `Packages/tlp.udonvoiceutils` folder from your project
-2. Remove the following lines from `Packages/packages-lock.json`:
-   ```json
-    "tlp.udonvoiceutils": {
-      "version": "file:tlp.udonvoiceutils",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-   ```
-3. Remove in a similar fassion from the `Packages/vpm-manifest.json` if present in there
-4. In the Unity project go to **Edit > Project Settings > Player > Script Compilation** and remove `TLP_UDONVOICEUTILS` from the list
-5. You may also remove anything else starting with `TLP_`
-    1. Only applies if you used other TLP packages or enabled debug/test mode
-
-### Enable Debug Mode
-
-> Disclaimer: There is no negative performance impact when debug mode is disabled
-> as the logging code is not compiled into builds.
-
-Debug mode is disabled by default. When enabled it will log additional information to the console.
-This logging is quite excessive and should only be enabled for debugging purposes.
-If you see no debug logs in the console/log files, ensure that the
-
-1. Go to **Edit > Project Settings > Player > Script Compilation** and add `TLP_DEBUG` to the list
-2. Find the `TLP_Logger` prefab in your scene
-3. Set to logging severity `Debug`, be default it is set to `Info`.
-
-### Disable Debug Mode
-
-1. Go to **Edit > Project Settings > Player > Script Compilation** and remove `TLP_DEBUG` from the list
-2. Find the `TLP_Logger` prefab in your scene and set to logging severity `Info` or higher
-
-### Test Mode
-
-Similar to debug mode, test mode is disabled by default but can be enabled
-by adding `TLP_UNIT_TESTING` to the list of script compilation symbols.
-
-Test mode is intended to be used for unit testing and should not be enabled in production builds.
-It will enable certain workarounds for parts of the VRChat SDK that can not easily be mocked.
-
-> Note: Releases of UdonUtils don't contain the unit tests used for development as they are not relevant for 99% of users.
-
-## Troubleshooting
-
-### Errors after installation
-
-1. You might have updated to a version of UdonUtils that is not yet compatible with UdonVoiceUtils
-    1. Remove UdonVoiceUtils and UdonUtils from your project via the Creator companion
-    2. Add **ONLY** UdonVoiceUtils again *(This will install the latest compatible version of UdonUtils for you as
-       well)*
-
-### *Something* is not working in the world
-
-1. Always playtest in the Unity editor using client sim!
-2. Check in the console for any errors
-    1. Note that there should only be a single error regarding an AudioListener, which is expected and by design
-3. Errors produced by my TLP packages can be clicked on and they will highlight the GameObject in your scene hierarchy
-   that produced the error
-4. Always start with the first error at the top!
-5. Read the error messages, they usually tell you what is wrong.
-    1. Usually it is something like `<Variable> is not set`
-    2. Check that script and look for the variable name mentioned
-    3. Set the missing variable, usually the related script that needs to be set there is part of the prefab
-    4. Sometimes it makes sense to just start fresh with a clean prefab!
-
-### Occlusion is not working
-
-1. Make sure your colliders are on the `Environment` layer!
-2. Walls must have a collision surface on either side to work in both directions!
-    1. This is the case when using e.g. basic BoxColliders
-
-## FAQ
-
-### Can I use MeshColliders for occlusion?
-
-**YES**
-
-### How can I change the default/globally active settings?
-
-1. Navigate to your PlayerAudioController prefab in your scene
-2. Find the GameObject `Configurations/LocalConfiguration` inside it
-3. Change its settings to your liking (this GameObject holds the active settings)
-4. when using the menu: apply the same settings to the `Configurations/DefaultConfiguration`
-   GameObject (this allows resetting the global settings back to your particular default values)
+- [Installation](https://github.com/Guribo/UdonVoiceUtils/wiki/Installation) | [Scene Setup](https://github.com/Guribo/UdonVoiceUtils/wiki/Minimal-Scene-Setup) | [Troubleshooting](https://github.com/Guribo/UdonVoiceUtils/wiki/Troubleshooting)
+- [Architecture](https://github.com/Guribo/UdonVoiceUtils/wiki/Architecture) | [Occlusion](https://github.com/Guribo/UdonVoiceUtils/wiki/Occlusion) | [Voice Directionality](https://github.com/Guribo/UdonVoiceUtils/wiki/Voice-Directionality)
+- [Private Voice Channels](https://github.com/Guribo/UdonVoiceUtils/wiki/Private-Voice-Channels) | [Reverb](https://github.com/Guribo/UdonVoiceUtils/wiki/How-to-Set-Up-Reverb)
+- [Tutorial #1: Voice Override Zone](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%231-How-to-create-a-voice-override-zone) | [Tutorial #2: Private Channels](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%232-Setting-up-private-voice-channels) | [Tutorial #3: World Audio](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%233-Setting-up-world-audio)
+- [Debug and Test Mode](https://github.com/Guribo/UdonVoiceUtils/wiki/Debug-and-Test-Mode) | [Updating](https://github.com/Guribo/UdonVoiceUtils/wiki/Updating) | [Uninstall](https://github.com/Guribo/UdonVoiceUtils/wiki/Uninstall) | [FAQ](https://github.com/Guribo/UdonVoiceUtils/wiki/FAQ)
 
 ## References
 
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
+### [6.0.0] - 2026-07-12
+
+#### 🚀 Features
+
+- [**breaking**] Add world audio support (occlusion, reverb, private channels), fix avatar audio
 ### [5.1.4] - 2026-05-02
 
 #### 🐛 Bug Fixes

@@ -1007,7 +1007,7 @@ MonoBehaviour:
       Data: 60|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: TLP.UdonVoiceUtils.Runtime.Core.PlayerAudioOverride, TLP.UdonVoiceUtils.Runtime
+      Data: TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerAudioOverride, TLP.UdonVoiceUtils.Runtime
     - Name: 
       Entry: 8
       Data: 

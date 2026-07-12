@@ -119,7 +119,8 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                 default:
                 {
                     foreach (var udonSharpBehaviour in _relevantBehaviours) {
-                        HandleInput(guiEvent, udonSharpBehaviour);
+                        EditorGUIHelper.HandleInput(guiEvent, udonSharpBehaviour,
+                                EditorGUIHelper.TrySelectAtClick);
                     }
                 }
                     break;
@@ -131,51 +132,25 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
 
 
             foreach (var udonBehaviour in Resources.FindObjectsOfTypeAll<UdonBehaviour>()) {
-                foreach (var betterPlayerAudioOverride in udonBehaviour.gameObject.GetComponents<VoiceOverrideDoor>()) {
-                    if (betterPlayerAudioOverride.VoiceOverrideRoom == voiceOverrideRoom) {
-                        _relevantBehaviours.Add(betterPlayerAudioOverride);
+                foreach (var voiceOverrideDoor in udonBehaviour.gameObject.GetComponents<VoiceOverrideDoor>()) {
+                    if (voiceOverrideDoor.VoiceOverrideRoom == voiceOverrideRoom) {
+                        _relevantBehaviours.Add(voiceOverrideDoor);
                     }
                 }
 
-                foreach (var betterPlayerAudioOverride in udonBehaviour.gameObject
+                foreach (var exitButton in udonBehaviour.gameObject
                                  .GetComponents<VoiceOverrideRoomExitButton>()) {
-                    if (betterPlayerAudioOverride.VoiceOverrideRoom == voiceOverrideRoom) {
-                        _relevantBehaviours.Add(betterPlayerAudioOverride);
+                    if (exitButton.VoiceOverrideRoom == voiceOverrideRoom) {
+                        _relevantBehaviours.Add(exitButton);
                     }
                 }
 
-                foreach (var betterPlayerAudioOverride in udonBehaviour.gameObject
+                foreach (var enterButton in udonBehaviour.gameObject
                                  .GetComponents<VoiceOverrideRoomEnterButton>()) {
-                    if (betterPlayerAudioOverride.VoiceOverrideRoom == voiceOverrideRoom) {
-                        _relevantBehaviours.Add(betterPlayerAudioOverride);
+                    if (enterButton.VoiceOverrideRoom == voiceOverrideRoom) {
+                        _relevantBehaviours.Add(enterButton);
                     }
                 }
-            }
-        }
-
-        private void HandleInput(Event guiEvent, UdonSharpBehaviour destination) {
-            var mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
-            float drawPlaneHeight = 0;
-            float dstToDrawPlane = (drawPlaneHeight - mouseRay.origin.y) / mouseRay.direction.y;
-            var mousePosition = mouseRay.GetPoint(dstToDrawPlane);
-
-            if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 &&
-                guiEvent.modifiers == EventModifiers.None) {
-                HandleLeftMouseDown(mousePosition, destination);
-            }
-        }
-
-        private void HandleLeftMouseDown(Vector3 mousePosition, UdonSharpBehaviour destination) {
-            var roomGuiPosition =
-                    HandleUtility.WorldToGUIPoint(destination.transform.position);
-            var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
-            bool clickCloseToDestinationGameObject = Vector2.Distance(roomGuiPosition, mouseGuiPosition) < 10f;
-            if (clickCloseToDestinationGameObject) {
-                Selection.SetActiveObjectWithContext(
-                        destination.gameObject,
-                        destination
-                );
-                EditorGUIUtility.PingObject(destination);
             }
         }
     }

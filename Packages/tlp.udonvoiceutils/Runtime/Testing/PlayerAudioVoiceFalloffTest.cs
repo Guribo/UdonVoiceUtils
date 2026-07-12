@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime.Testing;
-using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -41,8 +41,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
         [Range(0, 180f)]
         public float ListenerAngle;
 
-        [FormerlySerializedAs("BetterPlayerAudio")]
-        [FormerlySerializedAs("betterPlayerAudio")]
         public PlayerAudioController PlayerAudio;
 
         private int _currentStep;
@@ -169,7 +167,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
 #endif
             #endregion
 
-            if(Status != TestCaseStatus.Running) return;
+            if (Status != TestCaseStatus.Running) return;
 
             if (!Utilities.IsValid(_voiceEmitter)) {
                 Error("Voice emitting player is invalid");
@@ -202,6 +200,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
             DebugLog(nameof(CleanUpTest));
 #endif
             #endregion
+
             if (!Utilities.IsValid(_voiceEmitter)) {
                 Error("Voice emitting player is invalid");
                 TestController.TestCleanedUp(false);

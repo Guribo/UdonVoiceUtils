@@ -3,7 +3,7 @@ using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Player;
-using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;

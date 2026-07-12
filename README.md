@@ -61,8 +61,8 @@ Full documentation lives on the [Wiki](https://github.com/Guribo/UdonVoiceUtils/
 
 - [Installation](https://github.com/Guribo/UdonVoiceUtils/wiki/Installation) | [Scene Setup](https://github.com/Guribo/UdonVoiceUtils/wiki/Minimal-Scene-Setup) | [Troubleshooting](https://github.com/Guribo/UdonVoiceUtils/wiki/Troubleshooting)
 - [Architecture](https://github.com/Guribo/UdonVoiceUtils/wiki/Architecture) | [Occlusion](https://github.com/Guribo/UdonVoiceUtils/wiki/Occlusion) | [Voice Directionality](https://github.com/Guribo/UdonVoiceUtils/wiki/Voice-Directionality)
-- [Private Voice Channels](https://github.com/Guribo/UdonVoiceUtils/wiki/Private-Voice-Channels) | [Reverb](https://github.com/Guribo/UdonVoiceUtils/wiki/Reverb-in-VRChat) | [Performance](https://github.com/Guribo/UdonVoiceUtils/wiki/Performance)
-- [Tutorial #1: Voice Override Zone](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%231-How-to-create-a-voice-override-zone) | [Tutorial #2: Private Channels](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%232-Setting-up-private-voice-channels)
+- [Private Voice Channels](https://github.com/Guribo/UdonVoiceUtils/wiki/Private-Voice-Channels) | [Reverb](https://github.com/Guribo/UdonVoiceUtils/wiki/How-to-Set-Up-Reverb)
+- [Tutorial #1: Voice Override Zone](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%231-How-to-create-a-voice-override-zone) | [Tutorial #2: Private Channels](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%232-Setting-up-private-voice-channels) | [Tutorial #3: World Audio](https://github.com/Guribo/UdonVoiceUtils/wiki/Tutorial-%233-Setting-up-world-audio)
 - [Debug and Test Mode](https://github.com/Guribo/UdonVoiceUtils/wiki/Debug-and-Test-Mode) | [Updating](https://github.com/Guribo/UdonVoiceUtils/wiki/Updating) | [Uninstall](https://github.com/Guribo/UdonVoiceUtils/wiki/Uninstall) | [FAQ](https://github.com/Guribo/UdonVoiceUtils/wiki/FAQ)
 
 ## References
@@ -70,8 +70,11 @@ Full documentation lives on the [Wiki](https://github.com/Guribo/UdonVoiceUtils/
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
-## Changelog
+### [6.0.0] - 2026-07-12
 
+#### 🚀 Features
+
+- [**breaking**] Add world audio support (occlusion, reverb, private channels), fix avatar audio
 ### [5.1.4] - 2026-05-02
 
 #### 🐛 Bug Fixes

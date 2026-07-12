@@ -1223,7 +1223,7 @@ MonoBehaviour:
       Data: 72|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: TLP.UdonVoiceUtils.Runtime.Core.PlayerAudioController, TLP.UdonVoiceUtils.Runtime
+      Data: TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerAudioController, TLP.UdonVoiceUtils.Runtime
     - Name: 
       Entry: 8
       Data: 

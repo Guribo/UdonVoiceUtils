@@ -3,12 +3,31 @@ using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Sync;
-using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using TLP.UdonVoiceUtils.Runtime.Examples.Microphone;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
+#if UNITY_EDITOR
+using TLP.UdonUtils.Editor.Core;
+using TLP.UdonVoiceUtils.Runtime.Examples;
+using UnityEditor;
+#endif
+
+#if UNITY_EDITOR
+namespace TLP.UdonVoiceUtils.Editor.Examples
+{
+    [CustomEditor(typeof(PickupMicrophone))]
+    public class PickupMicrophoneEditor : TlpBehaviourEditor
+    {
+        protected override string GetDescription() {
+            return "Synced pickup that applies a PlayerAudioOverride to " +
+                   "whoever holds the microphone.";
+        }
+    }
+}
+#endif
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
@@ -168,8 +187,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (!PlayerAudioOverride.AddPlayer(newMicUser)) {
-                Error($"Failed to add player {newMicUser.DisplayNameUnique()} " +
-                      $"to {PlayerAudioOverride.GetScriptPathInScene()}");
+                Error(
+                        $"Failed to add player {newMicUser.DisplayNameUnique()} " +
+                        $"to {PlayerAudioOverride.GetScriptPathInScene()}");
             }
         }
 

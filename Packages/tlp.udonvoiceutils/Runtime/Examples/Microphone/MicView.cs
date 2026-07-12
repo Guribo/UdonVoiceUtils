@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
-using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;

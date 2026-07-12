@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TLP.UdonUtils.Editor.Core;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UdonSharpEditor;
 using UnityEditor;
@@ -44,17 +45,16 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     UpdateRelevantBehaviours();
 
                     foreach (var playerAudioOverride in _relevantBehaviours) {
-                        // TODO refactor redundant code
                         if (!playerAudioOverride) {
                             continue;
                         }
-                        var doorPosition = playerAudioOverride.transform.position;
+                        var overridePosition = playerAudioOverride.transform.position;
 
                         Handles.color = Color.white;
-                        Handles.DrawDottedLine(playerAudioController.transform.position, doorPosition, 2);
+                        Handles.DrawDottedLine(playerAudioController.transform.position, overridePosition, 2);
 
                         GUI.color = Color.white;
-                        Handles.Label(doorPosition, playerAudioOverride.transform.GetPathInScene());
+                        Handles.Label(overridePosition, playerAudioOverride.transform.GetPathInScene());
                     }
                 }
                     break;
@@ -66,7 +66,8 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                 default:
                 {
                     foreach (var udonSharpBehaviour in _relevantBehaviours) {
-                        HandleInput(guiEvent, udonSharpBehaviour);
+                        EditorGUIHelper.HandleInput(guiEvent, udonSharpBehaviour,
+                                EditorGUIHelper.TrySelectAtClick);
                     }
                 }
                     break;
@@ -109,32 +110,6 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
 #if TLP_DEBUG
             Debug.Log($"{nameof(_relevantBehaviours)}: {_relevantBehaviours.Count}");
 #endif
-        }
-
-        private void HandleInput(Event guiEvent, UdonSharpBehaviour destination) {
-            var mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
-            float drawPlaneHeight = 0;
-            float dstToDrawPlane = (drawPlaneHeight - mouseRay.origin.y) / mouseRay.direction.y;
-            var mousePosition = mouseRay.GetPoint(dstToDrawPlane);
-
-            if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 &&
-                guiEvent.modifiers == EventModifiers.None) {
-                HandleLeftMouseDown(mousePosition, destination);
-            }
-        }
-
-        private void HandleLeftMouseDown(Vector3 mousePosition, UdonSharpBehaviour destination) {
-            var roomGuiPosition =
-                    HandleUtility.WorldToGUIPoint(destination.transform.position);
-            var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
-            bool clickCloseToDestinationGameObject = Vector2.Distance(roomGuiPosition, mouseGuiPosition) < 10f;
-            if (clickCloseToDestinationGameObject) {
-                Selection.SetActiveObjectWithContext(
-                        destination.gameObject,
-                        destination
-                );
-                EditorGUIUtility.PingObject(destination);
-            }
         }
     }
 }

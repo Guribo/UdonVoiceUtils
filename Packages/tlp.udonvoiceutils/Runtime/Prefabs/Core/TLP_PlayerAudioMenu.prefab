@@ -305,7 +305,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Player Occlusion
 
-    (0.0 = OFF)'
+    (0 = no occlusion, 1 = 100% muted)'
 --- !u!1 &5281503764186759841
 GameObject:
   m_ObjectHideFlags: 0
@@ -6624,7 +6624,7 @@ GameObject:
   - component: {fileID: 8613197021017938122}
   - component: {fileID: 8613197021017938125}
   m_Layer: 0
-  m_Name: OcclusionText
+  m_Name: ClarityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6690,7 +6690,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Occlusion (0.0 = OFF)
+  m_Text: 'Environment Occlusion (Fallback;
+
+    0 = no occlusion, 1 = 100% muted)'
 --- !u!1 &8613197021021199149
 GameObject:
   m_ObjectHideFlags: 0
@@ -8046,7 +8048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8613197021405047401}
   m_Layer: 0
-  m_Name: Occlusion
+  m_Name: Clarity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

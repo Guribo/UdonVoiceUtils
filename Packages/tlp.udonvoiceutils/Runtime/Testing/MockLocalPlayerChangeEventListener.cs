@@ -1,4 +1,3 @@
-#if !COMPILER_UDONSHARP && UNITY_EDITOR
 using JetBrains.Annotations;
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Testing;
@@ -47,4 +46,3 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
         }
     }
 }
-#endif

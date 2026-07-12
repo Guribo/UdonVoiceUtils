@@ -3,13 +3,32 @@ using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Player;
-using TLP.UdonVoiceUtils.Runtime.Core;
+using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDKBase;
 using VRC.Udon.Common;
 
+#if UNITY_EDITOR
+using TLP.UdonUtils.Editor.Core;
+using TLP.UdonVoiceUtils.Runtime.Examples;
+using UnityEditor;
+#endif
+
+#if UNITY_EDITOR
+namespace TLP.UdonVoiceUtils.Editor.Examples
+{
+    [CustomEditor(typeof(AdjustableGain))]
+    public class AdjustableGainEditor : TlpBehaviourEditor
+    {
+        protected override string GetDescription() {
+            return "Synced UI slider controlling voice gain on multiple PlayerAudioOverrides. " +
+                   "Optionally restricts control to whitelisted players.";
+        }
+    }
+}
+#endif
 namespace TLP.UdonVoiceUtils.Runtime.Examples
 {
     /// <summary>
@@ -32,14 +51,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         [UdonSynced]
         private float _syncedGain;
 
-        public float Gain = 15f; // VRChat default
+        [Tooltip("Voice gain applied to all ControlledOverrides. VRChat range 0–24.")]
+        public float Gain = 15f;
         #endregion
 
         #region Dependencies
         [Tooltip("Optional, can be empty")]
         public PlayerBlackList PlayersAllowedToControl;
 
+        [Tooltip("PlayerAudioOverride components whose voice gain is controlled by this slider.")]
         public PlayerAudioOverride[] ControlledOverrides;
+
+        [Tooltip("Unity UI Slider whose value maps to the voice gain.")]
         public Slider Slider;
         #endregion
 
