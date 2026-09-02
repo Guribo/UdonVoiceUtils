@@ -18,7 +18,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(OccludedEmitter))]
     public class OccludedEmitterEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Per-emitter audio lifecycle controller. Manages importance calculation, " +
                    "reverb/lowpass updates, GameObject activation/deactivation for culled sources, " +
                    "and privacy channel gating. One per audible audio source in the scene.";
@@ -88,45 +88,45 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            var worldAudioController = VoiceUtils.FindWorldAudioController();
+            var worldAudioController = VoiceUtils._FindWorldAudioController();
             if (!Utilities.IsValid(worldAudioController)) {
                 return false;
             }
 
             _emitterRegistry = worldAudioController.EmitterRegistry;
-            if (!IsSet(_emitterRegistry, nameof(_emitterRegistry))) {
+            if (!_IsSet(_emitterRegistry, nameof(_emitterRegistry))) {
                 return false;
             }
 
             _audioSource = gameObject.GetComponent<AudioSource>();
-            if (!IsSet(_audioSource, nameof(_audioSource))) {
+            if (!_IsSet(_audioSource, nameof(_audioSource))) {
                 return false;
             }
 
             _reverbController = gameObject.GetComponent<ReverbController>();
-            if (!IsSet(_reverbController, nameof(_reverbController))) {
+            if (!_IsSet(_reverbController, nameof(_reverbController))) {
                 return false;
             }
 
             _audioStateController = gameObject.GetComponent<AudioSourceStateController>();
-            if (!IsSet(_audioStateController, nameof(_audioStateController))) {
+            if (!_IsSet(_audioStateController, nameof(_audioStateController))) {
                 return false;
             }
 
 #if TLP_DEBUG
-            if (!IsSet(DebugRenderer, nameof(DebugRenderer))) {
+            if (!_IsSet(DebugRenderer, nameof(DebugRenderer))) {
                 return false;
             }
 
-            InitializeDebugVisuals();
+            _InitializeDebugVisuals();
 #endif
 
-            _emitterRegistry.Add(this);
+            _emitterRegistry._Add(this);
             return true;
         }
         #endregion
@@ -137,32 +137,32 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                 return;
             }
 
-            _emitterRegistry.Remove(this);
+            _emitterRegistry._Remove(this);
         }
         #endregion
 
         #region Public API
         public float CachedImportance { get; private set; }
 
-        public void RefreshInTree(AvlTree avlTree, int maxAudibleSources) {
+        public void _RefreshInTree(AvlTree avlTree, int maxAudibleSources) {
             if (!HasStartedOk) {
                 return;
             }
 
-            float emitterCachedImportance = CalculateImportance();
-            avlTree.Remove(this);
+            float emitterCachedImportance = _CalculateImportance();
+            avlTree._Remove(this);
 
             if (_privacyCulled) {
                 // ensure privacy culled emitters are always below non-privacy culled emitters in the tree,
                 // even if they have higher importance
-                var entry = (OccludedEmitter)avlTree.Get(maxAudibleSources);
+                var entry = (OccludedEmitter)avlTree._Get(maxAudibleSources);
                 if (Utilities.IsValid(entry)) {
                     emitterCachedImportance = Mathf.Max(emitterCachedImportance, entry.CachedImportance);
                 }
             }
 
             CachedImportance = emitterCachedImportance;
-            avlTree.Add(this);
+            avlTree._Add(this);
         }
 
         /// <summary>
@@ -172,13 +172,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         /// <param name="maxAudibleSources"></param>
         /// <param name="lowestPrioActiveEmitter">the lowest priority (yet still audible) emitter</param>
         /// <returns></returns>
-        public bool IsAudible(AvlTree avlTree, int maxAudibleSources, out OccludedEmitter lowestPrioActiveEmitter) {
+        public bool _IsAudible(AvlTree avlTree, int maxAudibleSources, out OccludedEmitter lowestPrioActiveEmitter) {
             if (!HasStartedOk || _privacyCulled) {
                 lowestPrioActiveEmitter = null;
                 return false;
             }
 
-            lowestPrioActiveEmitter = (OccludedEmitter)avlTree.Get(maxAudibleSources);
+            lowestPrioActiveEmitter = (OccludedEmitter)avlTree._Get(maxAudibleSources);
             if (!Utilities.IsValid(lowestPrioActiveEmitter)) {
                 return true;
             }
@@ -186,9 +186,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             return lowestPrioActiveEmitter.CachedImportance > CachedImportance;
         }
 
-        public float CalculateImportance() {
+        public float _CalculateImportance() {
             var trackingData = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-            return VoiceUtils.CalculateImportance(
+            return VoiceUtils._CalculateImportance(
                     transform.position,
                     trackingData.position,
                     _audioSource,
@@ -200,23 +200,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         }
 
         /// <param name="clarity">0-1, when at 1: audio source is least affected by filters</param>
-        public void UpdateAudioSourceState(
+        public void _UpdateAudioSourceState(
                 float partition,
                 bool cull,
                 bool privacyCulled,
                 float clarity
         ) {
             if (cull) {
-                _audioStateController.Cull();
+                _audioStateController._Cull();
 
                 // This is an additional layer that applies for AudioSources controlled by Unity videoplayers as
                 // regular culling doesn't seem to have any effect.
                 // Additionally, audio sources controlled by Unity videoplayer must not be disabled when culled as
                 // it breaks audio filters when no longer culled afterwards.
                 // Videos would need to be restarted to fix that.
-                _reverbController.UpdateReverb(0, 0);
+                _reverbController._UpdateReverb(0, 0);
 #if TLP_DEBUG
-                UpdateDebugVisuals(1);
+                _UpdateDebugVisuals(1);
 #endif
                 if (DisableGameObjectWhenCulled) {
                     gameObject.SetActive(false);
@@ -229,20 +229,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             _privacyCulled = false;
 
 #if TLP_DEBUG
-            UpdateDebugVisuals(partition);
+            _UpdateDebugVisuals(partition);
 #endif
 
             if (DisableGameObjectWhenCulled && !gameObject.activeSelf) {
                 gameObject.SetActive(true);
             }
 
-            _audioStateController.Reactivate();
-            _reverbController.UpdateReverb(CalculateHeadDistance(), clarity);
+            _audioStateController._Reactivate();
+            _reverbController._UpdateReverb(_CalculateHeadDistance(), clarity);
         }
         #endregion
 
         #region Internal
-        private float CalculateHeadDistance() {
+        private float _CalculateHeadDistance() {
             var trackingData = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
             var headPosition = trackingData.position;
             float distance = Vector3.Distance(transform.position, headPosition);
@@ -254,12 +254,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         private MaterialPropertyBlock _propertyBlock;
         private float _lastPartition;
 
-        private void InitializeDebugVisuals() {
+        private void _InitializeDebugVisuals() {
             _propertyBlock = new MaterialPropertyBlock();
             _sColor = VRCShader.PropertyToID("_Color");
         }
 
-        private void UpdateDebugVisuals(float partition) {
+        private void _UpdateDebugVisuals(float partition) {
             if (Mathf.Approximately(_lastPartition, partition)) {
                 return;
             }

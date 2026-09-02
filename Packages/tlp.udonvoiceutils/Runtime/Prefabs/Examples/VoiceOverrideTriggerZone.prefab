@@ -285,7 +285,7 @@ MonoBehaviour:
   Listeners: []
   RaiseOnEnable: 0
   RaiseOnStart: 0
-  ListenerMethod: OnPlayerListUpdated
+  ListenerMethod: _OnPlayerListUpdated
   FastSync: 0
   Calls: 0
 --- !u!114 &2852579828967926198

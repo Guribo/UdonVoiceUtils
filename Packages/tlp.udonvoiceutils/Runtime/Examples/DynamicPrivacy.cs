@@ -2,7 +2,6 @@
 using TLP.UdonUtils.Runtime;
 using TLP.UdonUtils.Runtime.Common;
 using TLP.UdonUtils.Runtime.Events;
-using TLP.UdonVoiceUtils.Runtime.Core;
 using TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio;
 using UdonSharp;
 using UnityEngine;
@@ -20,7 +19,7 @@ namespace TLP.UdonVoiceUtils.Editor.Examples
     [CustomEditor(typeof(DynamicPrivacy))]
     public class DynamicPrivacyEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Dynamically manages privacy channels for voice communication based " +
                    "on player presence. Automatically adds/removes a single privacy channel " +
                    "ID when local players enters or exits the monitored area, " +
@@ -60,7 +59,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public void OnEnable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnEnable));
+            _DebugLog(nameof(OnEnable));
 #endif
             #endregion
 
@@ -68,20 +67,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!LocalPlayerAdded.AddListenerVerified(this, nameof(OnLocalPlayerAdded))) {
-                ErrorAndDisableComponent($"Failed to listen to {nameof(LocalPlayerAdded)}");
+            if (!LocalPlayerAdded._AddListenerVerified(this, nameof(_OnLocalPlayerAdded))) {
+                _ErrorAndDisableComponent($"Failed to listen to {nameof(LocalPlayerAdded)}");
                 return;
             }
 
-            if (!LocalPlayerRemoved.AddListenerVerified(this, nameof(OnLocalPlayerRemoved))) {
-                ErrorAndDisableComponent($"Failed to listen to {nameof(LocalPlayerRemoved)}");
+            if (!LocalPlayerRemoved._AddListenerVerified(this, nameof(_OnLocalPlayerRemoved))) {
+                _ErrorAndDisableComponent($"Failed to listen to {nameof(LocalPlayerRemoved)}");
             }
         }
 
         public void OnDisable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnDisable));
+            _DebugLog(nameof(OnDisable));
 #endif
             #endregion
 
@@ -89,62 +88,62 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!LocalPlayerAdded.RemoveListener(this, true)) {
-                ErrorAndDisableComponent($"Failed to stop listening to {nameof(LocalPlayerAdded)}");
+            if (!LocalPlayerAdded._RemoveListener(this, true)) {
+                _ErrorAndDisableComponent($"Failed to stop listening to {nameof(LocalPlayerAdded)}");
             }
 
-            if (!LocalPlayerRemoved.RemoveListener(this, true)) {
-                ErrorAndDisableComponent($"Failed to stop listening to {nameof(LocalPlayerRemoved)}");
+            if (!LocalPlayerRemoved._RemoveListener(this, true)) {
+                _ErrorAndDisableComponent($"Failed to stop listening to {nameof(LocalPlayerRemoved)}");
             }
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(LocalPlayerAdded, nameof(LocalPlayerAdded))) {
+            if (!_IsSet(LocalPlayerAdded, nameof(LocalPlayerAdded))) {
                 return false;
             }
 
-            if (!IsSet(LocalPlayerRemoved, nameof(LocalPlayerRemoved))) {
+            if (!_IsSet(LocalPlayerRemoved, nameof(LocalPlayerRemoved))) {
                 return false;
             }
 
-            if (!IsSet(OverrideWithDynamicPrivacy, nameof(OverrideWithDynamicPrivacy))) {
+            if (!_IsSet(OverrideWithDynamicPrivacy, nameof(OverrideWithDynamicPrivacy))) {
                 return false;
             }
 
             if (!OverrideWithDynamicPrivacy.HasStartedOk) {
-                Error($"{nameof(OverrideWithDynamicPrivacy)} not initialized");
+                _Error($"{nameof(OverrideWithDynamicPrivacy)} not initialized");
                 return false;
             }
 
             return true;
         }
 
-        public override void OnEvent(string eventName) {
+        public override void _OnEvent(string eventName) {
             switch (eventName) {
-                case nameof(OnLocalPlayerAdded):
-                    OnLocalPlayerAdded();
+                case nameof(_OnLocalPlayerAdded):
+                    _OnLocalPlayerAdded();
                     break;
-                case nameof(OnLocalPlayerRemoved):
-                    OnLocalPlayerRemoved();
+                case nameof(_OnLocalPlayerRemoved):
+                    _OnLocalPlayerRemoved();
                     break;
                 default:
-                    base.OnEvent(eventName);
+                    base._OnEvent(eventName);
                     break;
             }
         }
         #endregion
 
         #region Events
-        internal void OnLocalPlayerAdded() {
+        internal void _OnLocalPlayerAdded() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnLocalPlayerAdded));
+            _DebugLog(nameof(_OnLocalPlayerAdded));
 #endif
             #endregion
 
@@ -157,17 +156,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog(
-                        $"{nameof(OnLocalPlayerAdded)}: removed channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerExitedPrivacyChannelId}");
+                _DebugLog(
+                        $"{nameof(_OnLocalPlayerAdded)}: removed channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerExitedPrivacyChannelId}");
 #endif
                 #endregion;
             }
 
             if (OverrideWithDynamicPrivacy.PrivacyChannelIds.ContainsKey(PlayerAddedPrivacyChannelId)) {
-                Error(
-                        $"{nameof(OnLocalPlayerAdded)}: {nameof(PlayerAddedPrivacyChannelId)} " +
+                _Error(
+                        $"{nameof(_OnLocalPlayerAdded)}: {nameof(PlayerAddedPrivacyChannelId)} " +
                         $"{PlayerAddedPrivacyChannelId} is already in use by " +
-                        $"{OverrideWithDynamicPrivacy.GetScriptPathInScene()}");
+                        $"{OverrideWithDynamicPrivacy._GetScriptPathInScene()}");
                 return;
             }
 
@@ -175,16 +174,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(
-                    $"{nameof(OnLocalPlayerAdded)}: added channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerAddedPrivacyChannelId}");
+            _DebugLog(
+                    $"{nameof(_OnLocalPlayerAdded)}: added channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerAddedPrivacyChannelId}");
 #endif
             #endregion;
         }
 
-        internal void OnLocalPlayerRemoved() {
+        internal void _OnLocalPlayerRemoved() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnLocalPlayerRemoved));
+            _DebugLog(nameof(_OnLocalPlayerRemoved));
 #endif
             #endregion
 
@@ -193,27 +192,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (!OverrideWithDynamicPrivacy.PrivacyChannelIds.Remove(PlayerAddedPrivacyChannelId)) {
-                Error(
-                        $"{nameof(OnLocalPlayerRemoved)}: {nameof(PlayerAddedPrivacyChannelId)} " +
+                _Error(
+                        $"{nameof(_OnLocalPlayerRemoved)}: {nameof(PlayerAddedPrivacyChannelId)} " +
                         $"{PlayerAddedPrivacyChannelId} not found in " +
-                        $"{OverrideWithDynamicPrivacy.GetScriptPathInScene()}");
+                        $"{OverrideWithDynamicPrivacy._GetScriptPathInScene()}");
             }
 
             #region TLP_DEBUG
 #if TLP_DEBUG
             else {
-                DebugLog(
-                        $"{nameof(OnLocalPlayerRemoved)}: removed channel {nameof(PlayerAddedPrivacyChannelId)} {PlayerAddedPrivacyChannelId}");
+                _DebugLog(
+                        $"{nameof(_OnLocalPlayerRemoved)}: removed channel {nameof(PlayerAddedPrivacyChannelId)} {PlayerAddedPrivacyChannelId}");
             }
 
 #endif
             #endregion;
 
             if (OverrideWithDynamicPrivacy.PrivacyChannelIds.ContainsKey(PlayerExitedPrivacyChannelId)) {
-                Warn(
-                        $"{nameof(OnLocalPlayerRemoved)}: {nameof(PlayerExitedPrivacyChannelId)} " +
+                _Warn(
+                        $"{nameof(_OnLocalPlayerRemoved)}: {nameof(PlayerExitedPrivacyChannelId)} " +
                         $"{PlayerExitedPrivacyChannelId} is already in use by " +
-                        $"{OverrideWithDynamicPrivacy.GetScriptPathInScene()}");
+                        $"{OverrideWithDynamicPrivacy._GetScriptPathInScene()}");
                 return;
             }
 
@@ -221,8 +220,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(
-                    $"{nameof(OnLocalPlayerRemoved)}: added channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerExitedPrivacyChannelId}");
+            _DebugLog(
+                    $"{nameof(_OnLocalPlayerRemoved)}: added channel {nameof(PlayerExitedPrivacyChannelId)} {PlayerExitedPrivacyChannelId}");
 #endif
             #endregion;
         }

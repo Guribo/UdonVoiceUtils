@@ -1,7 +1,7 @@
 {
   "name": "tlp.udonvoiceutils",
   "displayName": "TLP UdonVoiceUtils",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Contains a collection of player voice related scripts/components for VRChat worlds.",
   "gitDependencies": {},
   "legacyFolders": {
@@ -14,8 +14,8 @@
     "url": "https://github.com/Guribo"
   },
   "vpmDependencies": {
-    "tlp.udonutils": "^14.0.0",
-    "tlp.udonavltree": "^1.0.1"
+    "tlp.udonutils": "^15.0.3",
+    "tlp.udonavltree": "^2.0.0"
   },
   "unity": "2022.3"
 }

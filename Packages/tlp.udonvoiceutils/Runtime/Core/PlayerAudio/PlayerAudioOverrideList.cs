@@ -28,12 +28,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         public int Overrides { get; internal set; }
 
         [PublicAPI]
-        public bool AddOverride(PlayerAudioOverride voiceOverride) {
+        public bool _AddOverride(PlayerAudioOverride voiceOverride) {
 #if TLP_DEBUG
-            DebugLog(nameof(AddOverride));
+            _DebugLog(nameof(_AddOverride));
 #endif
             if (!Utilities.IsValid(voiceOverride)) {
-                Error($"{nameof(voiceOverride)} invalid");
+                _Error($"{nameof(voiceOverride)} invalid");
                 return false;
             }
 
@@ -47,10 +47,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 return true;
             }
 
-            Overrides = RemoveOverride(voiceOverride);
+            Overrides = _RemoveOverride(voiceOverride);
             int slotsNeeded = Overrides + 1;
 
-            int insertIndex = GetInsertIndex(PlayerAudioOverrides, Overrides, voiceOverride);
+            int insertIndex = _GetInsertIndex(PlayerAudioOverrides, Overrides, voiceOverride);
             if (TempList == null || TempList.Length < slotsNeeded) {
                 TempList = new PlayerAudioOverride[slotsNeeded];
             }
@@ -85,25 +85,25 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// <param name="playerAudioOverride"></param>
         /// <returns>number of remaining valid overrides</returns>
         [PublicAPI]
-        public int RemoveOverride(PlayerAudioOverride playerAudioOverride) {
+        public int _RemoveOverride(PlayerAudioOverride playerAudioOverride) {
 #if TLP_DEBUG
-            DebugLog(nameof(RemoveOverride));
+            _DebugLog(nameof(_RemoveOverride));
 #endif
-            Remove(PlayerAudioOverrides, Overrides, playerAudioOverride);
-            Overrides = Consolidate(PlayerAudioOverrides);
+            bool unused = _Remove(PlayerAudioOverrides, Overrides, playerAudioOverride);
+            Overrides = _Consolidate(PlayerAudioOverrides);
             return Overrides;
         }
 
         [PublicAPI]
-        public bool GetMaxPriority(VRCPlayerApi player, out PlayerAudioOverride playerAudioOverride) {
+        public bool _GetMaxPriority(VRCPlayerApi player, out PlayerAudioOverride playerAudioOverride) {
             for (int i = 0; i < Overrides; i++) {
-                var entry = Get(i);
+                var entry = _Get(i);
                 if (!Utilities.IsValid(entry)) {
                     playerAudioOverride = null;
                     return false;
                 }
 
-                if (entry.IsPlayerBlackListed(player)) {
+                if (entry._IsPlayerBlackListed(player)) {
                     continue;
                 }
 
@@ -120,9 +120,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// <param name="index"></param>
         /// <returns>the valid override or null if there is no valid override for the given index</returns>
         [PublicAPI]
-        public PlayerAudioOverride Get(int index) {
+        public PlayerAudioOverride _Get(int index) {
 #if TLP_DEBUG
-            DebugLog(nameof(Get));
+            _DebugLog(nameof(_Get));
 #endif
 
             if (index < 0) {
@@ -133,22 +133,22 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 return null;
             }
 
-            if (PlayerAudioOverrides.LengthSafe() == 0) {
+            if (PlayerAudioOverrides._LengthSafe() == 0) {
                 return null;
             }
 
             if (Overrides > PlayerAudioOverrides.Length) {
-                Error("Overrides <= PlayerAudioOverrides.Length failed");
+                _Error("Overrides <= PlayerAudioOverrides.Length failed");
                 return null;
             }
 
-            Overrides = Consolidate(PlayerAudioOverrides);
+            Overrides = _Consolidate(PlayerAudioOverrides);
             return index < Overrides ? PlayerAudioOverrides[index] : null;
         }
         #endregion
 
         #region internals
-        internal int GetInsertIndex(
+        internal int _GetInsertIndex(
                 PlayerAudioOverride[] overrides,
                 int length,
                 PlayerAudioOverride voiceOverride
@@ -181,7 +181,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// </summary>
         /// <param name="list"></param>
         /// <returns>number of remaining valid overrides</returns>
-        internal int Consolidate(PlayerAudioOverride[] list) {
+        internal static int _Consolidate(PlayerAudioOverride[] list) {
             if (list == null) {
                 return 0;
             }
@@ -189,66 +189,76 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             int valid = 0;
             int moveIndex = -1;
             for (int i = 0; i < list.Length; i++) {
-                if (Utilities.IsValid(list[i])) {
-                    ++valid;
-                    if (moveIndex != -1) {
-                        list[moveIndex] = list[i];
-                        list[i] = null;
-                        ++moveIndex;
-                    }
-                } else {
-                    // ensure that the entry no longer references an invalid object
-                    list[i] = null;
-                    if (moveIndex == -1) {
-                        moveIndex = i;
-                    }
+                valid = _ShiftValidEntries(list, i, valid, ref moveIndex);
+            }
+
+            return valid;
+        }
+
+        private static int _ShiftValidEntries(PlayerAudioOverride[] list, int i, int valid, ref int moveIndex) {
+            if (Utilities.IsValid(list[i])) {
+                ++valid;
+                if (moveIndex == -1) {
+                    return valid;
+                }
+
+                list[moveIndex] = list[i];
+                list[i] = null;
+                ++moveIndex;
+            } else {
+                // ensure that the entry no longer references an invalid object
+                list[i] = null;
+                if (moveIndex == -1) {
+                    moveIndex = i;
                 }
             }
 
             return valid;
         }
 
-        internal bool Remove(PlayerAudioOverride[] list, int length, PlayerAudioOverride playerAudioOverride) {
+        internal static bool _Remove(PlayerAudioOverride[] list, int length, PlayerAudioOverride playerAudioOverride) {
             if (list == null) {
                 return false;
             }
 
             bool removed = false;
             for (int i = 0; i < length; i++) {
-                if (list[i] == playerAudioOverride) {
-                    list[i] = null;
-                    removed = true;
-                    break;
+                if (list[i] != playerAudioOverride) {
+                    continue;
                 }
+
+                list[i] = null;
+                removed = true;
+                break;
             }
 
             return removed;
         }
         #endregion
 
-        public override void OnPrepareForReturnToPool() {
-            base.OnPrepareForReturnToPool();
+        public override void _OnPrepareForReturnToPool() {
+            base._OnPrepareForReturnToPool();
 
             PlayerAudioOverrides = null;
             TempList = null;
             Overrides = 0;
         }
 
-        public override void OnReadyForUse() {
-            base.OnReadyForUse();
+        public override void _OnReadyForUse() {
+            base._OnReadyForUse();
 
             PlayerAudioOverrides = null;
             TempList = null;
             Overrides = 0;
         }
 
-        public bool Contains(PlayerAudioOverride playerAudioOverride) {
+        public bool _Contains(PlayerAudioOverride playerAudioOverride) {
             if (!Utilities.IsValid(playerAudioOverride)) {
-                Error($"{nameof(playerAudioOverride)} invalid");
+                _Error($"{nameof(playerAudioOverride)} invalid");
                 return false;
             }
 
-            if (PlayerAudioOverrides.LengthSafe() < 1) return false;
+            if (PlayerAudioOverrides._LengthSafe() < 1) return false;
             for (int i = 0; i < Overrides; i++) {
                 if (ReferenceEquals(PlayerAudioOverrides[i], playerAudioOverride)) {
                     return true;

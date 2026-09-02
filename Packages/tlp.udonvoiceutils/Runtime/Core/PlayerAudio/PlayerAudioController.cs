@@ -119,27 +119,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         public void OnEnable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnEnable));
+            _DebugLog(nameof(OnEnable));
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error($"{nameof(OnEnable)}: Not initialized");
+                _Error($"{nameof(OnEnable)}: Not initialized");
             }
         }
 
         public void OnDisable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnDisable));
+            _DebugLog(nameof(OnDisable));
 #endif
             #endregion
 
-            UseReverbSettings(null);
-            ResetAllPlayerVoices();
+            _UseReverbSettings(null);
+            _ResetAllPlayerVoices();
 
             if (!HasStartedOk) {
-                Warn($"{nameof(OnDisable)}: Not initialized, nothing to do");
+                _Warn($"{nameof(OnDisable)}: Not initialized, nothing to do");
                 HasReceivedStart = false; // allow re-start
                 return;
             }
@@ -148,18 +148,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             if (Menu.HasStartedOk
                 && Menu.IsViewInitialized
-                && !Menu.DeInitialize()) {
-                Error($"{nameof(OnDisable)}: {nameof(DeInitialize)} of {nameof(Menu)} failed");
+                && !Menu._DeInitialize()) {
+                _Error($"{nameof(OnDisable)}: {nameof(_DeInitialize)} of {nameof(Menu)} failed");
             }
 
-            if (!DeInitialize()) {
-                Error($"{nameof(OnDisable)} {nameof(DeInitialize)} of {GetUdonTypeName()} failed");
+            if (!_DeInitialize()) {
+                _Error($"{nameof(OnDisable)} {nameof(_DeInitialize)} of {GetUdonTypeName()} failed");
             }
 
             if (LocalConfiguration.HasStartedOk
                 && LocalConfiguration.IsModelInitialized
-                && !LocalConfiguration.DeInitialize()) {
-                Error($"DeInitialization of {nameof(LocalConfiguration)} failed");
+                && !LocalConfiguration._DeInitialize()) {
+                _Error($"DeInitialization of {nameof(LocalConfiguration)} failed");
             }
         }
 
@@ -169,24 +169,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 return;
             }
 
-            LocalPlayerOverrideList.GetMaxPriority(LocalPlayer, out var localPlayerOverride);
-            _localOverride = UpdateAudioFilters(localPlayerOverride, _localOverride);
+            LocalPlayerOverrideList._GetMaxPriority(LocalPlayer, out var localPlayerOverride);
+            _localOverride = _UpdateAudioFilters(localPlayerOverride, _localOverride);
             for (int playerUpdate = 0;
-                 playerUpdate < GetPendingPlayerUpdates(ExistingRemotePlayerIds.Count);
+                 playerUpdate < _GetPendingPlayerUpdates(ExistingRemotePlayerIds.Count);
                  ++playerUpdate) {
-                UpdateNextPlayer(LocalPlayer, ref playerUpdate);
+                _UpdateNextPlayer(ref playerUpdate);
             }
         }
 
         protected override void OnDestroy() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnDestroy));
+            _DebugLog(nameof(OnDestroy));
 #endif
             #endregion
 
-            UseReverbSettings(null);
-            ResetAllPlayerVoices();
+            _UseReverbSettings(null);
+            _ResetAllPlayerVoices();
         }
         #endregion
 
@@ -200,24 +200,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// </summary>
         /// <param name="playerToIgnore"></param>
         /// <returns>true on success, false if argument invalid or player doesn't exist or is already ignored</returns>
-        public bool IgnorePlayer(VRCPlayerApi playerToIgnore) {
+        public bool _IgnorePlayer(VRCPlayerApi playerToIgnore) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(IgnorePlayer)} {playerToIgnore.ToStringSafe()}");
+            _DebugLog($"{nameof(_IgnorePlayer)} {playerToIgnore._ToStringSafe()}");
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error($"{nameof(IgnorePlayer)}: Not initialized");
+                _Error($"{nameof(_IgnorePlayer)}: Not initialized");
                 return false;
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(IgnorePlayer)}: MVC not initialized");
+                _Error($"{nameof(_IgnorePlayer)}: MVC not initialized");
                 return false;
             }
 
-            return IgnoredPlayers.Add(playerToIgnore);
+            return IgnoredPlayers._Add(playerToIgnore);
         }
 
         /// <summary>
@@ -226,149 +226,149 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// </summary>
         /// <param name="ignoredPlayer"></param>
         /// <returns>false if player was invalid or not ignored, true if the player was removed from the ignore list</returns>
-        public bool UnIgnorePlayer(VRCPlayerApi ignoredPlayer) {
+        public bool _UnIgnorePlayer(VRCPlayerApi ignoredPlayer) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(UnIgnorePlayer)} {ignoredPlayer.ToStringSafe()}");
+            _DebugLog($"{nameof(_UnIgnorePlayer)} {ignoredPlayer._ToStringSafe()}");
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error($"{nameof(UnIgnorePlayer)}: Not initialized");
+                _Error($"{nameof(_UnIgnorePlayer)}: Not initialized");
                 return false;
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(UnIgnorePlayer)}: MVC not initialized");
+                _Error($"{nameof(_UnIgnorePlayer)}: MVC not initialized");
                 return false;
             }
 
-            return IgnoredPlayers.Remove(ignoredPlayer);
+            return IgnoredPlayers._Remove(ignoredPlayer);
         }
 
-        public bool OverridePlayerSettings(
+        public bool _OverridePlayerSettings(
                 PlayerAudioOverride playerAudioOverride,
                 VRCPlayerApi playerToAffect
         ) {
 #if TLP_DEBUG
-            DebugLog(nameof(OverridePlayerSettings));
+            _DebugLog(nameof(_OverridePlayerSettings));
 #endif
             if (!HasStartedOk) {
-                Error($"{nameof(OverridePlayerSettings)}: Not initialized");
+                _Error($"{nameof(_OverridePlayerSettings)}: Not initialized");
                 return false;
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(OverridePlayerSettings)}: MVC not initialized");
+                _Error($"{nameof(_OverridePlayerSettings)}: MVC not initialized");
                 return false;
             }
 
             if (!Utilities.IsValid(playerAudioOverride)) {
-                Error($"{nameof(playerAudioOverride)} invalid");
+                _Error($"{nameof(playerAudioOverride)} invalid");
                 return false;
             }
 
             if (!Utilities.IsValid(playerToAffect)) {
-                Error($"{nameof(playerToAffect)} invalid");
+                _Error($"{nameof(playerToAffect)} invalid");
                 return false;
             }
 
             if (playerToAffect.isLocal) {
-                return LocalPlayerOverrideList.AddOverride(playerAudioOverride);
+                return LocalPlayerOverrideList._AddOverride(playerAudioOverride);
             }
 
             // check if the player already has an override
             if (PlayersToOverride.TryGetValue(playerToAffect.playerId, out var value)) {
                 var existingList = (PlayerAudioOverrideList)value.Reference;
                 if (Utilities.IsValid(existingList)) {
-                    return AddOverrideToExistingList(playerAudioOverride, playerToAffect, existingList);
+                    return _AddOverrideToExistingList(playerAudioOverride, playerToAffect, existingList);
                 }
             }
 
-            return AddOverrideToNewList(playerAudioOverride, playerToAffect);
+            return _AddOverrideToNewList(playerAudioOverride, playerToAffect);
         }
 
-        public bool ClearPlayerOverride(PlayerAudioOverride playerAudioOverride, VRCPlayerApi playerToClear) {
+        public bool _ClearPlayerOverride(PlayerAudioOverride playerAudioOverride, VRCPlayerApi playerToClear) {
 #if TLP_DEBUG
-            DebugLog(nameof(ClearPlayerOverride));
+            _DebugLog(nameof(_ClearPlayerOverride));
 #endif
             if (!HasStartedOk) {
-                Error($"{nameof(ClearPlayerOverride)}: Not initialized");
+                _Error($"{nameof(_ClearPlayerOverride)}: Not initialized");
                 return false;
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(ClearPlayerOverride)}: MVC not initialized");
+                _Error($"{nameof(_ClearPlayerOverride)}: MVC not initialized");
                 return false;
             }
 
             if (!Utilities.IsValid(playerToClear)) {
-                Error($"{nameof(playerToClear)} invalid");
+                _Error($"{nameof(playerToClear)} invalid");
                 return false;
             }
 
             if (!Utilities.IsValid(playerAudioOverride)) {
-                Error($"{nameof(playerAudioOverride)} invalid");
+                _Error($"{nameof(playerAudioOverride)} invalid");
                 return false;
             }
 
             if (playerToClear.isLocal) {
-                if (LocalPlayerOverrideList.Contains(playerAudioOverride)) {
-                    LocalPlayerOverrideList.RemoveOverride(playerAudioOverride);
+                if (LocalPlayerOverrideList._Contains(playerAudioOverride)) {
+                    LocalPlayerOverrideList._RemoveOverride(playerAudioOverride);
                     return true;
                 }
 
-                DebugLog(
-                        $"{playerToClear.ToStringSafe()} didn't have the local override {playerAudioOverride.GetScriptPathInScene()}");
+                _DebugLog(
+                        $"{playerToClear._ToStringSafe()} didn't have the local override {playerAudioOverride._GetScriptPathInScene()}");
                 return false;
             }
 
             if (!PlayersToOverride.TryGetValue(playerToClear.playerId, out var list)) {
-                Warn(
-                        $"{playerToClear.ToStringSafe()} doesn't have any overrides");
+                _Warn(
+                        $"{playerToClear._ToStringSafe()} doesn't have any overrides");
                 return false;
             }
 
             var overrideList = (PlayerAudioOverrideList)list.Reference;
-            if (Utilities.IsValid(overrideList) && overrideList.Contains(playerAudioOverride)) {
-                overrideList.RemoveOverride(playerAudioOverride);
+            if (Utilities.IsValid(overrideList) && overrideList._Contains(playerAudioOverride)) {
+                overrideList._RemoveOverride(playerAudioOverride);
                 return true;
             }
 
-            Warn(
-                    $"{playerToClear.ToStringSafe()} didn't have the override {playerAudioOverride.GetScriptPathInScene()}");
+            _Warn(
+                    $"{playerToClear._ToStringSafe()} didn't have the override {playerAudioOverride._GetScriptPathInScene()}");
             return false;
         }
 
         /// <param name="player"></param>
         /// <returns>null on error or if no overrides present</returns>
-        public bool GetMaxPriorityOverride(VRCPlayerApi player, out PlayerAudioOverride playerAudioOverride) {
+        public bool _GetMaxPriorityOverride(VRCPlayerApi player, out PlayerAudioOverride playerAudioOverride) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(GetMaxPriorityOverride)} {player.ToStringSafe()}");
+            _DebugLog($"{nameof(_GetMaxPriorityOverride)} {player._ToStringSafe()}");
 #endif
             #endregion
 
             if (!IsReceivingStart && !HasStartedOk) {
-                Error($"{nameof(GetMaxPriorityOverride)}: Not initialized");
+                _Error($"{nameof(_GetMaxPriorityOverride)}: Not initialized");
                 playerAudioOverride = null;
                 return false;
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(GetMaxPriorityOverride)}: MVC not initialized");
+                _Error($"{nameof(_GetMaxPriorityOverride)}: MVC not initialized");
                 playerAudioOverride = null;
                 return false;
             }
 
             if (!Utilities.IsValid(player)) {
-                Error($"{nameof(player)} invalid");
+                _Error($"{nameof(player)} invalid");
                 playerAudioOverride = null;
                 return false;
             }
 
             if (player.isLocal) {
-                return LocalPlayerOverrideList.GetMaxPriority(player, out playerAudioOverride);
+                return LocalPlayerOverrideList._GetMaxPriority(player, out playerAudioOverride);
             }
 
             if (!PlayersToOverride.TryGetValue(player.playerId, out var list)) {
@@ -378,7 +378,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             var overrideList = (PlayerAudioOverrideList)list.Reference;
             if (Utilities.IsValid(overrideList)) {
-                return overrideList.GetMaxPriority(player, out playerAudioOverride);
+                return overrideList._GetMaxPriority(player, out playerAudioOverride);
             }
 
             playerAudioOverride = null;
@@ -387,38 +387,38 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         #endregion
 
         #region OnPlayerLeft
-        private void PurgeOverridesOfPlayer(int playerId) {
+        private void _PurgeOverridesOfPlayer(int playerId) {
             if (!PlayersToOverride.TryGetValue(playerId, out var list)) {
                 return;
             }
 
             var overrideList = (PlayerAudioOverrideList)list.Reference;
             if (Utilities.IsValid(overrideList)) {
-                PlayerOverrideListPool.Return(overrideList.gameObject);
+                PlayerOverrideListPool._Return(overrideList.gameObject);
             }
 
             PlayersToOverride.Remove(playerId);
         }
 
-        private void PurgeOverridesOfInvalidPlayers() {
+        private void _PurgeOverridesOfInvalidPlayers() {
             var playerIds = PlayersToOverride.GetKeys();
             for (int i = 0; i < playerIds.Count; i++) {
                 var entry = playerIds[i];
                 int playerId = entry.Int;
-                if (!playerId.IsValidPlayer(out var unused)) {
-                    PurgeOverridesOfPlayer(playerId);
+                if (!playerId._IsValidPlayer(out var unused)) {
+                    _PurgeOverridesOfPlayer(playerId);
                 }
             }
         }
         #endregion
 
-        private void UpdateNextPlayer(VRCPlayerApi localPlayer, ref int playerUpdate) {
-            _playerIndex.MoveIndexRightLooping(ExistingRemotePlayerIds.Count);
+        private void _UpdateNextPlayer(ref int playerUpdate) {
+            _playerIndex._MoveIndexRightLooping(ExistingRemotePlayerIds.Count);
             int playerId = ExistingRemotePlayerIds[_playerIndex].Int;
 
-            if (!playerId.IsValidPlayer(out var player)) {
+            if (!playerId._IsValidPlayer(out var player)) {
                 // this is not supposed to happen as Players should be removed by OnPlayerLeft before they become invalid
-                Error(
+                _Warn(
                         $"{nameof(PostLateUpdate)}: Player {playerId} at position " +
                         $"{_playerIndex} has unexpectedly become invalid, deleting entry");
 
@@ -426,27 +426,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 ExistingRemotePlayerIds.RemoveAt(_playerIndex);
 
                 // ensure that we don't skip an entry in the next iteration after deleting the invalid one
-                _playerIndex.MoveIndexLeftLooping(ExistingRemotePlayerIds.Count);
+                _playerIndex._MoveIndexLeftLooping(ExistingRemotePlayerIds.Count);
                 --playerUpdate;
                 return;
             }
 
-            if (IgnoredPlayers.Contains(playerId)) {
+            if (IgnoredPlayers._Contains(playerId)) {
                 return;
             }
 
-            UpdateOtherPlayer(player);
+            _UpdateOtherPlayer(player);
         }
 
-        private bool ValidateAndSetupMvc() {
+        private bool _ValidateAndSetupMvc() {
             if (!LocalConfiguration.IsModelInitialized &&
-                !LocalConfiguration.Initialize(LocalConfiguration.gameObject.GetComponent<UdonEvent>())) {
-                ErrorAndDisableComponent($"Failed to initialize {nameof(LocalConfiguration)}");
+                !LocalConfiguration._Initialize(LocalConfiguration.gameObject.GetComponent<UdonEvent>())) {
+                _ErrorAndDisableComponent($"Failed to initialize {nameof(LocalConfiguration)}");
                 return false;
             }
 
             if (SyncedMasterConfiguration.transform.childCount != 1) {
-                ErrorAndDisableComponent(
+                _ErrorAndDisableComponent(
                         $"Expected the {nameof(SyncedMasterConfiguration)} to have one child with the {nameof(UdonEvent)}"
                 );
                 return false;
@@ -454,7 +454,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             var child = SyncedMasterConfiguration.transform.GetChild(0);
             if (!child) {
-                ErrorAndDisableComponent(
+                _ErrorAndDisableComponent(
                         $"Expected the {nameof(SyncedMasterConfiguration)} to have one child with the {nameof(UdonEvent)}"
                 );
                 return false;
@@ -462,25 +462,19 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             var masterConfigChangeEvent = child.gameObject.GetComponent<UdonEvent>();
             if (!masterConfigChangeEvent) {
-                ErrorAndDisableComponent(
+                _ErrorAndDisableComponent(
                         $"Expected the {nameof(SyncedMasterConfiguration)} to have one child with the {nameof(UdonEvent)}"
                 );
                 return false;
             }
 
             if (!SyncedMasterConfiguration.IsModelInitialized &&
-                !SyncedMasterConfiguration.Initialize(masterConfigChangeEvent)) {
-                ErrorAndDisableComponent($"Failed to initialize {nameof(SyncedMasterConfiguration)}");
+                !SyncedMasterConfiguration._Initialize(masterConfigChangeEvent)) {
+                _ErrorAndDisableComponent($"Failed to initialize {nameof(SyncedMasterConfiguration)}");
                 return false;
             }
 
-            if (!LocalConfiguration.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
-                ErrorAndDisableComponent("Failed to listen to local configuration");
-                return false;
-            }
-
-            if (!SyncedMasterConfiguration.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
-                ErrorAndDisableComponent("Failed to listen to master configuration");
+            if (!_AddConfigurationListeners()) {
                 return false;
             }
 
@@ -489,35 +483,53 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             }
 
             _currentConfiguration = LocalConfiguration;
-            if (!Initialize(_currentConfiguration, Menu)) {
-                ErrorAndDisableComponent($"Init of {GetUdonTypeName()} failed");
+            if (!_Initialize(_currentConfiguration, Menu)) {
+                _ErrorAndDisableComponent($"Init of {GetUdonTypeName()} failed");
                 return false;
             }
 
-            if (!Utilities.IsValid(Menu) || Menu.IsViewInitialized) {
-                ErrorAndDisableComponent($"{nameof(Menu)} is already initialized");
+            return _InitializeMenu();
+        }
+
+        private bool _AddConfigurationListeners() {
+            if (!LocalConfiguration.ChangeEvent._AddListenerVerified(this, nameof(_OnModelChanged))) {
+                _ErrorAndDisableComponent("Failed to listen to local configuration");
                 return false;
             }
 
-            if (!Menu.Initialize(this, _currentConfiguration)) {
-                ErrorAndDisableComponent($"Init of {nameof(Menu)} failed");
+            if (!SyncedMasterConfiguration.ChangeEvent._AddListenerVerified(this, nameof(_OnModelChanged))) {
+                _ErrorAndDisableComponent("Failed to listen to master configuration");
                 return false;
             }
 
             return true;
         }
 
+        private bool _InitializeMenu() {
+            if (!Utilities.IsValid(Menu) || Menu.IsViewInitialized) {
+                _ErrorAndDisableComponent($"{nameof(Menu)} is already initialized");
+                return false;
+            }
 
-        internal bool GetLocalPlayerAudioListenerTransform(out Vector3 position, out Quaternion rotation) {
+            if (Menu._Initialize(this, _currentConfiguration)) {
+                return true;
+            }
+
+            _ErrorAndDisableComponent($"Init of {nameof(Menu)} failed");
+            return false;
+        }
+
+
+        internal bool _GetLocalPlayerAudioListenerTransform(out Vector3 position, out Quaternion rotation) {
 #if TLP_UNIT_TESTING
-            GetRemotePlayerAudioListenerTransform(LocalPlayer, out position, out rotation);
+            _GetRemotePlayerAudioListenerTransform(LocalPlayer, out position, out rotation);
             return true;
 #else
             var screenCamera = VRCCameraSettings.ScreenCamera;
 
             if (!Utilities.IsValid(screenCamera) || !screenCamera.Active) {
-                Error(
-                        $"{nameof(GetLocalPlayerAudioListenerTransform)}: {nameof(VRCCameraSettings.ScreenCamera)} " +
+                _Error(
+                        $"{nameof(_GetLocalPlayerAudioListenerTransform)}: {nameof(VRCCameraSettings.ScreenCamera)} " +
                         $"is unexpectedly invalid or not active)");
                 position = Vector3.zero;
                 rotation = Quaternion.identity;
@@ -530,7 +542,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 #endif
         }
 
-        public static void GetRemotePlayerAudioListenerTransform(
+        public static void _GetRemotePlayerAudioListenerTransform(
                 VRCPlayerApi otherPlayer,
                 out Vector3 position,
                 out Quaternion rotation
@@ -552,22 +564,22 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         }
 
 
-        internal void UpdateOtherPlayer(VRCPlayerApi otherPlayer) {
-            if (!GetLocalPlayerAudioListenerTransform(out var listenerHeadPosition, out var listenerHeadRotation)) {
+        internal void _UpdateOtherPlayer(VRCPlayerApi otherPlayer) {
+            if (!_GetLocalPlayerAudioListenerTransform(out var listenerHeadPosition, out var listenerHeadRotation)) {
                 return;
             }
 
-            GetRemotePlayerAudioListenerTransform(otherPlayer, out var otherHeadPosition, out var otherHeadRotation);
+            _GetRemotePlayerAudioListenerTransform(otherPlayer, out var otherHeadPosition, out var otherHeadRotation);
 
-            if (GetMaxPriorityOverride(otherPlayer, out var playerOverride)) {
+            if (_GetMaxPriorityOverride(otherPlayer, out var playerOverride)) {
                 bool localPlayerHasOverride = Utilities.IsValid(_localOverride) && _localOverride.HasStartedOk;
-                if (OtherPlayerWithOverrideCanBeHeard(
+                if (_OtherPlayerWithOverrideCanBeHeard(
                             playerOverride,
                             _localOverride,
                             localPlayerHasOverride && _localOverride.MuteOutsiders,
                             localPlayerHasOverride && _localOverride.DisallowListeningToChannel
                     )) {
-                    ApplyAudioOverrides(
+                    _ApplyAudioOverrides(
                             otherPlayer,
                             listenerHeadPosition,
                             listenerHeadRotation,
@@ -578,16 +590,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     return;
                 }
 
-                MutePlayer(otherPlayer);
+                _MutePlayer(otherPlayer);
                 return;
             }
 
             if (Utilities.IsValid(_localOverride) && _localOverride.HasStartedOk && _localOverride.MuteOutsiders) {
-                MutePlayer(otherPlayer);
+                _MutePlayer(otherPlayer);
                 return;
             }
 
-            ApplyGlobalAudioSettings(
+            _ApplyGlobalAudioSettings(
                     otherPlayer,
                     listenerHeadPosition,
                     listenerHeadRotation,
@@ -598,27 +610,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             );
         }
 
-        internal bool OtherPlayerWithOverrideCanBeHeard(
+        internal bool _OtherPlayerWithOverrideCanBeHeard(
                 PlayerAudioOverride otherPlayerOverride,
                 PlayerAudioOverride localPlayerOverride,
                 bool muteOutsiders,
                 bool disallowLocalPlayerListening
         ) {
-            bool playersShareChannels = otherPlayerOverride.HasOverlappingChannels(localPlayerOverride);
+            bool playersShareChannels = otherPlayerOverride._HasOverlappingChannels(localPlayerOverride);
             if (playersShareChannels) {
                 return !disallowLocalPlayerListening;
             }
 
-            bool otherPlayerInPrivateChannel = otherPlayerOverride.IsPrivateChannel();
+            bool otherPlayerInPrivateChannel = otherPlayerOverride._IsPrivateChannel();
             if (otherPlayerInPrivateChannel && !Utilities.IsValid(localPlayerOverride)) {
                 // by default players are in NoPrivacyChannel, so the local player can't hear the other player
                 return false;
             }
 
-            return localPlayerOverride.IsPrivateChannel() && !otherPlayerInPrivateChannel && !muteOutsiders;
+            return localPlayerOverride._IsPrivateChannel() && !otherPlayerInPrivateChannel && !muteOutsiders;
         }
 
-        internal void ApplyGlobalAudioSettings(
+        internal void _ApplyGlobalAudioSettings(
                 VRCPlayerApi otherPlayer,
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
@@ -630,20 +642,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             var direction = toOtherPlayer.normalized;
             float distanceBetweenPlayerHeads = toOtherPlayer.magnitude;
             float heightBasedMultiplier = heightToVoiceCorrelation.Evaluate(otherPlayer.GetAvatarEyeHeightAsMeters());
-            float relativeAudioRange = GetGlobalRelativeAudioRange(
+            float relativeAudioRange = _GetGlobalRelativeAudioRange(
                     listenerHeadPosition,
                     listenerHeadRotation,
                     direction,
                     distanceBetweenPlayerHeads,
                     otherPlayerHeadRotation,
                     configuration);
-            ApplyGlobalPlayerVoiceRangeReduction(
+            _ApplyGlobalPlayerVoiceRangeReduction(
                     otherPlayer,
                     distanceBetweenPlayerHeads,
                     configuration,
                     relativeAudioRange,
                     heightBasedMultiplier);
-            ApplyGlobalAvatarAudioRangeReduction(
+            _ApplyGlobalAvatarAudioRangeReduction(
                     otherPlayer,
                     distanceBetweenPlayerHeads,
                     configuration,
@@ -651,7 +663,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     heightBasedMultiplier);
         }
 
-        private float GetGlobalRelativeAudioRange(
+        private float _GetGlobalRelativeAudioRange(
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
                 Vector3 direction,
@@ -659,7 +671,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 Quaternion otherPlayerHeadRotation,
                 PlayerAudioConfigurationModel configuration
         ) {
-            float rangeReducedByOcclusion = PlayerOcclusionStrategy.GetAudioClarity(
+            float rangeReducedByOcclusion = PlayerOcclusionStrategy._GetAudioClarity(
                     listenerHeadPosition,
                     direction,
                     distanceBetweenPlayerHeads,
@@ -668,7 +680,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     configuration.OcclusionMask
             );
 
-            float rangeReducedByDirection = VoiceUtils.CalculateDirectionality(
+            float rangeReducedByDirection = VoiceUtils._CalculateDirectionality(
                     listenerHeadRotation,
                     otherPlayerHeadRotation,
                     direction,
@@ -679,20 +691,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             return rangeReducedByDirection * rangeReducedByOcclusion;
         }
 
-        private void ApplyGlobalPlayerVoiceRangeReduction(
+        private void _ApplyGlobalPlayerVoiceRangeReduction(
                 VRCPlayerApi otherPlayer,
                 float distanceBetweenPlayerHeads,
                 PlayerAudioConfigurationModel configuration,
                 float relativeAudioRange,
                 float heightBasedMultiplier
         ) {
-            float voiceDistanceFactor = GetAbsoluteRangeReduction(
+            float voiceDistanceFactor = _GetAbsoluteRangeReduction(
                     distanceBetweenPlayerHeads,
                     relativeAudioRange,
                     configuration.VoiceDistanceFar * heightBasedMultiplier
             );
 
-            UpdateVoiceAudio(
+            _UpdateVoiceAudio(
                     otherPlayer,
                     voiceDistanceFactor,
                     configuration.EnableVoiceLowpass,
@@ -703,20 +715,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             );
         }
 
-        private void ApplyGlobalAvatarAudioRangeReduction(
+        private void _ApplyGlobalAvatarAudioRangeReduction(
                 VRCPlayerApi otherPlayer,
                 float distanceBetweenPlayerHeads,
                 PlayerAudioConfigurationModel configuration,
                 float relativeAudioRange,
                 float heightBasedMultiplier
         ) {
-            float avatarDistanceFactor = GetAbsoluteRangeReduction(
+            float avatarDistanceFactor = _GetAbsoluteRangeReduction(
                     distanceBetweenPlayerHeads,
                     relativeAudioRange,
                     configuration.AvatarFarRadius * heightBasedMultiplier
             );
 
-            UpdateAvatarAudio(
+            _UpdateAvatarAudio(
                     otherPlayer,
                     avatarDistanceFactor,
                     configuration.ForceAvatarSpatialAudio,
@@ -728,7 +740,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             );
         }
 
-        private void ApplyAudioOverrides(
+        private void _ApplyAudioOverrides(
                 VRCPlayerApi otherPlayer,
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
@@ -741,20 +753,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             float heightBasedMultiplier = playerOverride
                     .HeightToVoiceCorrelation
                     .Evaluate(otherPlayer.GetAvatarEyeHeightAsMeters());
-            float relativeAudioRange = GetOverrideRelativeAudioRange(
+            float relativeAudioRange = _GetOverrideRelativeAudioRange(
                     listenerHeadPosition,
                     listenerHeadRotation,
                     direction,
                     distanceBetweenPlayerHeads,
                     playerOverride,
                     otherHeadRotation);
-            ApplyOverrideVoiceRangeReduction(
+            _ApplyOverrideVoiceRangeReduction(
                     otherPlayer,
                     distanceBetweenPlayerHeads,
                     playerOverride,
                     relativeAudioRange,
                     heightBasedMultiplier);
-            ApplyOverrideAvatarRangeReduction(
+            _ApplyOverrideAvatarRangeReduction(
                     otherPlayer,
                     distanceBetweenPlayerHeads,
                     playerOverride,
@@ -762,20 +774,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     heightBasedMultiplier);
         }
 
-        private void ApplyOverrideAvatarRangeReduction(
+        private void _ApplyOverrideAvatarRangeReduction(
                 VRCPlayerApi otherPlayer,
                 float distanceBetweenPlayerHeads,
                 PlayerAudioOverride playerOverride,
                 float relativeAudioRange,
                 float heightBasedMultiplier
         ) {
-            float avatarDistanceFactor = GetAbsoluteRangeReduction(
+            float avatarDistanceFactor = _GetAbsoluteRangeReduction(
                     distanceBetweenPlayerHeads,
                     relativeAudioRange,
                     playerOverride.TargetAvatarFarRadius * heightBasedMultiplier
             );
 
-            UpdateAvatarAudio(
+            _UpdateAvatarAudio(
                     otherPlayer,
                     avatarDistanceFactor,
                     playerOverride.ForceAvatarSpatialAudio,
@@ -787,20 +799,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             );
         }
 
-        private void ApplyOverrideVoiceRangeReduction(
+        private void _ApplyOverrideVoiceRangeReduction(
                 VRCPlayerApi otherPlayer,
                 float distanceBetweenPlayerHeads,
                 PlayerAudioOverride playerOverride,
                 float relativeAudioRange,
                 float heightBasedMultiplier
         ) {
-            float voiceDistanceFactor = GetAbsoluteRangeReduction(
+            float voiceDistanceFactor = _GetAbsoluteRangeReduction(
                     distanceBetweenPlayerHeads,
                     relativeAudioRange,
                     playerOverride.VoiceDistanceFar * heightBasedMultiplier
             );
 
-            UpdateVoiceAudio(
+            _UpdateVoiceAudio(
                     otherPlayer,
                     voiceDistanceFactor,
                     playerOverride.EnableVoiceLowpass,
@@ -811,7 +823,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             );
         }
 
-        private float GetOverrideRelativeAudioRange(
+        private float _GetOverrideRelativeAudioRange(
                 Vector3 listenerHeadPosition,
                 Quaternion listenerHeadRotation,
                 Vector3 direction,
@@ -819,7 +831,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 PlayerAudioOverride playerOverride,
                 Quaternion otherHeadRotation
         ) {
-            float rangeReducedByOcclusion = PlayerOcclusionStrategy.GetAudioClarity(
+            float rangeReducedByOcclusion = PlayerOcclusionStrategy._GetAudioClarity(
                     listenerHeadPosition,
                     direction,
                     distanceBetweenPlayerHeads,
@@ -828,7 +840,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     playerOverride.OcclusionMask
             );
 
-            float rangeReducedByDirection = VoiceUtils.CalculateDirectionality(
+            float rangeReducedByDirection = VoiceUtils._CalculateDirectionality(
                     listenerHeadRotation,
                     otherHeadRotation,
                     direction,
@@ -839,8 +851,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             return rangeReducedByDirection * rangeReducedByOcclusion;
         }
 
-        private void MutePlayer(VRCPlayerApi otherPlayer) {
-            UpdateVoiceAudio(
+        private void _MutePlayer(VRCPlayerApi otherPlayer) {
+            _UpdateVoiceAudio(
                     otherPlayer,
                     MinRelativeAudioRange,
                     false,
@@ -850,7 +862,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     MinRelativeAudioRange
             );
 
-            UpdateAvatarAudio(
+            _UpdateAvatarAudio(
                     otherPlayer,
                     0,
                     false,
@@ -862,7 +874,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             );
         }
 
-        private int GetPendingPlayerUpdates(int playerCount) {
+        private int _GetPendingPlayerUpdates(int playerCount) {
             if (PlayerUpdateRate == 0) {
                 // this will update all players every update
                 return playerCount;
@@ -873,7 +885,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         }
 
 
-        private float GetAbsoluteRangeReduction(
+        private float _GetAbsoluteRangeReduction(
                 float distanceBetweenPlayerHeads,
                 float relativeAudioRange,
                 float maxAudibleRange
@@ -882,8 +894,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 return MinRelativeAudioRange;
             }
 
-            if (PlayerCanNotBeHeard(maxAudibleRange)
-                || PlayerIsOutOfHearingRange(distanceBetweenPlayerHeads, maxAudibleRange)) {
+            if (_PlayerCanNotBeHeard(maxAudibleRange)
+                || _PlayerIsOutOfHearingRange(distanceBetweenPlayerHeads, maxAudibleRange)) {
                 return MaxRelativeAudioRange;
             }
 
@@ -893,16 +905,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             return postOcclusionFarDistance / maxAudibleRange;
         }
 
-        private static bool PlayerCanNotBeHeard(float maxAudibleRange) {
+        private static bool _PlayerCanNotBeHeard(float maxAudibleRange) {
             return maxAudibleRange == 0;
         }
 
-        private static bool PlayerIsOutOfHearingRange(float distanceBetweenPlayerHeads, float maxAudibleRange) {
+        private static bool _PlayerIsOutOfHearingRange(float distanceBetweenPlayerHeads, float maxAudibleRange) {
             return maxAudibleRange < distanceBetweenPlayerHeads;
         }
 
 
-        private void UpdateVoiceAudio(
+        private void _UpdateVoiceAudio(
                 VRCPlayerApi vrcPlayerApi,
                 float clarity,
                 bool enableVoiceLowpass,
@@ -922,7 +934,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             vrcPlayerApi.SetVoiceVolumetricRadius(targetVoiceVolumetricRadius * clarity);
         }
 
-        private void UpdateAvatarAudio(
+        private void _UpdateAvatarAudio(
                 VRCPlayerApi vrcPlayerApi,
                 float clarity,
                 bool forceAvatarSpatialAudio,
@@ -949,26 +961,26 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
         #region internal
         #region OverridePlayerSettings
-        private bool AddOverrideToNewList(PlayerAudioOverride playerAudioOverride, VRCPlayerApi playerToAffect) {
-            var instance = PlayerOverrideListPool.Get();
+        private bool _AddOverrideToNewList(PlayerAudioOverride playerAudioOverride, VRCPlayerApi playerToAffect) {
+            var instance = PlayerOverrideListPool._Get();
             if (!Utilities.IsValid(instance)) {
-                Error(
-                        $"Failed to retrieve {nameof(PlayerAudioOverrideList)} instance from {PlayerOverrideListPool.GetScriptPathInScene()}");
+                _Error(
+                        $"Failed to retrieve {nameof(PlayerAudioOverrideList)} instance from {PlayerOverrideListPool._GetScriptPathInScene()}");
                 return false;
             }
 
             var createdOverrideList = instance.GetComponent<PlayerAudioOverrideList>();
             if (!Utilities.IsValid(createdOverrideList)) {
-                Error(
-                        $"{nameof(PlayerAudioOverrideList)} component missing object retrieved from {PlayerOverrideListPool.GetScriptPathInScene()}");
-                PlayerOverrideListPool.Return(instance);
+                _Error(
+                        $"{nameof(PlayerAudioOverrideList)} component missing object retrieved from {PlayerOverrideListPool._GetScriptPathInScene()}");
+                PlayerOverrideListPool._Return(instance);
                 return false;
             }
 
-            if (!createdOverrideList.AddOverride(playerAudioOverride)) {
-                Error(
-                        $"Failed to add {playerAudioOverride.GetScriptPathInScene()} to created list of {playerToAffect.ToStringSafe()}");
-                PlayerOverrideListPool.Return(instance);
+            if (!createdOverrideList._AddOverride(playerAudioOverride)) {
+                _Error(
+                        $"Failed to add {playerAudioOverride._GetScriptPathInScene()} to created list of {playerToAffect._ToStringSafe()}");
+                PlayerOverrideListPool._Return(instance);
                 return false;
             }
 
@@ -976,43 +988,43 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             return true;
         }
 
-        private bool AddOverrideToExistingList(
+        private bool _AddOverrideToExistingList(
                 PlayerAudioOverride playerAudioOverride,
                 VRCPlayerApi playerToAffect,
                 PlayerAudioOverrideList existingList
         ) {
-            if (existingList.Contains(playerAudioOverride)) {
-                existingList.RemoveOverride(playerAudioOverride);
+            if (existingList._Contains(playerAudioOverride)) {
+                existingList._RemoveOverride(playerAudioOverride);
             }
 
-            if (existingList.AddOverride(playerAudioOverride)) {
+            if (existingList._AddOverride(playerAudioOverride)) {
                 return true;
             }
 
-            Error(
-                    $"Failed to add {playerAudioOverride.GetScriptPathInScene()} to {existingList.GetScriptPathInScene()} of {playerToAffect.ToStringSafe()}");
+            _Error(
+                    $"Failed to add {playerAudioOverride._GetScriptPathInScene()} to {existingList._GetScriptPathInScene()} of {playerToAffect._ToStringSafe()}");
             return false;
         }
         #endregion
 
-        internal void ResetAllPlayerVoices() {
+        internal void _ResetAllPlayerVoices() {
             for (int i = 0; i < ExistingRemotePlayerIds.Count;) {
                 int playerId = ExistingRemotePlayerIds[i].Int;
-                var playerApi = playerId.IdToVrcPlayer();
+                var playerApi = playerId._IdToVrcPlayer();
                 if (!Utilities.IsValid(playerApi)) {
                     // this is not supposed to happen as Players should be removed by OnPlayerLeft before they become invalid
-                    Error($"Player {playerId} at position {i} has unexpectedly become invalid, deleting entry");
+                    _Warn($"Player {playerId} at position {i} has unexpectedly become invalid, deleting entry");
                     ExistingRemotePlayerIds.RemoveAt(i);
                     continue;
                 }
 
-                UpdateVoiceAudio(playerApi, 1f, true, 15f, 25, 0, 0);
-                UpdateAvatarAudio(playerApi, 1f, false, false, 10f, 40, 0, 0);
+                _UpdateVoiceAudio(playerApi, 1f, true, 15f, 25, 0, 0);
+                _UpdateAvatarAudio(playerApi, 1f, false, false, 10f, 40, 0, 0);
                 i++;
             }
         }
 
-        internal PlayerAudioOverride UpdateAudioFilters(
+        internal PlayerAudioOverride _UpdateAudioFilters(
                 PlayerAudioOverride newOverride,
                 PlayerAudioOverride oldOverride
         ) {
@@ -1021,51 +1033,51 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             }
 
             if (Utilities.IsValid(newOverride)) {
-                UseReverbSettings(newOverride.OptionalReverb);
+                _UseReverbSettings(newOverride.OptionalReverb);
                 return newOverride;
             }
 
-            UseReverbSettings(null);
+            _UseReverbSettings(null);
             return null;
         }
 
-        public override void OnEvent(string eventName) {
+        public override void _OnEvent(string eventName) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnEvent)} {eventName}");
+            _DebugLog($"{nameof(_OnEvent)} {eventName}");
 #endif
             #endregion
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(OnEvent)}: MVC not initialized");
+                _Error($"{nameof(_OnEvent)}: MVC not initialized");
                 return;
             }
 
             switch (eventName) {
-                case nameof(OnModelChanged):
-                    OnModelChanged();
+                case nameof(_OnModelChanged):
+                    _OnModelChanged();
 
                     break;
                 default:
-                    base.OnEvent(eventName);
+                    base._OnEvent(eventName);
                     break;
             }
         }
 
-        private void OnModelChanged() {
+        private void _OnModelChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnModelChanged));
+            _DebugLog(nameof(_OnModelChanged));
 #endif
             #endregion
 
             if (!Utilities.IsValid(LocalConfiguration)) {
-                Error($"{nameof(LocalConfiguration)} invalid");
+                _Error($"{nameof(LocalConfiguration)} invalid");
                 return;
             }
 
             if (!Utilities.IsValid(SyncedMasterConfiguration)) {
-                Error($"{nameof(SyncedMasterConfiguration)} invalid");
+                _Error($"{nameof(SyncedMasterConfiguration)} invalid");
                 return;
             }
 
@@ -1074,15 +1086,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     : LocalConfiguration;
         }
 
-        private bool AreMandatoryReferencesValid() {
+        private bool _AreMandatoryReferencesValid() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(AreMandatoryReferencesValid));
+            _DebugLog(nameof(_AreMandatoryReferencesValid));
 #endif
             #endregion
 
             if (!Utilities.IsValid(LocalConfiguration)) {
-                Error($"{nameof(LocalConfiguration)} invalid");
+                _Error($"{nameof(LocalConfiguration)} invalid");
                 return false;
             }
 
@@ -1090,7 +1102,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 return true;
             }
 
-            Error($"{nameof(SyncedMasterConfiguration)} invalid");
+            _Error($"{nameof(SyncedMasterConfiguration)} invalid");
             return false;
         }
         #endregion
@@ -1098,46 +1110,46 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         public override void OnOwnershipTransferred(VRCPlayerApi player) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnOwnershipTransferred)} to '{player.DisplayNameSafe()}'");
+            _DebugLog($"{nameof(OnOwnershipTransferred)} to '{player._DisplayNameSafe()}'");
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error($"{nameof(OnOwnershipTransferred)}: Not initialized");
+                _Error($"{nameof(OnOwnershipTransferred)}: Not initialized");
                 return;
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(OnOwnershipTransferred)}: MVC not initialized");
+                _Error($"{nameof(OnOwnershipTransferred)}: MVC not initialized");
                 return;
             }
 
             if (!Utilities.IsValid(LocalConfiguration)) {
-                Error($"{nameof(LocalConfiguration)} is invalid");
+                _Error($"{nameof(LocalConfiguration)} is invalid");
                 return;
             }
 
             LocalConfiguration.Dirty = true;
-            LocalConfiguration.NotifyIfDirty(1);
+            LocalConfiguration._NotifyIfDirty(1);
         }
 
         #region Player Events
         public override void OnPlayerJoined(VRCPlayerApi player) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnPlayerJoined)} '{player.DisplayNameSafe()}'");
+            _DebugLog($"{nameof(OnPlayerJoined)} '{player._DisplayNameSafe()}'");
 #endif
             #endregion
 
             if (!Utilities.IsValid(player)) {
-                Error("Invalid player joined");
+                _Error("Invalid player joined");
                 return;
             }
 
             if (player.isLocal) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog("Local player joined and is being ignored");
+                _DebugLog("Local player joined and is being ignored");
 #endif
                 #endregion
 
@@ -1145,7 +1157,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             }
 
             if (ExistingRemotePlayerIds.Contains(player.playerId)) {
-                Warn($"{player.ToStringSafe()} already exists!");
+                _Warn($"{player._ToStringSafe()} already exists!");
                 return;
             }
 
@@ -1153,7 +1165,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{player.ToStringSafe()} added to {nameof(ExistingRemotePlayerIds)}");
+            _DebugLog($"{player._ToStringSafe()} added to {nameof(ExistingRemotePlayerIds)}");
 #endif
             #endregion
         }
@@ -1161,17 +1173,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         public override void OnPlayerLeft(VRCPlayerApi player) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnPlayerLeft)} '{player.DisplayNameSafe()}'");
+            _DebugLog($"{nameof(OnPlayerLeft)} '{player._DisplayNameSafe()}'");
 #endif
             #endregion
 
-            if (player.IsLocalSafe()) {
+            if (player._IsLocalSafe()) {
                 // don't bother doing anything
                 return;
             }
 
             if (!HasStartedOk) {
-                Error($"{nameof(OnPlayerLeft)}: Not initialized");
+                _Error($"{nameof(OnPlayerLeft)}: Not initialized");
                 return;
             }
 
@@ -1180,20 +1192,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(OnPlayerLeft)}: MVC not initialized");
+                _Error($"{nameof(OnPlayerLeft)}: MVC not initialized");
                 return;
             }
 
-            PurgeOverridesOfPlayer(player.PlayerIdSafe());
-            PurgeOverridesOfInvalidPlayers();
+            _PurgeOverridesOfPlayer(player._PlayerIdSafe());
+            _PurgeOverridesOfInvalidPlayers();
 
             if (!Utilities.IsValid(LocalConfiguration)) {
-                Error($"{nameof(LocalConfiguration)} is invalid");
+                _Error($"{nameof(LocalConfiguration)} is invalid");
                 return;
             }
 
             LocalConfiguration.Dirty = true;
-            LocalConfiguration.NotifyIfDirty(1);
+            LocalConfiguration._NotifyIfDirty(1);
         }
         #endregion
 
@@ -1201,17 +1213,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         #region Player Checks
         /// <param name="player"></param>
         /// <returns>True when a player is not ignored and is affected only by global effects</returns>
-        public bool UsesDefaultEffects(VRCPlayerApi player) {
+        public bool _UsesDefaultEffects(VRCPlayerApi player) {
             if (!HasStartedOk) {
-                Error($"{nameof(UsesDefaultEffects)}: Not initialized");
+                _Error($"{nameof(_UsesDefaultEffects)}: Not initialized");
                 return false;
             }
 
             if (IsControllerInitialized) {
-                return !IgnoredPlayers.Contains(player.PlayerIdSafe()) && !HasActiveVoiceOverrides(player);
+                return !IgnoredPlayers._Contains(player._PlayerIdSafe()) && !_HasActiveVoiceOverrides(player);
             }
 
-            Error($"{nameof(UsesDefaultEffects)}: MVC not initialized");
+            _Error($"{nameof(_UsesDefaultEffects)}: MVC not initialized");
             return false;
         }
 
@@ -1220,33 +1232,33 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// </summary>
         /// <param name="player"></param>
         /// <returns>true when a player is not affected global nor by override effects</returns>
-        public bool IsIgnored(VRCPlayerApi player) {
+        public bool _IsIgnored(VRCPlayerApi player) {
             if (!HasStartedOk) {
-                Error($"{nameof(IsIgnored)}: Not initialized");
+                _Error($"{nameof(_IsIgnored)}: Not initialized");
                 return false;
             }
 
             if (IsControllerInitialized) {
-                return IgnoredPlayers.Contains(player.PlayerIdSafe());
+                return IgnoredPlayers._Contains(player._PlayerIdSafe());
             }
 
-            Error($"{nameof(IsIgnored)}: MVC not initialized");
+            _Error($"{nameof(_IsIgnored)}: MVC not initialized");
             return false;
         }
 
         /// <param name="player"></param>
         /// <returns>true if the player is not ignored and is assigned to at least one override</returns>
-        public bool UsesVoiceOverride(VRCPlayerApi player) {
+        public bool _UsesVoiceOverride(VRCPlayerApi player) {
             if (!HasStartedOk) {
-                Error($"{nameof(UsesVoiceOverride)}: Not initialized");
+                _Error($"{nameof(_UsesVoiceOverride)}: Not initialized");
                 return false;
             }
 
             if (IsControllerInitialized) {
-                return !IgnoredPlayers.Contains(player.PlayerIdSafe()) && HasActiveVoiceOverrides(player);
+                return !IgnoredPlayers._Contains(player._PlayerIdSafe()) && _HasActiveVoiceOverrides(player);
             }
 
-            Error($"{nameof(UsesVoiceOverride)}: MVC not initialized");
+            _Error($"{nameof(_UsesVoiceOverride)}: MVC not initialized");
             return false;
         }
 
@@ -1255,24 +1267,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// </summary>
         /// <param name="player"></param>
         /// <returns>true if the player is assigned to at least one override</returns>
-        public bool HasActiveVoiceOverrides(VRCPlayerApi player) {
+        public bool _HasActiveVoiceOverrides(VRCPlayerApi player) {
             if (!HasStartedOk) {
-                Error($"{nameof(HasActiveVoiceOverrides)}: Not initialized");
+                _Error($"{nameof(_HasActiveVoiceOverrides)}: Not initialized");
                 return false;
             }
 
             if (!IsControllerInitialized) {
-                Error($"{nameof(HasActiveVoiceOverrides)}: MVC not initialized");
+                _Error($"{nameof(_HasActiveVoiceOverrides)}: MVC not initialized");
                 return false;
             }
 
             if (!Utilities.IsValid(player)) {
-                Error($"{nameof(player)} invalid");
+                _Error($"{nameof(player)} invalid");
                 return false;
             }
 
             if (player.isLocal) {
-                return LocalPlayerOverrideList.GetMaxPriority(player, out var unused);
+                return LocalPlayerOverrideList._GetMaxPriority(player, out var unused);
             }
 
             if (!PlayersToOverride.TryGetValue(player.playerId, out var list)) {
@@ -1280,7 +1292,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             }
 
             var overrideList = (PlayerAudioOverrideList)list.Reference;
-            return Utilities.IsValid(overrideList) && overrideList.GetMaxPriority(player, out var unused2);
+            return Utilities.IsValid(overrideList) && overrideList._GetMaxPriority(player, out var unused2);
         }
         #endregion
 
@@ -1290,12 +1302,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// local player not included if it has an override
         /// </summary>
         /// <returns>copy of array of player ids or empty array</returns>
-        public DataList GetNonLocalPlayersWithOverrides() {
+        public DataList _GetNonLocalPlayersWithOverrides() {
 #if TLP_DEBUG
-            DebugLog(nameof(GetNonLocalPlayersWithOverrides));
+            _DebugLog(nameof(_GetNonLocalPlayersWithOverrides));
 #endif
             if (!HasStartedOk) {
-                Error($"{nameof(HasActiveVoiceOverrides)}: Not initialized");
+                _Error($"{nameof(_HasActiveVoiceOverrides)}: Not initialized");
                 return new DataList();
             }
 
@@ -1304,7 +1316,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 return PlayersToOverride.GetKeys();
             }
 
-            Error($"{nameof(GetNonLocalPlayersWithOverrides)}: MVC not initialized");
+            _Error($"{nameof(_GetNonLocalPlayersWithOverrides)}: MVC not initialized");
             return new DataList();
         }
 
@@ -1312,9 +1324,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         ///
         /// </summary>
         /// <param name="audioReverbFilter">Clears the reverb settings when null, otherwise copies and applies the values</param>
-        internal void UseReverbSettings(AudioReverbFilter audioReverbFilter) {
+        internal void _UseReverbSettings(AudioReverbFilter audioReverbFilter) {
 #if TLP_DEBUG
-            DebugLog(nameof(UseReverbSettings));
+            _DebugLog(nameof(_UseReverbSettings));
 #endif
             bool clearSettings = !Utilities.IsValid(audioReverbFilter);
             if (clearSettings) {
@@ -1351,54 +1363,54 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
 
         #region Overrides
-        protected override bool InitializeInternal() {
+        protected override bool _InitializeInternal() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(InitializeInternal));
+            _DebugLog(nameof(_InitializeInternal));
 #endif
             #endregion
 
             if (!Utilities.IsValid(PlayerOverrideListPool)) {
-                Error($"{nameof(PlayerOverrideListPool)} is not set");
+                _Error($"{nameof(PlayerOverrideListPool)} is not set");
                 return false;
             }
 
             if (!Utilities.IsValid(DefaultConfiguration)) {
-                Error($"{nameof(DefaultConfiguration)} is not set");
+                _Error($"{nameof(DefaultConfiguration)} is not set");
                 return false;
             }
 
             if (!Utilities.IsValid(PlayerOcclusionStrategy)) {
-                Error($"{nameof(PlayerOcclusionStrategy)} is not set");
+                _Error($"{nameof(PlayerOcclusionStrategy)} is not set");
                 return false;
             }
 
             if (!Utilities.IsValid(IgnoredPlayers)) {
-                Error($"{nameof(IgnoredPlayers)} is not set");
+                _Error($"{nameof(IgnoredPlayers)} is not set");
                 return false;
             }
 
             if (!Utilities.IsValid(MainAudioReverbFilter)) {
-                Error($"{nameof(MainAudioReverbFilter)} is not set");
+                _Error($"{nameof(MainAudioReverbFilter)} is not set");
                 return false;
             }
 
-            return base.InitializeInternal();
+            return base._InitializeInternal();
         }
 
-        internal static string ExpectedGameObjectName() {
+        internal static string _ExpectedGameObjectName() {
             return $"TLP_{nameof(PlayerAudioController)}";
         }
 
-        internal void LogVrcDefaultAudioSettings() {
+        internal void _LogVrcDefaultAudioSettings() {
             // TODO VRChat wtf?! why are the avatar settings not exposed as well???
             var player = Networking.LocalPlayer;
             if (!Utilities.IsValid(player)) {
-                Error($"{nameof(LogVrcDefaultAudioSettings)}: Local player invalid");
+                _Error($"{nameof(_LogVrcDefaultAudioSettings)}: Local player invalid");
                 return;
             }
 
-            Info(
+            _Info(
                     "VRChat client default player voice settings (BEFORE UdonVoiceUtils is activated):\n"
                     + $"VoiceDistanceNear: {player.GetVoiceDistanceNear()} meter\n"
                     + $"VoiceDistanceFar: {player.GetVoiceDistanceFar()} meter\n"
@@ -1407,36 +1419,36 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                     + $"VoiceLowPassFiltering: {(player.GetVoiceLowpass() ? "Yes" : "No")}\n");
         }
 
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            string expectedName = ExpectedGameObjectName();
+            string expectedName = _ExpectedGameObjectName();
             if (gameObject.name != expectedName) {
-                Warn($"Changing name of GameObject '{transform.GetPathInScene()}' to '{expectedName}'");
+                _Warn($"Changing name of GameObject '{transform._GetPathInScene()}' to '{expectedName}'");
                 gameObject.name = expectedName;
             }
 
-            if (!AreMandatoryReferencesValid()) {
-                ErrorAndDisableComponent($"Setup incomplete");
+            if (!_AreMandatoryReferencesValid()) {
+                _ErrorAndDisableComponent($"Setup incomplete");
                 return false;
             }
 
-            if (!IsControllerInitialized && !ValidateAndSetupMvc()) {
-                ErrorAndDisableComponent($"MVC setup failed");
+            if (!IsControllerInitialized && !_ValidateAndSetupMvc()) {
+                _ErrorAndDisableComponent($"MVC setup failed");
                 return false;
             }
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            LogVrcDefaultAudioSettings();
+            _LogVrcDefaultAudioSettings();
 #endif
             #endregion
 
 
-            if (GetMaxPriorityOverride(LocalPlayer, out var localOverride)) {
-                UseReverbSettings(localOverride.OptionalReverb);
+            if (_GetMaxPriorityOverride(LocalPlayer, out var localOverride)) {
+                _UseReverbSettings(localOverride.OptionalReverb);
             }
 
             return true;

@@ -23,24 +23,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
         [FormerlySerializedAs("removed")]
         public bool Removed;
 
-        public void LocalPlayerAdded() {
+        public void _LocalPlayerAdded() {
             Added = true;
         }
 
-        public void LocalPlayerRemoved() {
+        public void _LocalPlayerRemoved() {
             Removed = true;
         }
 
-        public override void OnEvent(string name) {
-            switch (name) {
-                case "LocalPlayerAdded":
-                    LocalPlayerAdded();
+        public override void _OnEvent(string eventName) {
+            switch (eventName) {
+                case nameof(_LocalPlayerAdded):
+                    _LocalPlayerAdded();
                     break;
-                case "LocalPlayerRemoved":
-                    LocalPlayerRemoved();
+                case nameof(_LocalPlayerRemoved):
+                    _LocalPlayerRemoved();
                     break;
                 default:
-                    base.OnEvent(name);
+                    base._OnEvent(eventName);
                     break;
             }
         }

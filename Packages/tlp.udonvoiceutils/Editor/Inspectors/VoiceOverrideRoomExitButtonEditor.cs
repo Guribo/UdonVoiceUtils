@@ -10,7 +10,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
     [CustomEditor(typeof(VoiceOverrideRoomExitButton))]
     public class VoiceOverrideRoomExitButtonEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Example implementation of a door which removes a player from " +
                    "a VoiceOverrideRoom when interacting with the button.\n\n" +
                    "Pitfall: If the entering player carries another player, " +
@@ -49,16 +49,16 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     break;
                 default:
                 {
-                    EditorGUIHelper.HandleInput(guiEvent, voiceOverrideRoomExitButton, SelectRoom);
+                    EditorGUIHelper._HandleInput(guiEvent, voiceOverrideRoomExitButton, _SelectRoom);
                 }
                     break;
             }
         }
 
-        private static void SelectRoom(Vector3 mousePosition, UdonSharpBehaviour destination) {
+        private static void _SelectRoom(Vector3 mousePosition, UdonSharpBehaviour destination) {
             var exitButton = (VoiceOverrideRoomExitButton)destination;
             if (Utilities.IsValid(exitButton.VoiceOverrideRoom)) {
-                EditorGUIHelper.TrySelectAtClick(mousePosition, exitButton.VoiceOverrideRoom);
+                EditorGUIHelper._TrySelectAtClick(mousePosition, exitButton.VoiceOverrideRoom);
             }
         }
     }

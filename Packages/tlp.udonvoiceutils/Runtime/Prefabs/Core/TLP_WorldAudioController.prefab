@@ -264,7 +264,7 @@ MonoBehaviour:
   _udonSharpBackingUdonBehaviour: {fileID: 7441210042744875705}
   AutoRetrySendOnFailure: 1
   PauseSynchronization: 0
-  Severity: 5
+  Severity: 2
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0

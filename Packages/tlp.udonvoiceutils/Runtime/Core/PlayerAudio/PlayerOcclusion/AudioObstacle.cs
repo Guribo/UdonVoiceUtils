@@ -15,7 +15,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.PlayerAudio.PlayerOcclusion
     [CustomEditor(typeof(AudioObstacle))]
     public class AudioObstacleEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Attach to environment colliders to define per-obstacle occlusion clarity. " +
                    "When a raycast hits this collider, the configured clarity value is used " +
                    "instead of the global environment clarity.";

@@ -31,10 +31,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         #region VRC Callbacks
         public override void OnPlayerRespawn(VRCPlayerApi player) {
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnPlayerRespawn)}: {player.ToStringSafe()}");
+            _DebugLog($"{nameof(OnPlayerRespawn)}: {player._ToStringSafe()}");
 #endif
             if (!Initialized) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return;
             }
 
@@ -42,9 +42,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!player.IsLocalSafe()) {
+            if (!player._IsLocalSafe()) {
 #if TLP_DEBUG
-                Warn($"Ignore irrelevant {player.ToStringSafe()}");
+                _Warn($"Ignore irrelevant {player._ToStringSafe()}");
 #endif
                 return;
             }
@@ -52,36 +52,36 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             if (!IsInZone) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"{player.ToStringSafe()} was not in {this.GetScriptPathInScene()}");
+                _DebugLog($"{player._ToStringSafe()} was not in {this._GetScriptPathInScene()}");
 #endif
                 #endregion
 
                 return;
             }
 
-            if (!RemoveLocalPlayerFromZone(player)) {
-                Error($"Failed to remove {player.ToStringSafe()} from {this.GetScriptPathInScene()}");
+            if (!_RemoveLocalPlayerFromZone(player)) {
+                _Error($"Failed to remove {player._ToStringSafe()} from {this._GetScriptPathInScene()}");
             }
         }
         #endregion
 
         #region Events
-        public void OnPlayerListUpdated() {
+        public void _OnPlayerListUpdated() {
 #if TLP_DEBUG
-            DebugLog(nameof(OnPlayerListUpdated));
+            _DebugLog(nameof(_OnPlayerListUpdated));
 #endif
             if (!Initialized) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return;
             }
 
-            PlayerAudioOverride.Refresh();
+            PlayerAudioOverride._Refresh();
 
             var localPlayer = Networking.LocalPlayer;
-            if (PlayerAudioOverride.IsAffected(localPlayer) == IsInZone) {
+            if (PlayerAudioOverride._IsAffected(localPlayer) == IsInZone) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"{localPlayer.ToStringSafe()} is in sync with other players ({nameof(IsInZone)} = {IsInZone})");
+                _DebugLog($"{localPlayer._ToStringSafe()} is in sync with other players ({nameof(IsInZone)} = {IsInZone})");
 #endif
                 #endregion
 
@@ -89,22 +89,22 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (IsInZone) {
-                Warn(
-                        $"{localPlayer.ToStringSafe()} not in {PlayerAudioOverride.GetScriptPathInScene()} despite being in {this.GetScriptPathInScene()} (network state outdated)");
-                if (!PlayerAudioOverride.AddPlayer(localPlayer)) {
-                    Error($"Failed to add {localPlayer.ToStringSafe()} to {this.GetScriptPathInScene()}");
+                _Warn(
+                        $"{localPlayer._ToStringSafe()} not in {PlayerAudioOverride._GetScriptPathInScene()} despite being in {this._GetScriptPathInScene()} (network state outdated)");
+                if (!PlayerAudioOverride._AddPlayer(localPlayer)) {
+                    _Error($"Failed to add {localPlayer._ToStringSafe()} to {this._GetScriptPathInScene()}");
                     return;
                 }
             } else {
-                Warn(
-                        $"{localPlayer.ToStringSafe()} in {PlayerAudioOverride.GetScriptPathInScene()} despite no longer being in {this.GetScriptPathInScene()} (network state outdated)");
-                if (!PlayerAudioOverride.RemovePlayer(localPlayer)) {
-                    Error($"Failed to remove {localPlayer.ToStringSafe()} from {this.GetScriptPathInScene()}");
+                _Warn(
+                        $"{localPlayer._ToStringSafe()} in {PlayerAudioOverride._GetScriptPathInScene()} despite no longer being in {this._GetScriptPathInScene()} (network state outdated)");
+                if (!PlayerAudioOverride._RemovePlayer(localPlayer)) {
+                    _Error($"Failed to remove {localPlayer._ToStringSafe()} from {this._GetScriptPathInScene()}");
                     return;
                 }
             }
 
-            UpdateNetwork(localPlayer);
+            _UpdateNetwork(localPlayer);
         }
         #endregion
 
@@ -130,138 +130,138 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public void OnEnable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnEnable));
+            _DebugLog(nameof(OnEnable));
 #endif
             #endregion
 
             if (Initialized) {
-                OnPlayerListUpdated();
+                _OnPlayerListUpdated();
             }
         }
 
         public void OnDisable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnDisable));
+            _DebugLog(nameof(OnDisable));
 #endif
             #endregion
 
             if (Initialized) {
-                PlayerSet.RemoveListener(this, true);
+                PlayerSet._RemoveListener(this, true);
             }
         }
         #endregion
 
         #region Public
-        public bool EnterRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation) {
+        public bool _EnterRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(EnterRoom));
+            _DebugLog(nameof(_EnterRoom));
 #endif
             #endregion
 
             if (!Initialized) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return false;
             }
 
-            if (!localPlayer.IsLocalSafe()) {
-                Error($"Player {localPlayer.ToStringSafe()} is not local");
+            if (!localPlayer._IsLocalSafe()) {
+                _Error($"Player {localPlayer._ToStringSafe()} is not local");
                 return false;
             }
 
-            if (!AddLocalPlayerToZone(localPlayer)) {
-                Error("Failed adding player to zone");
+            if (!_AddLocalPlayerToZone(localPlayer)) {
+                _Error("Failed adding player to zone");
                 return false;
             }
 
-            TeleportPlayer(optionTeleportLocation);
+            _TeleportPlayer(optionTeleportLocation);
             return true;
         }
 
-        public bool ExitRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation) {
+        public bool _ExitRoom(VRCPlayerApi localPlayer, Transform optionTeleportLocation) {
 #if TLP_DEBUG
-            DebugLog(nameof(ExitRoom));
+            _DebugLog(nameof(_ExitRoom));
 #endif
             if (!Initialized) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return false;
             }
 
-            if (!localPlayer.IsLocalSafe()) {
-                Error($"{localPlayer.ToStringSafe()} is not local");
+            if (!localPlayer._IsLocalSafe()) {
+                _Error($"{localPlayer._ToStringSafe()} is not local");
                 return false;
             }
 
-            if (!RemoveLocalPlayerFromZone(localPlayer)) {
-                Error("Local player was not in the zone");
+            if (!_RemoveLocalPlayerFromZone(localPlayer)) {
+                _Error("Local player was not in the zone");
                 return false;
             }
 
-            TeleportPlayer(optionTeleportLocation);
+            _TeleportPlayer(optionTeleportLocation);
             return true;
         }
 
 
-        public bool Contains(VRCPlayerApi playerApi) {
+        public bool _Contains(VRCPlayerApi playerApi) {
 #if TLP_DEBUG
-            DebugLog(nameof(Contains));
+            _DebugLog(nameof(_Contains));
 #endif
             if (Initialized) {
-                return PlayerAudioOverride.IsAffected(playerApi);
+                return PlayerAudioOverride._IsAffected(playerApi);
             }
 
-            Error("Not initialized");
+            _Error("Not initialized");
             return false;
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
             if (!Utilities.IsValid(PlayerSet)) {
-                Error($"{nameof(PlayerSet)} not set");
+                _Error($"{nameof(PlayerSet)} not set");
                 return false;
             }
 
             if (!Utilities.IsValid(PlayerAudioOverride)) {
-                Error($"{nameof(PlayerAudioOverride)} not set");
+                _Error($"{nameof(PlayerAudioOverride)} not set");
                 return false;
             }
 
-            if (!PlayerSet.AddListenerVerified(this, nameof(OnPlayerListUpdated))) {
-                Error($"Failed listening to {PlayerSet.GetScriptPathInScene()}.{nameof(OnPlayerListUpdated)}");
+            if (!PlayerSet._AddListenerVerified(this, nameof(_OnPlayerListUpdated))) {
+                _Error($"Failed listening to {PlayerSet._GetScriptPathInScene()}.{nameof(_OnPlayerListUpdated)}");
                 return false;
             }
 
             Initialized = true;
 
-            OnPlayerListUpdated();
+            _OnPlayerListUpdated();
             return true;
         }
 
-        public override void OnEvent(string eventName) {
+        public override void _OnEvent(string eventName) {
             switch (eventName) {
-                case nameof(OnPlayerListUpdated):
+                case nameof(_OnPlayerListUpdated):
 #if TLP_DEBUG
-                    DebugLog($"{nameof(OnEvent)} {eventName}");
+                    _DebugLog($"{nameof(_OnEvent)} {eventName}");
 #endif
-                    OnPlayerListUpdated();
+                    _OnPlayerListUpdated();
                     break;
                 default:
-                    base.OnEvent(eventName);
+                    base._OnEvent(eventName);
                     break;
             }
         }
         #endregion
 
         #region Internal
-        internal void TeleportPlayer(Transform target) {
+        internal void _TeleportPlayer(Transform target) {
 #if TLP_DEBUG
-            DebugLog(nameof(TeleportPlayer));
+            _DebugLog(nameof(_TeleportPlayer));
 #endif
             if (Utilities.IsValid(target)) {
                 Networking.LocalPlayer.TeleportTo(
@@ -273,55 +273,55 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
         }
 
-        internal void UpdateNetwork(VRCPlayerApi localPlayer) {
+        internal void _UpdateNetwork(VRCPlayerApi localPlayer) {
 #if TLP_DEBUG
-            DebugLog(nameof(UpdateNetwork));
+            _DebugLog(nameof(_UpdateNetwork));
 #endif
             var syncedIntegerArray = PlayerSet.gameObject;
             if (!Networking.IsOwner(syncedIntegerArray)) {
                 Networking.SetOwner(localPlayer, syncedIntegerArray);
             }
 
-            if (!PlayerSet.RaiseRemoteOnly(this)) {
-                Error($"Failed to send current {nameof(PlayerSet)}");
+            if (!PlayerSet._RaiseRemoteOnly(this)) {
+                _Error($"Failed to send current {nameof(PlayerSet)}");
             }
         }
 
-        internal bool AddLocalPlayerToZone(VRCPlayerApi localPlayer) {
+        internal bool _AddLocalPlayerToZone(VRCPlayerApi localPlayer) {
 #if TLP_DEBUG
-            DebugLog(nameof(AddLocalPlayerToZone));
+            _DebugLog(nameof(_AddLocalPlayerToZone));
 #endif
-            if (!PlayerAudioOverride.AddPlayer(localPlayer)) {
-                Error($"Adding local player to {nameof(PlayerAudioOverride)} failed");
+            if (!PlayerAudioOverride._AddPlayer(localPlayer)) {
+                _Error($"Adding local player to {nameof(PlayerAudioOverride)} failed");
                 return false;
             }
 
             IsInZone = true;
-            UpdateNetwork(localPlayer);
+            _UpdateNetwork(localPlayer);
 
             return true;
         }
 
-        internal bool RemoveLocalPlayerFromZone(VRCPlayerApi localPlayer) {
+        internal bool _RemoveLocalPlayerFromZone(VRCPlayerApi localPlayer) {
 #if TLP_DEBUG
-            DebugLog(nameof(RemoveLocalPlayerFromZone));
+            _DebugLog(nameof(_RemoveLocalPlayerFromZone));
 #endif
             IsInZone = false;
-            if (!PlayerAudioOverride.IsAffected(localPlayer)) {
+            if (!PlayerAudioOverride._IsAffected(localPlayer)) {
 #if TLP_DEBUG
-                Warn(
-                        $"{nameof(RemoveLocalPlayerFromZone)}: {localPlayer.ToStringSafe()} was not affected by {PlayerAudioOverride.GetScriptPathInScene()}");
+                _Warn(
+                        $"{nameof(_RemoveLocalPlayerFromZone)}: {localPlayer._ToStringSafe()} was not affected by {PlayerAudioOverride._GetScriptPathInScene()}");
 #endif
                 return true;
             }
 
-            if (!PlayerAudioOverride.RemovePlayer(localPlayer)) {
-                Error(
-                        $"Failed to remove {localPlayer.ToStringSafe()} from {PlayerAudioOverride.GetScriptPathInScene()}");
+            if (!PlayerAudioOverride._RemovePlayer(localPlayer)) {
+                _Error(
+                        $"Failed to remove {localPlayer._ToStringSafe()} from {PlayerAudioOverride._GetScriptPathInScene()}");
                 return false;
             }
 
-            UpdateNetwork(localPlayer);
+            _UpdateNetwork(localPlayer);
             return true;
         }
         #endregion

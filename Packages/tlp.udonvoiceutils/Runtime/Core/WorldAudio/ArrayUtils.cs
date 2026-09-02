@@ -5,14 +5,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 {
     public static class ArrayUtils
     {
-        public static int[] CreateExponentialBuckets(
+        public static int[] _CreateExponentialBuckets(
                 int totalElements,
                 int bucketCount = 8,
                 float growthFactor = 2,
                 bool smallestFirst = true
         ) {
             if (totalElements <= 0) {
-                Debug.LogError($"{nameof(CreateExponentialBuckets)}: Total elements must be > 0");
+                Debug.LogError($"{nameof(_CreateExponentialBuckets)}: Total elements must be > 0");
                 return null;
             }
 
@@ -74,8 +74,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             return buckets;
         }
         
-        public static int UpdatePartitionCursorWithLooping(int partitionIndex, int partitionCursor, int partitionSize) {
-            return partitionIndex + (partitionCursor - partitionIndex).AddLooping(partitionSize);
+        public static int _UpdatePartitionCursorWithLooping(int partitionIndex, int partitionCursor, int partitionSize) {
+            return partitionIndex + (partitionCursor - partitionIndex)._AddLooping(partitionSize);
         }
     }
 }

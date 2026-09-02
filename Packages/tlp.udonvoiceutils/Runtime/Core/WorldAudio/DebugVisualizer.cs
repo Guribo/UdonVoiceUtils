@@ -16,7 +16,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(DebugVisualizer))]
     public class DebugVisualizerEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Visual debug overlay for the importance system. " +
                    "Instantiates transform indicators showing which emitter is being re-evaluated " +
                    "and which partition is currently updating. Only active in TLP_DEBUG builds.";
@@ -62,8 +62,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
@@ -76,8 +76,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Public API
-        public void InitializePartitionIndicators(int count) {
-            DestroyPartitionIndicators();
+        public void _InitializePartitionIndicators(int count) {
+            _DestroyPartitionIndicators();
             _partitionIndicators = new Transform[count];
 
             if (!Utilities.IsValid(PartitionUpdateIndicatorTemplate)) {
@@ -91,7 +91,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             }
         }
 
-        public void OnTreeUpdated(Vector3 position) {
+        public void _OnTreeUpdated(Vector3 position) {
             if (!Utilities.IsValid(TreeUpdateIndicator)) {
                 return;
             }
@@ -99,7 +99,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             TreeUpdateIndicator.position = position;
         }
 
-        public void OnPartitionUpdated(int partitionIndex, Vector3 emitterPosition) {
+        public void _OnPartitionUpdated(int partitionIndex, Vector3 emitterPosition) {
             if (partitionIndex < 0 || partitionIndex >= _partitionIndicators.Length) {
                 return;
             }
@@ -115,12 +115,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 
         #region Unity Lifecycle
         private void OnDestroy() {
-            DestroyPartitionIndicators();
+            _DestroyPartitionIndicators();
         }
         #endregion
 
         #region Internal
-        private void DestroyPartitionIndicators() {
+        private void _DestroyPartitionIndicators() {
             foreach (var indicator in _partitionIndicators) {
                 if (!Utilities.IsValid(indicator)) {
                     continue;

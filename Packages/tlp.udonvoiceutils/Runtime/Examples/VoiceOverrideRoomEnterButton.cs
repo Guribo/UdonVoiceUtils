@@ -39,23 +39,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public override void Interact() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(Interact)}: {Networking.LocalPlayer.ToStringSafe()}");
+            _DebugLog($"{nameof(Interact)}: {Networking.LocalPlayer._ToStringSafe()}");
 #endif
             #endregion
 
             if (!Initialized) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return;
             }
 
             var localPlayer = Networking.LocalPlayer;
             if (!Utilities.IsValid(localPlayer)) {
-                Error("Local player invalid");
+                _Error("Local player invalid");
                 return;
             }
 
-            if (VoiceOverrideRoom.Contains(localPlayer)) {
-                Warn($"{localPlayer.ToStringSafe()} already in room");
+            if (VoiceOverrideRoom._Contains(localPlayer)) {
+                _Warn($"{localPlayer._ToStringSafe()} already in room");
 
                 if (Utilities.IsValid(OptionalEnterLocation)) {
                     localPlayer.TeleportTo(
@@ -69,20 +69,20 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!VoiceOverrideRoom.EnterRoom(localPlayer, OptionalEnterLocation)) {
-                Error($"Failed to add {localPlayer} to {VoiceOverrideRoom.GetScriptPathInScene()}");
+            if (!VoiceOverrideRoom._EnterRoom(localPlayer, OptionalEnterLocation)) {
+                _Error($"Failed to add {localPlayer} to {VoiceOverrideRoom._GetScriptPathInScene()}");
             }
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
             if (!Utilities.IsValid(VoiceOverrideRoom)) {
-                Error($"{nameof(VoiceOverrideRoom)} not set");
+                _Error($"{nameof(VoiceOverrideRoom)} not set");
                 return false;
             }
 

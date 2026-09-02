@@ -15,7 +15,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(AudioSourceStateController))]
     public class AudioSourceStateControllerEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Manages AudioSource play/pause/stop state and handles culling suspension. " +
                    "When culled, playback is frozen and the logical position is preserved so " +
                    "Reactivate() can resume seamlessly. One per AudioSource on OccludedEmitter.";
@@ -71,18 +71,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
             _audioSource = GetComponent<AudioSource>();
-            if (!IsSet(_audioSource, nameof(_audioSource))) {
+            if (!_IsSet(_audioSource, nameof(_audioSource))) {
                 return false;
             }
 
-            _worldAudioController = VoiceUtils.FindWorldAudioController();
-            if (!IsSet(_worldAudioController, nameof(_worldAudioController))) {
+            _worldAudioController = VoiceUtils._FindWorldAudioController();
+            if (!_IsSet(_worldAudioController, nameof(_worldAudioController))) {
                 return false;
             }
 
@@ -103,7 +103,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         /// If culled, resets the play position and cull start time instead of playing directly —
         /// actual playback resumes on the next <see cref="Reactivate"/>.
         /// </summary>
-        public void Play() {
+        public void _Play() {
             if (!HasStartedOk) {
                 return;
             }
@@ -115,13 +115,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                 _cullStartTime = Time.realtimeSinceStartupAsDouble;
 
                 if (LowLatencyMode) {
-                    _worldAudioController.ForceUpdate(gameObject);
+                    _worldAudioController._ForceUpdate(gameObject);
                 }
 
                 return;
             }
 
-            PlayWithBugFix();
+            _PlayWithBugFix();
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         /// into the saved position instead of pausing the AudioSource.
         /// Sets requested state to <see cref="AudioSourceState.Paused"/>.
         /// </summary>
-        public void Pause() {
+        public void _Pause() {
             if (!HasStartedOk) {
                 return;
             }
@@ -155,7 +155,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         /// is treated as virtually playing.
         /// Sets requested state to <see cref="AudioSourceState.Playing"/>.
         /// </summary>
-        public void UnPause() {
+        public void _UnPause() {
             if (!HasStartedOk) {
                 return;
             }
@@ -166,13 +166,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                 _cullStartTime = Time.realtimeSinceStartupAsDouble; // ensure that the clip is virtually playing now
 
                 if (LowLatencyMode) {
-                    _worldAudioController.ForceUpdate(gameObject);
+                    _worldAudioController._ForceUpdate(gameObject);
                 }
 
                 return;
             }
 
-            PlayWithBugFix();
+            _PlayWithBugFix();
             _audioSource.time = (float)_playTimeWhenCulled;
         }
 
@@ -180,7 +180,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         /// Stops playback and sets requested state to <see cref="AudioSourceState.Stopped"/>.
         /// If culled, only updates state without stopping the AudioSource (it is already stopped).
         /// </summary>
-        public void Stop() {
+        public void _Stop() {
             if (!HasStartedOk) {
                 return;
             }
@@ -198,7 +198,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         /// The logical playback position is saved so <see cref="Reactivate"/> can resume seamlessly.
         /// Only has an effect when <see cref="_requestedState"/> is <see cref="AudioSourceState.Playing"/>.
         /// </summary>
-        public void Cull() {
+        public void _Cull() {
             if (!HasStartedOk) {
                 return;
             }
@@ -224,10 +224,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         /// AudioSource is already playing, the requested state is not <see cref="AudioSourceState.Playing"/>,
         /// or the clip has ended during culling.
         /// </summary>
-        public void Reactivate() {
+        public void _Reactivate() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(Reactivate));
+            _DebugLog(nameof(_Reactivate));
 #endif
             #endregion
 
@@ -249,7 +249,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             }
 
             if (!Mathf.Approximately(_audioSource.clip.length, _clipLength)) {
-                PlayWithBugFix(); // clip changed since cull, just play from the start
+                _PlayWithBugFix(); // clip changed since cull, just play from the start
                 return;
             }
 
@@ -269,19 +269,19 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                 return;
             }
 
-            PlayWithBugFix();
+            _PlayWithBugFix();
             _audioSource.time = (float)resumePlayTime;
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"Reactivating at time {resumePlayTime}");
+            _DebugLog($"Reactivating at time {resumePlayTime}");
 #endif
             #endregion
         }
         #endregion
 
         #region Internal
-        private void PlayWithBugFix() {
+        private void _PlayWithBugFix() {
             // ensures audio filters initialize properly afterward in case the gameobject was disabled
             _audioSource.Stop();
             _audioSource.Play();

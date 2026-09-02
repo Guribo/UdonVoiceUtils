@@ -6015,7 +6015,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: ResetAll
+  ListenerMethod: _ResetAll
 --- !u!114 &6733810870935219416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9470,7 +9470,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnSettingsChanged
+  ListenerMethod: _OnSettingsChanged
 --- !u!114 &6466059374950639406
 MonoBehaviour:
   m_ObjectHideFlags: 0

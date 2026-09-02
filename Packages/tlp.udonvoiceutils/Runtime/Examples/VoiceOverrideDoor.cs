@@ -55,18 +55,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public override void OnPlayerRespawn(VRCPlayerApi player) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnPlayerRespawn)}: {player.ToStringSafe()}");
+            _DebugLog($"{nameof(OnPlayerRespawn)}: {player._ToStringSafe()}");
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error($"{nameof(OnPlayerRespawn)}: Not initialized");
+                _Error($"{nameof(OnPlayerRespawn)}: Not initialized");
                 return;
             }
 
-            if (!player.IsLocalSafe()) {
+            if (!player._IsLocalSafe()) {
 #if TLP_DEBUG
-                Warn($"Ignore respawn of irrelevant {player.ToStringSafe()}");
+                _Warn($"Ignore respawn of irrelevant {player._ToStringSafe()}");
 #endif
                 return;
             }
@@ -79,18 +79,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public override void OnPlayerTriggerEnter(VRCPlayerApi player) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnPlayerTriggerEnter)}: {player.ToStringSafe()}");
+            _DebugLog($"{nameof(OnPlayerTriggerEnter)}: {player._ToStringSafe()}");
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error($"{nameof(OnPlayerTriggerEnter)}: Not initialized");
+                _Error($"{nameof(OnPlayerTriggerEnter)}: Not initialized");
                 return;
             }
 
-            if (!player.IsLocalSafe()) {
+            if (!player._IsLocalSafe()) {
 #if TLP_DEBUG
-                DebugLog($"{nameof(OnPlayerTriggerEnter)}: ignoring {player.ToStringSafe()}");
+                _DebugLog($"{nameof(OnPlayerTriggerEnter)}: ignoring {player._ToStringSafe()}");
 #endif
                 return;
             }
@@ -101,32 +101,32 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (VoiceOverrideRoom.Contains(player)) {
-                VoiceOverrideRoom.ExitRoom(player, null);
+            if (VoiceOverrideRoom._Contains(player)) {
+                VoiceOverrideRoom._ExitRoom(player, null);
             }
         }
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnPlayerTriggerExit)}: {player.ToStringSafe()}");
+            _DebugLog($"{nameof(OnPlayerTriggerExit)}: {player._ToStringSafe()}");
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error($"{nameof(OnPlayerTriggerExit)}: Not initialized");
+                _Error($"{nameof(OnPlayerTriggerExit)}: Not initialized");
                 return;
             }
-            if (!player.IsLocalSafe()) {
+            if (!player._IsLocalSafe()) {
 #if TLP_DEBUG
-                DebugLog($"{nameof(OnPlayerTriggerExit)}: ignoring {player.ToStringSafe()}");
+                _DebugLog($"{nameof(OnPlayerTriggerExit)}: ignoring {player._ToStringSafe()}");
 #endif
                 return;
             }
 
             if (_enterPosition == Vector3.zero) {
-                Error(
-                        $"{player.ToStringSafe()} was not touching and is being ignored. Udon missed {nameof(OnPlayerTriggerEnter)} event!?");
+                _Error(
+                        $"{player._ToStringSafe()} was not touching and is being ignored. Udon missed {nameof(OnPlayerTriggerEnter)} event!?");
                 return;
             }
 
@@ -134,12 +134,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             var enterPosition = _enterPosition;
             _enterPosition = Vector3.zero;
 
-            if (HasExitedDoor(enterPosition, exitPosition, ExitDirection)) {
-                RemovePlayerFromRoom(player);
+            if (_HasExitedDoor(enterPosition, exitPosition, ExitDirection)) {
+                _RemovePlayerFromRoom(player);
                 return;
             }
 
-            AddPlayerToRoom(player);
+            _AddPlayerToRoom(player);
         }
 
 
@@ -147,19 +147,19 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         ///
         /// </summary>
         /// <returns>true if the local player is currently in contact with the trigger</returns>
-        public bool IsLocalPlayerTouching() {
+        public bool _IsLocalPlayerTouching() {
             return _enterPosition != Vector3.zero;
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
             if (!Utilities.IsValid(VoiceOverrideRoom)) {
-                Error($"{nameof(VoiceOverrideRoom)} not set");
+                _Error($"{nameof(VoiceOverrideRoom)} not set");
                 return false;
             }
 
@@ -168,18 +168,18 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             var trigger = gameObject.GetComponent<BoxCollider>();
             if (!Utilities.IsValid(trigger)) {
-                Error($"{nameof(BoxCollider)} missing on {transform.GetPathInScene()}");
+                _Error($"{nameof(BoxCollider)} missing on {transform._GetPathInScene()}");
                 return false;
             }
 
             if (!trigger.isTrigger) {
                 trigger.isTrigger = true;
-                Warn($"{nameof(BoxCollider)} was changed to be trigger");
+                _Warn($"{nameof(BoxCollider)} was changed to be trigger");
             }
 
             if (trigger.center != Vector3.zero) {
                 trigger.center = Vector3.zero;
-                Warn($"{nameof(BoxCollider)} center was changed to Vector3.zero");
+                _Warn($"{nameof(BoxCollider)} center was changed to Vector3.zero");
             }
 
             return true;
@@ -193,7 +193,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         /// the positions indicate exiting the room.
         /// If set to 0,0,0 false is returned.</param>
         /// <returns>true if positions indicate that player passed through the door to the outside</returns>
-        internal bool HasExitedDoor(Vector3 enterPosition, Vector3 exitPosition, Vector3 leaveDirection) {
+        internal bool _HasExitedDoor(Vector3 enterPosition, Vector3 exitPosition, Vector3 leaveDirection) {
             if (enterPosition == Vector3.zero
                 || exitPosition == Vector3.zero
                 || leaveDirection == Vector3.zero) {
@@ -213,27 +213,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             return enterInside && exitOutside;
         }
 
-        private void AddPlayerToRoom(VRCPlayerApi player) {
-            if (VoiceOverrideRoom.Contains(player)) {
-                Warn($"{player.ToStringSafe()} already in {VoiceOverrideRoom.GetScriptPathInScene()}");
+        private void _AddPlayerToRoom(VRCPlayerApi player) {
+            if (VoiceOverrideRoom._Contains(player)) {
+                _Warn($"{player._ToStringSafe()} already in {VoiceOverrideRoom._GetScriptPathInScene()}");
                 return;
             }
 
-            if (!VoiceOverrideRoom.EnterRoom(player, null)) {
-                Error($"Failed adding {player.ToStringSafe()} to {VoiceOverrideRoom.GetScriptPathInScene()}");
+            if (!VoiceOverrideRoom._EnterRoom(player, null)) {
+                _Error($"Failed adding {player._ToStringSafe()} to {VoiceOverrideRoom._GetScriptPathInScene()}");
             }
         }
 
-        private void RemovePlayerFromRoom(VRCPlayerApi player) {
-            if (!VoiceOverrideRoom.Contains(player)
-                || !VoiceOverrideRoom.ExitRoom(player, null)) {
-                Warn($"{player.ToStringSafe()} was not in the {VoiceOverrideRoom.GetScriptPathInScene()}");
+        private void _RemovePlayerFromRoom(VRCPlayerApi player) {
+            if (!VoiceOverrideRoom._Contains(player)
+                || !VoiceOverrideRoom._ExitRoom(player, null)) {
+                _Warn($"{player._ToStringSafe()} was not in the {VoiceOverrideRoom._GetScriptPathInScene()}");
                 return;
             }
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{player.ToStringSafe()} has successfully left the {VoiceOverrideRoom.GetScriptPathInScene()}");
+            _DebugLog($"{player._ToStringSafe()} has successfully left the {VoiceOverrideRoom._GetScriptPathInScene()}");
 #endif
             #endregion
         }

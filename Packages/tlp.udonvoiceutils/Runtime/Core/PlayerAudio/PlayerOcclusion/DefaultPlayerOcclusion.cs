@@ -36,7 +36,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
         /// <param name="playerClarity"></param>
         /// <param name="playerOcclusionMask"></param>
         /// <returns>multiplier in range 0 to 1</returns>
-        public override float GetAudioClarity(
+        public override float _GetAudioClarity(
                 Vector3 listenerHead,
                 Vector3 listenerLookDirection,
                 float distanceBetweenPlayerHeads,
@@ -52,7 +52,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
                     playerOcclusionMask
             );
 
-            return DetermineClarityFromOcclusion(
+            return _DetermineClarityFromOcclusion(
                     distanceBetweenPlayerHeads,
                     environmentClarity,
                     playerClarity,
@@ -61,7 +61,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
                     _rayHits);
         }
 
-        internal static float DetermineClarityFromOcclusion(
+        internal static float _DetermineClarityFromOcclusion(
                 float distanceBetweenPlayerHeads,
                 float environmentClarity,
                 float playerClarity,
@@ -69,23 +69,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
                 int hits,
                 RaycastHit[] raycastHits
         ) {
-            if (IsNotOccluded(hits)) {
+            if (_IsNotOccluded(hits)) {
                 return MaxClarity;
             }
 
-            if (PlayersCanNotOccludeEachOther(playerOcclusionMask)) {
-                return GetAudioObstacleClarity(raycastHits[0], environmentClarity);
+            if (_PlayersCanNotOccludeEachOther(playerOcclusionMask)) {
+                return _GetAudioObstacleClarity(raycastHits[0], environmentClarity);
             }
 
-            if (OnePlayerHeadMaybeLeftTheirCapsule(hits)) {
-                return HandleSingleHitOcclusionWithPlayers(
+            if (_OnePlayerHeadMaybeLeftTheirCapsule(hits)) {
+                return _HandleSingleHitOcclusionWithPlayers(
                         distanceBetweenPlayerHeads,
                         environmentClarity,
                         playerClarity,
                         raycastHits[0]);
             }
 
-            return HandleMultiHitOcclusionWithPlayers(
+            return _HandleMultiHitOcclusionWithPlayers(
                     environmentClarity,
                     playerClarity,
                     raycastHits[0],
@@ -102,23 +102,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
         /// <param name="firstHit"></param>
         /// <param name="secondHit"></param>
         /// <returns></returns>
-        private static float HandleMultiHitOcclusionWithPlayers(
+        private static float _HandleMultiHitOcclusionWithPlayers(
                 float environmentClarity,
                 float playerClarity,
                 RaycastHit firstHit,
                 RaycastHit secondHit
         ) {
-            if (IsOnlyPlayerHits(firstHit, secondHit)) {
+            if (_IsOnlyPlayerHits(firstHit, secondHit)) {
                 // another player occluded the emitting player we ray casted to
                 return playerClarity;
             }
 
             // we hit one non-player obstacle
-            return GetAudioObstacleClarity(FindEnvironmentHit(firstHit, secondHit), environmentClarity);
+            return _GetAudioObstacleClarity(_FindEnvironmentHit(firstHit, secondHit), environmentClarity);
         }
 
-        private static bool IsOnlyPlayerHits(RaycastHit firstHit, RaycastHit secondHit) {
-            if (IsOccludedByPlayer(firstHit) && IsOccludedByPlayer(secondHit)) {
+        private static bool _IsOnlyPlayerHits(RaycastHit firstHit, RaycastHit secondHit) {
+            if (_IsOccludedByPlayer(firstHit) && _IsOccludedByPlayer(secondHit)) {
 #if TLP_DEBUG
                 TlpLogger.StaticDebugLog($"{nameof(DefaultPlayerOcclusion)}: only players occlude", null);
 #endif
@@ -133,7 +133,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
             return false;
         }
 
-        private static float HandleSingleHitOcclusionWithPlayers(
+        private static float _HandleSingleHitOcclusionWithPlayers(
                 float distanceBetweenPlayerHeads,
                 float environmentClarity,
                 float playerClarity,
@@ -146,10 +146,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
                 return MaxClarity;
             }
 
-            if (IsOccludedByPlayer(firstHit)) {
+            if (_IsOccludedByPlayer(firstHit)) {
                 return playerClarity;
             }
-            return GetAudioObstacleClarity(firstHit, environmentClarity);
+            return _GetAudioObstacleClarity(firstHit, environmentClarity);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
         /// </summary>
         /// <param name="raycastHit"></param>
         /// <returns></returns>
-        private static bool IsOccludedByPlayer(RaycastHit raycastHit) {
+        private static bool _IsOccludedByPlayer(RaycastHit raycastHit) {
             return !raycastHit.transform;
         }
 
@@ -168,11 +168,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
         /// </summary>
         /// <param name="hits"></param>
         /// <returns></returns>
-        private static bool OnePlayerHeadMaybeLeftTheirCapsule(int hits) {
+        private static bool _OnePlayerHeadMaybeLeftTheirCapsule(int hits) {
             return hits == 1;
         }
 
-        private static bool IsNotOccluded(int hits) {
+        private static bool _IsNotOccluded(int hits) {
             return hits == 0;
         }
 
@@ -181,15 +181,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
         /// </summary>
         /// <param name="playerOcclusionMask"></param>
         /// <returns></returns>
-        private static bool PlayersCanNotOccludeEachOther(int playerOcclusionMask) {
+        private static bool _PlayersCanNotOccludeEachOther(int playerOcclusionMask) {
             return (playerOcclusionMask & PlayerAudioConfigurationModel.UILayerMask) == 0;
         }
 
-        private static bool HasEnvironmentHit(RaycastHit hit) {
+        private static bool _HasEnvironmentHit(RaycastHit hit) {
             return Utilities.IsValid(hit.transform);
         }
 
-        private static float GetAudioObstacleClarity(RaycastHit hit, float fallbackClarity) {
+        private static float _GetAudioObstacleClarity(RaycastHit hit, float fallbackClarity) {
             if (!Utilities.IsValid(hit.transform)) {
                 return fallbackClarity;
             }
@@ -200,8 +200,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
             return fallbackClarity;
         }
 
-        private static RaycastHit FindEnvironmentHit(RaycastHit firstHit, RaycastHit secondHit) {
-            if (HasEnvironmentHit(firstHit)) {
+        private static RaycastHit _FindEnvironmentHit(RaycastHit firstHit, RaycastHit secondHit) {
+            if (_HasEnvironmentHit(firstHit)) {
                 return firstHit;
             }
             return secondHit;

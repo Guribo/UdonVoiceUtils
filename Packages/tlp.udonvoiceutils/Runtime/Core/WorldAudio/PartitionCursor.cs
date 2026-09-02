@@ -16,7 +16,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(PartitionCursor))]
     public class PartitionCursorEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Manages partition iteration state: tracks cursor position per partition, " +
                    "cycles through outdated partitions, and enforces per-frame update budgets. " +
                    "Drives the round-robin emitter update loop in WorldAudioController.";
@@ -56,25 +56,25 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
         
         #region Public API
-        public float GetPartitionAsRatio() {
+        public float _GetPartitionAsRatio() {
             if (_partitions == 0) return 0;
             return (float)_partitionToUpdate / _partitions;
         }
 
-        public void ResetPartitionUpdateCounters() {
+        public void _ResetPartitionUpdateCounters() {
             for (int i = 0; i < _partitions; i++) {
                 PartitionUpdatesInFrame[i] = 0;
             }
         }
         
-        public bool FindNextOutdatedPartition(out int index, out int partitionToUpdate) {
-            _partitionToUpdate.MoveIndexRightLooping(_partitions);
+        public bool _FindNextOutdatedPartition(out int index, out int partitionToUpdate) {
+            _partitionToUpdate._MoveIndexRightLooping(_partitions);
             int partitionsChecked = 0;
             while (PartitionUpdatesInFrame[_partitionToUpdate] >= PartitionSizes[_partitionToUpdate]) {
                 if (partitionsChecked >= _partitions) {
                     #region TLP_DEBUG
 #if TLP_DEBUG
-                    Warn("Infinite loop detected in UpdateEmitters, partition index: " + _partitionToUpdate);
+                    _Warn("Infinite loop detected in UpdateEmitters, partition index: " + _partitionToUpdate);
 #endif
                     #endregion
 
@@ -83,12 +83,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                     return false;
                 }
 
-                _partitionToUpdate.MoveIndexRightLooping(_partitions);
+                _partitionToUpdate._MoveIndexRightLooping(_partitions);
                 partitionsChecked++;
             }
 
             PartitionUpdatesInFrame[_partitionToUpdate]++;
-            index = ArrayUtils.UpdatePartitionCursorWithLooping(
+            index = ArrayUtils._UpdatePartitionCursorWithLooping(
                     PartitionIndices[_partitionToUpdate],
                     PartitionCursors[_partitionToUpdate],
                     PartitionSizes[_partitionToUpdate]);
@@ -99,23 +99,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Internal
-        internal void InitializePartitionSizes(int totalElements, int partitions, float partitionGrowthFactor) {
+        internal void _InitializePartitionSizes(int totalElements, int partitions, float partitionGrowthFactor) {
             _partitions = partitions;
-            PartitionSizes = ArrayUtils.CreateExponentialBuckets(
+            PartitionSizes = ArrayUtils._CreateExponentialBuckets(
                     totalElements,
                     _partitions,
                     partitionGrowthFactor);
-            PartitionSizes = PartitionSizes.ResizeOrCreate(_partitions); // ensures is not null
+            PartitionSizes = PartitionSizes._ResizeOrCreate(_partitions); // ensures is not null
         }
 
-        internal void InitializePartitionCursors() {
+        internal void _InitializePartitionCursors() {
             PartitionCursors = new int[_partitions];
             for (int i = 0; i < _partitions; i++) {
                 PartitionCursors[i] = PartitionIndices[i];
             }
         }
 
-        internal void InitializePartitionIndices() {
+        internal void _InitializePartitionIndices() {
             PartitionIndices = new int[_partitions];
             PartitionUpdatesInFrame = new int[_partitions];
             int index = 0;

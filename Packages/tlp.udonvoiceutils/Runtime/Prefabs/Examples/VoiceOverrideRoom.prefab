@@ -68,7 +68,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnPlayerListUpdated
+  ListenerMethod: _OnPlayerListUpdated
   FastSync: 0
   Calls: 0
 --- !u!114 &7104392975194146615
@@ -165,7 +165,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnLocalPlayerRemoved
+  ListenerMethod: _OnLocalPlayerRemoved
 --- !u!114 &4775806422084197637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,7 +260,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnLocalPlayerAdded
+  ListenerMethod: _OnLocalPlayerAdded
 --- !u!114 &6806999307312105523
 MonoBehaviour:
   m_ObjectHideFlags: 0

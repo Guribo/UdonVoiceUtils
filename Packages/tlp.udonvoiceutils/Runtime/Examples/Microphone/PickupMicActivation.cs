@@ -14,7 +14,7 @@ namespace TLP.UdonVoiceUtils.Editor.Examples
     [CustomEditor(typeof(PickupMicActivation))]
     public class PickupMicActivationEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Activates the microphone when the object is picked up and deactivates it when dropped.";
         }
     }
@@ -39,7 +39,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnPickup));
+            _DebugLog(nameof(OnPickup));
 #endif
             #endregion
 
@@ -47,8 +47,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!Activate()) {
-                Error($"{nameof(OnPickup)} failed to activate mic");
+            if (!_Activate()) {
+                _Error($"{nameof(OnPickup)} failed to activate mic");
             }
         }
 
@@ -57,7 +57,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnDrop));
+            _DebugLog(nameof(OnDrop));
 #endif
             #endregion
 
@@ -65,8 +65,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!Deactivate()) {
-                Error($"{nameof(OnDrop)} failed to deactivate mic");
+            if (!_Deactivate()) {
+                _Error($"{nameof(OnDrop)} failed to deactivate mic");
             }
         }
         #endregion

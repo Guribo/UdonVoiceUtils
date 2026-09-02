@@ -1,13 +1,26 @@
-﻿using TLP.UdonUtils.Runtime.Common;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime;
+using TLP.UdonUtils.Runtime.Common;
 using UdonSharp;
+using UnityEngine;
 using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 {
+   
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [DefaultExecutionOrder(ExecutionOrder)]
+    [TlpDefaultExecutionOrder(typeof(ImportanceComparer), ExecutionOrder)]
     public class ImportanceComparer : Comparer
     {
-        protected override bool ComparisonImplementation(UdonSharpBehaviour first, UdonSharpBehaviour second, out int comparisonResult) {
+        #region ExecutionOrder
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = Comparer.ExecutionOrder + 10;
+        #endregion
+ 
+        protected override bool _ComparisonImplementation(UdonSharpBehaviour first, UdonSharpBehaviour second, out int comparisonResult) {
             comparisonResult = 0;
             if (!Utilities.IsValid(first)) {
                 return false;

@@ -22,7 +22,7 @@ namespace TLP.UdonVoiceUtils.Editor.Examples
     [CustomEditor(typeof(AdjustableGain))]
     public class AdjustableGainEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Synced UI slider controlling voice gain on multiple PlayerAudioOverrides. " +
                    "Optionally restricts control to whitelisted players.";
         }
@@ -80,26 +80,26 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             base.OnDeserialization(deserializationResult);
             Gain = _syncedGain;
 
-            RefreshUi();
+            _RefreshUi();
 
             // apply gain to all receiving players
-            ApplyGain();
+            _ApplyGain();
         }
         #endregion
 
         #region UiHooks
         [PublicAPI]
-        public void OnGainSliderValueChanged() {
+        public void _OnGainSliderValueChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnGainSliderValueChanged));
+            _DebugLog(nameof(_OnGainSliderValueChanged));
 #endif
             #endregion
 
             if (_updatingUi) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"{nameof(OnGainSliderValueChanged)}: ignoring due to UI refresh");
+                _DebugLog($"{nameof(_OnGainSliderValueChanged)}: ignoring due to UI refresh");
 #endif
                 #endregion
 
@@ -107,15 +107,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (!Utilities.IsValid(Slider)) {
-                Error($"{nameof(OnGainSliderValueChanged)}: {nameof(Slider)} is not set");
+                _Error($"{nameof(_OnGainSliderValueChanged)}: {nameof(Slider)} is not set");
                 return;
             }
 
             var localPlayer = Networking.LocalPlayer;
             if (Utilities.IsValid(PlayersAllowedToControl) &&
-                PlayersAllowedToControl.IsBlackListed(localPlayer.DisplayNameSafe())) {
-                Warn(
-                        $"{nameof(OnGainSliderValueChanged)}: {localPlayer.DisplayNameUniqueSafe()} is not allowed to make changes");
+                PlayersAllowedToControl._IsBlackListed(localPlayer._DisplayNameSafe())) {
+                _Warn(
+                        $"{nameof(_OnGainSliderValueChanged)}: {localPlayer._DisplayNameUniqueSafe()} is not allowed to make changes");
                 return;
             }
 
@@ -124,40 +124,40 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (!Networking.IsOwner(gameObject)) {
-                Error($"{nameof(OnGainSliderValueChanged)}: Failed to take ownership");
+                _Error($"{nameof(_OnGainSliderValueChanged)}: Failed to take ownership");
                 return;
             }
 
             Gain = Slider.value;
-            MarkNetworkDirty();
+            _MarkNetworkDirty();
 
             // apply gain change to player who moved the slider
-            ApplyGain();
+            _ApplyGain();
         }
         #endregion
 
         #region Internal
-        private void ApplyGain() {
+        private void _ApplyGain() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(ApplyGain)}: {nameof(Gain)}={Gain}");
+            _DebugLog($"{nameof(_ApplyGain)}: {nameof(Gain)}={Gain}");
 #endif
             #endregion
 
-            if (ControlledOverrides.LengthSafe() < 1) {
-                Warn($"{nameof(ApplyGain)}: {nameof(ControlledOverrides)} is empty");
+            if (ControlledOverrides._LengthSafe() < 1) {
+                _Warn($"{nameof(_ApplyGain)}: {nameof(ControlledOverrides)} is empty");
                 return;
             }
 
             foreach (var controlledOverride in ControlledOverrides) {
                 if (!Utilities.IsValid(controlledOverride)) {
-                    Warn($"{nameof(ApplyGain)}: {nameof(ControlledOverrides)} contains invalid item");
+                    _Warn($"{nameof(_ApplyGain)}: {nameof(ControlledOverrides)} contains invalid item");
                     continue;
                 }
 
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"{nameof(ApplyGain)}: {controlledOverride.GetScriptPathInScene()}");
+                _DebugLog($"{nameof(_ApplyGain)}: {controlledOverride._GetScriptPathInScene()}");
 #endif
                 #endregion
 
@@ -165,10 +165,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
         }
 
-        private void RefreshUi() {
+        private void _RefreshUi() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(RefreshUi));
+            _DebugLog(nameof(_RefreshUi));
 #endif
             #endregion
 

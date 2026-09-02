@@ -2,10 +2,8 @@
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-
 #if UNITY_EDITOR
 using TLP.UdonUtils.Editor.Core;
-using TLP.UdonVoiceUtils.Editor.Core;
 using TLP.UdonVoiceUtils.Runtime.Examples;
 using UnityEditor;
 #endif
@@ -16,7 +14,7 @@ namespace TLP.UdonVoiceUtils.Editor.Examples
     [CustomEditor(typeof(InteractMicActivation))]
     public class InteractMicActivationEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Toggles the microphone ON/OFF when the player interacts with it. " +
                    $"Optionally deactivates the microphone when dropped if " +
                    $"'{nameof(InteractMicActivation.DeactivateOnDrop)}' is enabled.";
@@ -61,16 +59,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
         #region Overrides
 
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(VrcPickup, nameof(VrcPickup))) {
+            if (!_IsSet(VrcPickup, nameof(VrcPickup))) {
                 return false;
             }
 
-            UpdateInteractionText();
+            _UpdateInteractionText();
             return true;
         }
 
@@ -79,7 +77,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnPickupUseDown));
+            _DebugLog(nameof(OnPickupUseDown));
 #endif
             #endregion
 
@@ -93,14 +91,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (HoldUseToTalk) {
-                if (!Activate()) {
-                    Error($"{nameof(OnPickupUseDown)}: failed to activate mic");
+                if (!_Activate()) {
+                    _Error($"{nameof(OnPickupUseDown)}: failed to activate mic");
                 }
             } else {
-                ToggleOnState();
+                _ToggleOnState();
             }
 
-            UpdateInteractionText();
+            _UpdateInteractionText();
         }
 
 
@@ -109,7 +107,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnPickupUseUp));
+            _DebugLog(nameof(OnPickupUseUp));
 #endif
             #endregion
 
@@ -123,12 +121,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             if (HoldUseToTalk) {
-                if (!Deactivate()) {
-                    Error($"{nameof(OnPickupUseUp)}: failed to deactivate mic");
+                if (!_Deactivate()) {
+                    _Error($"{nameof(OnPickupUseUp)}: failed to deactivate mic");
                 }
             }
 
-            UpdateInteractionText();
+            _UpdateInteractionText();
         }
 
         public override void OnPickup() {
@@ -136,7 +134,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnPickup));
+            _DebugLog(nameof(OnPickup));
 #endif
             #endregion
 
@@ -146,7 +144,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             _framePickedUp = Time.frameCount;
 
-            UpdateInteractionText();
+            _UpdateInteractionText();
         }
 
         public override void OnDrop() {
@@ -154,7 +152,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnDrop));
+            _DebugLog(nameof(OnDrop));
 #endif
             #endregion
 
@@ -165,32 +163,32 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             if (!DeactivateOnDrop && !HoldUseToTalk) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"Leaving mic in {(IsOn ? "ON" : "OFF")} state");
+                _DebugLog($"Leaving mic in {(IsOn ? "ON" : "OFF")} state");
 #endif
                 #endregion
 
                 return;
             }
 
-            if (!Deactivate()) {
-                Error($"{nameof(OnDrop)} failed to deactivate mic");
+            if (!_Deactivate()) {
+                _Error($"{nameof(OnDrop)} failed to deactivate mic");
                 return;
             }
 
-            UpdateInteractionText();
+            _UpdateInteractionText();
         }
         #endregion
 
         #region Internal
-        private void UpdateInteractionText() {
+        private void _UpdateInteractionText() {
             VrcPickup.UseText = $"Turn {(IsOn ? "OFF" : "ON")}";
         }
 
-        private void ToggleOnState() {
+        private void _ToggleOnState() {
             if (IsOn) {
-                Deactivate();
+                _Deactivate();
             } else {
-                Activate();
+                _Activate();
             }
         }
         #endregion

@@ -19,7 +19,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(WorldAudioController))]
     public class WorldAudioControllerEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Core audio controller managing player voice emitters, " +
                    "importance sorting, and per-frame audio updates. " +
                    "Only one allowed per scene/world.";
@@ -99,36 +99,36 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
 #if TLP_DEBUG
             _debugVisualizer = gameObject.GetComponent<DebugVisualizer>();
-            if (!IsSet(_debugVisualizer, nameof(_debugVisualizer))) {
+            if (!_IsSet(_debugVisualizer, nameof(_debugVisualizer))) {
                 return false;
             }
 #endif
 
-            if (!IsSet(ImportanceTree, nameof(ImportanceTree))) {
+            if (!_IsSet(ImportanceTree, nameof(ImportanceTree))) {
                 return false;
             }
 
-            if (!IsSet(PartitionState, nameof(PartitionState))) {
+            if (!_IsSet(PartitionState, nameof(PartitionState))) {
                 return false;
             }
 
-            if (!IsSet(PartitionCursor, nameof(PartitionCursor))) {
+            if (!_IsSet(PartitionCursor, nameof(PartitionCursor))) {
                 return false;
             }
 
-            PlayerAudioController = VoiceUtils.FindPlayerAudioController();
-            if (!IsSet(PlayerAudioController, nameof(PlayerAudioController))) {
+            PlayerAudioController = VoiceUtils._FindPlayerAudioController();
+            if (!_IsSet(PlayerAudioController, nameof(PlayerAudioController))) {
                 return false;
             }
 
-            if (!IsSet(EmitterRegistry, nameof(EmitterRegistry))) {
+            if (!_IsSet(EmitterRegistry, nameof(EmitterRegistry))) {
                 return false;
             }
 
@@ -142,16 +142,16 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region UpdateScheduler
-        internal void InitializeUpdateScheduler(int totalElements) {
+        internal void _InitializeUpdateScheduler(int totalElements) {
 #if TLP_DEBUG
-            DebugLog($"{nameof(InitializeUpdateScheduler)}: {nameof(totalElements)}={totalElements}");
+            _DebugLog($"{nameof(_InitializeUpdateScheduler)}: {nameof(totalElements)}={totalElements}");
 #endif
 
             _clampedUpdatesPerFrame = Mathf.Min(UpdatesPerFrame, totalElements);
             _clampedImportanceUpdatesPerFrame = Mathf.Min(ImportanceUpdatesPerFrame, totalElements);
 
 #if TLP_DEBUG
-            _debugVisualizer.InitializePartitionIndicators(PartitionState.ActivePartitions);
+            _debugVisualizer._InitializePartitionIndicators(PartitionState.ActivePartitions);
 #endif
         }
 
@@ -161,23 +161,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             }
 
             if (EmitterRegistry.NeedsRebuild) {
-                EmitterRegistry.Initialize();
+                EmitterRegistry._Initialize();
                 int totalElements = EmitterRegistry.Emitters.Length;
-                PartitionState.InitializePartitionManagement(totalElements);
-                InitializeUpdateScheduler(totalElements);
+                PartitionState._InitializePartitionManagement(totalElements);
+                _InitializeUpdateScheduler(totalElements);
             }
 
             // skip the heaviest part of the update if we just did a force update this frame,
             // since that already updated the importance tree
             if (Time.frameCount != _frameOfLastForceUpdate) {
-                UpdateEmitterImportanceOrder();
+                _UpdateEmitterImportanceOrder();
             }
 
-            UpdateEmitters();
+            _UpdateEmitters();
         }
 
-        private void UpdateEmitters() {
-            PartitionCursor.ResetPartitionUpdateCounters();
+        private void _UpdateEmitters() {
+            PartitionCursor._ResetPartitionUpdateCounters();
 
             var config = PlayerAudioController.CurrentConfiguration;
             float environmentClarity = 1f - config.OcclusionFactor;
@@ -186,25 +186,25 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             var localOverride = PlayerAudioController.CurrentLocalOverride;
 
             for (int i = 0; i < _clampedUpdatesPerFrame; i++) {
-                if (!PartitionCursor.FindNextOutdatedPartition(out int index, out int partitionToUpdate)) {
+                if (!PartitionCursor._FindNextOutdatedPartition(out int index, out int partitionToUpdate)) {
                     if (_lastWarnFrame + WarnFrameInterval < Time.frameCount) {
                         _lastWarnFrame = Time.frameCount;
-                        Warn($"{nameof(UpdateEmitters)}: No outdated partition found after checking all partitions.");
+                        _Warn($"{nameof(_UpdateEmitters)}: No outdated partition found after checking all partitions.");
                     }
 
                     break;
                 }
 
-                var emitter = (OccludedEmitter)ImportanceTree.Get(index);
+                var emitter = (OccludedEmitter)ImportanceTree._Get(index);
                 if (!Utilities.IsValid(emitter)) {
                     continue;
                 }
 
 #if TLP_DEBUG
-                _debugVisualizer.OnPartitionUpdated(partitionToUpdate, emitter.transform.position);
+                _debugVisualizer._OnPartitionUpdated(partitionToUpdate, emitter.transform.position);
 #endif
 
-                UpdateAudioSource(
+                _UpdateAudioSource(
                         localOverride,
                         emitter,
                         environmentClarity,
@@ -216,29 +216,29 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Importance Updater
-        private void UpdateEmitterImportanceOrder() {
+        private void _UpdateEmitterImportanceOrder() {
             for (int i = 0; i < _clampedImportanceUpdatesPerFrame; i++) {
-                _emitterIterationCursor.MoveIndexRightLooping(EmitterRegistry.Emitters.Length);
+                _emitterIterationCursor._MoveIndexRightLooping(EmitterRegistry.Emitters.Length);
                 var occludedEmitter = EmitterRegistry.Emitters[_emitterIterationCursor];
                 if (!Utilities.IsValid(occludedEmitter)) {
                     continue;
                 }
 
-                occludedEmitter.RefreshInTree(ImportanceTree, MaxActiveSources);
+                occludedEmitter._RefreshInTree(ImportanceTree, MaxActiveSources);
 
 #if TLP_DEBUG
-                _debugVisualizer.OnTreeUpdated(occludedEmitter.transform.position + Vector3.up);
+                _debugVisualizer._OnTreeUpdated(occludedEmitter.transform.position + Vector3.up);
 #endif
             }
         }
         #endregion
 
         #region Internal
-        internal static string ExpectedGameObjectName() {
+        internal static string _ExpectedGameObjectName() {
             return $"TLP_{nameof(WorldAudioController)}";
         }
 
-        internal void ForceUpdate(GameObject o) {
+        internal void _ForceUpdate(GameObject o) {
             if (!HasStartedOk) {
                 return;
             }
@@ -250,11 +250,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 
             _frameOfLastForceUpdate = Time.frameCount;
 
-            emitter.RefreshInTree(ImportanceTree, MaxActiveSources);
-            bool willBeAudible = emitter.IsAudible(ImportanceTree, MaxActiveSources, out var lowestPrioActiveEmitter);
+            emitter._RefreshInTree(ImportanceTree, MaxActiveSources);
+            bool willBeAudible = emitter._IsAudible(ImportanceTree, MaxActiveSources, out var lowestPrioActiveEmitter);
             if (willBeAudible && lowestPrioActiveEmitter != null) {
                 // ensure we stay below the max limit by forcing the lowest priority active emitter to be culled
-                lowestPrioActiveEmitter.UpdateAudioSourceState(0, true, false, 0);
+                lowestPrioActiveEmitter._UpdateAudioSourceState(0, true, false, 0);
             }
 
             var config = PlayerAudioController.CurrentConfiguration;
@@ -264,9 +264,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             var localOverride = PlayerAudioController.CurrentLocalOverride;
 
 #if TLP_DEBUG
-            _debugVisualizer.OnPartitionUpdated(0, emitter.transform.position);
+            _debugVisualizer._OnPartitionUpdated(0, emitter.transform.position);
 #endif
-            UpdateAudioSource(
+            _UpdateAudioSource(
                     localOverride,
                     emitter,
                     environmentClarity,
@@ -275,7 +275,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                     !willBeAudible);
         }
 
-        private void UpdateAudioSource(
+        private void _UpdateAudioSource(
                 PlayerAudioOverride localOverride,
                 OccludedEmitter emitter,
                 float environmentClarity,
@@ -284,28 +284,28 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                 bool cull
         ) {
             if (Utilities.IsValid(localOverride)) {
-                bool emitterInChannel = localOverride.IsChannelAudible(emitter.PrivacyChannelId);
+                bool emitterInChannel = localOverride._IsChannelAudible(emitter.PrivacyChannelId);
                 bool canHear;
 
                 if (emitterInChannel) {
                     canHear = !localOverride.DisallowListeningToChannel;
                 } else if (emitter.PrivacyChannelId == PlayerAudioController.ChannelNoPrivacy) {
-                    canHear = localOverride.IsPrivateChannel() && !localOverride.MuteOutsiders;
+                    canHear = localOverride._IsPrivateChannel() && !localOverride.MuteOutsiders;
                 } else {
                     canHear = false;
                 }
 
                 if (!canHear) {
-                    emitter.UpdateAudioSourceState(
-                            PartitionCursor.GetPartitionAsRatio(),
+                    emitter._UpdateAudioSourceState(
+                            PartitionCursor._GetPartitionAsRatio(),
                             true,
                             true,
                             0f);
                     return;
                 }
             } else if (emitter.PrivacyChannelId != PlayerAudioController.ChannelNoPrivacy) {
-                emitter.UpdateAudioSourceState(
-                        PartitionCursor.GetPartitionAsRatio(),
+                emitter._UpdateAudioSourceState(
+                        PartitionCursor._GetPartitionAsRatio(),
                         true,
                         true,
                         0f);
@@ -313,15 +313,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             }
 
             var trackingData = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-            float clarity = PlayerAudioController.PlayerOcclusionStrategy.GetEmitterAudioClarity(
+            float clarity = PlayerAudioController.PlayerOcclusionStrategy._GetEmitterAudioClarity(
                     trackingData.position,
                     emitter.transform.position,
                     environmentClarity,
                     playerClarity,
                     occlusionMask
             );
-            emitter.UpdateAudioSourceState(
-                    PartitionCursor.GetPartitionAsRatio(),
+            emitter._UpdateAudioSourceState(
+                    PartitionCursor._GetPartitionAsRatio(),
                     cull,
                     false,
                     clarity);

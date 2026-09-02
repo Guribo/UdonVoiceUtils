@@ -28,66 +28,66 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(OnIndicator, nameof(OnIndicator))) {
+            if (!_IsSet(OnIndicator, nameof(OnIndicator))) {
                 return false;
             }
 
-            if (!IsSet(OffIndicator, nameof(OffIndicator))) {
+            if (!_IsSet(OffIndicator, nameof(OffIndicator))) {
                 return false;
             }
 
-            if (!InitializeMvcSingleGameObject(gameObject)) {
-                Error("Failed to initialize Model-View-Controller");
+            if (!_InitializeMvcSingleGameObject(gameObject)) {
+                _Error("Failed to initialize Model-View-Controller");
                 return false;
             }
 
-            UpdateVisuals();
+            _UpdateVisuals();
             return true;
         }
 
-        protected override bool InitializeInternal() {
+        protected override bool _InitializeInternal() {
             _micModel = (MicModel)Model;
             if (!Utilities.IsValid(_micModel)) {
-                Error($"{nameof(Model)} is not a {nameof(MicModel)}");
+                _Error($"{nameof(Model)} is not a {nameof(MicModel)}");
                 return false;
             }
 
             _micController = (MicController)Controller;
             if (!Utilities.IsValid(_micController)) {
-                Error($"{nameof(Controller)} is not a {nameof(MicController)}");
+                _Error($"{nameof(Controller)} is not a {nameof(MicController)}");
                 return false;
             }
 
-            UpdateVisuals();
-            return base.InitializeInternal();
+            _UpdateVisuals();
+            return base._InitializeInternal();
         }
 
-        public override void OnModelChanged() {
+        public override void _OnModelChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnModelChanged));
+            _DebugLog(nameof(_OnModelChanged));
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return;
             }
 
-            UpdateVisuals();
+            _UpdateVisuals();
         }
         #endregion
 
         #region Internal
-        private void UpdateVisuals() {
+        private void _UpdateVisuals() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(UpdateVisuals));
+            _DebugLog(nameof(_UpdateVisuals));
 #endif
             #endregion
 

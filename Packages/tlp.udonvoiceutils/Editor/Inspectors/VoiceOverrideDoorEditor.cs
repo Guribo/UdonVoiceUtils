@@ -10,7 +10,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
     [CustomEditor(typeof(VoiceOverrideDoor))]
     public class VoiceOverrideDoorEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Example implementation of a door which adds a player to " +
                    "a PlayerAudioOverride upon entering a room. " +
                    "This works by checking player-trigger interactions with the doors box collider (trigger) " +
@@ -32,7 +32,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                 case EventType.Repaint:
                 {
                     // draw
-                    DrawDoorInfo(voiceOverrideDoor);
+                    _DrawDoorInfo(voiceOverrideDoor);
 
                     if (Utilities.IsValid(voiceOverrideDoor.VoiceOverrideRoom)) {
                         var roomPosition = voiceOverrideDoor.VoiceOverrideRoom.transform.position;
@@ -52,13 +52,13 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
                     break;
                 default:
                 {
-                    EditorGUIHelper.HandleInput(guiEvent, voiceOverrideDoor, SelectRoom);
+                    EditorGUIHelper._HandleInput(guiEvent, voiceOverrideDoor, _SelectRoom);
                 }
                     break;
             }
         }
 
-        public static void DrawDoorInfo(VoiceOverrideDoor voiceOverrideDoor) {
+        public static void _DrawDoorInfo(VoiceOverrideDoor voiceOverrideDoor) {
             if (!voiceOverrideDoor) {
                 return;
             }
@@ -81,10 +81,10 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
             Handles.Label(doorPosition - exitDirection, "Inside");
         }
 
-        private static void SelectRoom(Vector3 mousePosition, UdonSharpBehaviour destination) {
+        private static void _SelectRoom(Vector3 mousePosition, UdonSharpBehaviour destination) {
             var voiceOverrideDoor = (VoiceOverrideDoor)destination;
             if (Utilities.IsValid(voiceOverrideDoor.VoiceOverrideRoom)) {
-                EditorGUIHelper.TrySelectAtClick(mousePosition, voiceOverrideDoor.VoiceOverrideRoom);
+                EditorGUIHelper._TrySelectAtClick(mousePosition, voiceOverrideDoor.VoiceOverrideRoom);
             }
         }
     }

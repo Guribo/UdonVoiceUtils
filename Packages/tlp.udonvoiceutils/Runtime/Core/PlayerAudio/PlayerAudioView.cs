@@ -21,7 +21,6 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         [PublicAPI]
         public new const int ExecutionOrder = View.ExecutionOrder + 100;
 
-
         #region Ui Elements
         #region General Settings
         [Header("General Settings")]
@@ -118,8 +117,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         [SerializeField]
         internal Toggle ToggleAvatarCustomCurve;
         #endregion
-
-
+        
         #region Events
         [Header("Events")]
         [SerializeField]
@@ -153,10 +151,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// <summary>
         /// Callback function, can be called by the BetterPlayerAudio to update the UI
         /// </summary>
-        public void UpdateUi() {
+        public void _UpdateUi() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(UpdateUi));
+            _DebugLog(nameof(_UpdateUi));
 #endif
             #endregion
 
@@ -165,7 +163,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             }
 
             if (!IsViewInitialized) {
-                Error($"Not initialized, did you reference it correctly on the {nameof(PlayerAudioController)}?");
+                _Error($"Not initialized, did you reference it correctly on the {nameof(PlayerAudioController)}?");
                 return;
             }
 
@@ -178,22 +176,22 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"Applying values from {_displayedConfig.GetScriptPathInScene()} to UI");
+            _DebugLog($"Applying values from {_displayedConfig._GetScriptPathInScene()} to UI");
 #endif
             #endregion
 
-            UpdateSliderChecked(SliderOcclusionFactor, _displayedConfig.OcclusionFactor);
-            UpdateSliderChecked(SliderPlayerOcclusionFactor, _displayedConfig.PlayerOcclusionFactor);
-            UpdateSliderChecked(SliderListenerDirectionality, _displayedConfig.ListenerDirectionality);
-            UpdateSliderChecked(SliderPlayerDirectionality, _displayedConfig.PlayerDirectionality);
-            UpdateSliderChecked(SliderVoiceDistanceNear, _displayedConfig.VoiceDistanceNear);
-            UpdateSliderChecked(SliderVoiceDistanceFar, _displayedConfig.VoiceDistanceFar);
-            UpdateSliderChecked(SliderVoiceGain, _displayedConfig.VoiceGain);
-            UpdateSliderChecked(SliderVoiceVolumetricRadius, _displayedConfig.VoiceVolumetricRadius);
-            UpdateSliderChecked(SliderAvatarDistanceNear, _displayedConfig.AvatarNearRadius);
-            UpdateSliderChecked(SliderAvatarDistanceFar, _displayedConfig.AvatarFarRadius);
-            UpdateSliderChecked(SliderAvatarGain, _displayedConfig.AvatarGain);
-            UpdateSliderChecked(SliderAvatarVolumetricRadius, _displayedConfig.AvatarVolumetricRadius);
+            _UpdateSliderChecked(SliderOcclusionFactor, _displayedConfig.OcclusionFactor);
+            _UpdateSliderChecked(SliderPlayerOcclusionFactor, _displayedConfig.PlayerOcclusionFactor);
+            _UpdateSliderChecked(SliderListenerDirectionality, _displayedConfig.ListenerDirectionality);
+            _UpdateSliderChecked(SliderPlayerDirectionality, _displayedConfig.PlayerDirectionality);
+            _UpdateSliderChecked(SliderVoiceDistanceNear, _displayedConfig.VoiceDistanceNear);
+            _UpdateSliderChecked(SliderVoiceDistanceFar, _displayedConfig.VoiceDistanceFar);
+            _UpdateSliderChecked(SliderVoiceGain, _displayedConfig.VoiceGain);
+            _UpdateSliderChecked(SliderVoiceVolumetricRadius, _displayedConfig.VoiceVolumetricRadius);
+            _UpdateSliderChecked(SliderAvatarDistanceNear, _displayedConfig.AvatarNearRadius);
+            _UpdateSliderChecked(SliderAvatarDistanceFar, _displayedConfig.AvatarFarRadius);
+            _UpdateSliderChecked(SliderAvatarGain, _displayedConfig.AvatarGain);
+            _UpdateSliderChecked(SliderAvatarVolumetricRadius, _displayedConfig.AvatarVolumetricRadius);
 
             ToggleVoiceLowpass.isOn = _displayedConfig.EnableVoiceLowpass;
             ToggleAvatarSpatialize.isOn = _displayedConfig.ForceAvatarSpatialAudio;
@@ -202,58 +200,58 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             _preventChangeEvent = false;
 
-            UpdateTextAndInteractiveElements();
+            _UpdateTextAndInteractiveElements();
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(UserChangedSettings, nameof(UserChangedSettings))) {
+            if (!_IsSet(UserChangedSettings, nameof(UserChangedSettings))) {
                 return false;
             }
 
-            if (!IsSet(ResetToDefault, nameof(ResetToDefault))) {
+            if (!_IsSet(ResetToDefault, nameof(ResetToDefault))) {
                 return false;
             }
 
-            if (!UserChangedSettings.AddListenerVerified(this, nameof(OnSettingsChanged), true)) {
+            if (!UserChangedSettings._AddListenerVerified(this, nameof(_OnSettingsChanged), true)) {
                 return false;
             }
 
-            if (!ResetToDefault.AddListenerVerified(this, nameof(ResetAll), true)) {
+            if (!ResetToDefault._AddListenerVerified(this, nameof(_ResetAll), true)) {
                 return false;
             }
 
             return true;
         }
 
-        public override void OnEvent(string eventName) {
+        public override void _OnEvent(string eventName) {
             if (!HasStartedOk) {
                 return;
             }
 
             switch (eventName) {
-                case nameof(OnSettingsChanged):
-                    OnSettingsChanged();
+                case nameof(_OnSettingsChanged):
+                    _OnSettingsChanged();
                     break;
-                case nameof(ResetAll):
-                    ResetAll();
+                case nameof(_ResetAll):
+                    _ResetAll();
                     break;
                 default:
-                    base.OnEvent(eventName);
+                    base._OnEvent(eventName);
                     break;
             }
         }
 
         #region MVC
-        public override void OnModelChanged() {
+        public override void _OnModelChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnModelChanged));
+            _DebugLog(nameof(_OnModelChanged));
 #endif
             #endregion
 
@@ -271,43 +269,43 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             _displayedConfig = masterControls ? MasterConfig : LocalConfig;
 
-            UpdateUi();
+            _UpdateUi();
         }
 
-        protected override bool InitializeInternal() {
+        protected override bool _InitializeInternal() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(InitializeInternal));
+            _DebugLog(nameof(_InitializeInternal));
 #endif
             #endregion
 
             if (!Utilities.IsValid(DefaultValues)) {
-                ErrorAndDisableComponent($"{nameof(DefaultValues)} not set");
+                _ErrorAndDisableComponent($"{nameof(DefaultValues)} not set");
                 return false;
             }
 
             if (!Utilities.IsValid(LocalConfig)) {
-                ErrorAndDisableComponent($"{nameof(LocalConfig)} not set");
+                _ErrorAndDisableComponent($"{nameof(LocalConfig)} not set");
                 return false;
             }
 
             if (!Utilities.IsValid(MasterConfig)) {
-                ErrorAndDisableComponent($"{nameof(MasterConfig)} not set");
+                _ErrorAndDisableComponent($"{nameof(MasterConfig)} not set");
                 return false;
             }
 
-            if (!LocalConfig.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
-                ErrorAndDisableComponent($"Failed to add listener to {nameof(LocalConfig)}");
+            if (!LocalConfig.ChangeEvent._AddListenerVerified(this, nameof(_OnModelChanged))) {
+                _ErrorAndDisableComponent($"Failed to add listener to {nameof(LocalConfig)}");
                 return false;
             }
 
-            if (!MasterConfig.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
-                ErrorAndDisableComponent($"Failed to add listener to {nameof(MasterConfig)}");
+            if (!MasterConfig.ChangeEvent._AddListenerVerified(this, nameof(_OnModelChanged))) {
+                _ErrorAndDisableComponent($"Failed to add listener to {nameof(MasterConfig)}");
                 return false;
             }
 
             if (!Utilities.IsValid(Controller)) {
-                ErrorAndDisableComponent($"{nameof(Controller)} invalid");
+                _ErrorAndDisableComponent($"{nameof(Controller)} invalid");
                 return false;
             }
 
@@ -317,42 +315,42 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             return true;
         }
 
-        protected override bool DeInitializeInternal() {
+        protected override bool _DeInitializeInternal() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(DeInitializeInternal));
+            _DebugLog(nameof(_DeInitializeInternal));
 #endif
             #endregion
 
             if (!Utilities.IsValid(LocalConfig)) {
-                Warn($"{nameof(LocalConfig)} was destroyed");
+                _Warn($"{nameof(LocalConfig)} was destroyed");
                 return true; // OK in case of de-init
             }
 
             if (!Utilities.IsValid(LocalConfig.ChangeEvent)) {
-                Warn($"{nameof(LocalConfig.ChangeEvent)} was destroyed");
+                _Warn($"{nameof(LocalConfig.ChangeEvent)} was destroyed");
                 return true; // OK in case of de-init
             }
 
             if (!Utilities.IsValid(MasterConfig)) {
-                Warn($"{nameof(MasterConfig)} was destroyed");
+                _Warn($"{nameof(MasterConfig)} was destroyed");
                 return true; // OK in case of de-init
             }
 
             if (!Utilities.IsValid(MasterConfig.ChangeEvent)) {
-                Warn($"{nameof(MasterConfig.ChangeEvent)} was destroyed");
+                _Warn($"{nameof(MasterConfig.ChangeEvent)} was destroyed");
                 return true; // OK in case of de-init
             }
 
-            bool successLocal = LocalConfig.ChangeEvent.RemoveListener(this, true);
-            bool successMaster = MasterConfig.ChangeEvent.RemoveListener(this, true);
+            bool successLocal = LocalConfig.ChangeEvent._RemoveListener(this, true);
+            bool successMaster = MasterConfig.ChangeEvent._RemoveListener(this, true);
 
             if (!successLocal) {
-                Error($"Failed to remove listener from {nameof(LocalConfig)}");
+                _Error($"Failed to remove listener from {nameof(LocalConfig)}");
             }
 
             if (!successMaster) {
-                Error($"Failed to remove listener from {nameof(MasterConfig)}");
+                _Error($"Failed to remove listener from {nameof(MasterConfig)}");
             }
 
             return successLocal && successMaster;
@@ -362,15 +360,15 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
 
         #region Internal
-        internal void OnSettingsChanged() {
+        internal void _OnSettingsChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnSettingsChanged));
+            _DebugLog(nameof(_OnSettingsChanged));
 #endif
             #endregion
 
             if (!IsViewInitialized) {
-                Warn($"Skipping {nameof(OnSettingsChanged)} event as {nameof(PlayerAudioView)} is not ready");
+                _Warn($"Skipping {nameof(_OnSettingsChanged)} event as {nameof(PlayerAudioView)} is not ready");
                 return;
             }
 
@@ -380,156 +378,156 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"Updating {LocalConfig.GetScriptPathInScene()} from UI");
+            _DebugLog($"Updating {LocalConfig._GetScriptPathInScene()} from UI");
 #endif
             #endregion
 
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.OcclusionFactor,
                     nameof(LocalConfig.OcclusionFactor),
                     SliderOcclusionFactor.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.PlayerOcclusionFactor,
                     nameof(LocalConfig.PlayerOcclusionFactor),
                     SliderPlayerOcclusionFactor.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.PlayerDirectionality,
                     nameof(LocalConfig.PlayerDirectionality),
                     SliderPlayerDirectionality.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.ListenerDirectionality,
                     nameof(LocalConfig.ListenerDirectionality),
                     SliderListenerDirectionality.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.VoiceDistanceNear,
                     nameof(LocalConfig.VoiceDistanceNear),
                     SliderVoiceDistanceNear.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.VoiceDistanceFar,
                     nameof(LocalConfig.VoiceDistanceFar),
                     SliderVoiceDistanceFar.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.VoiceGain,
                     nameof(LocalConfig.VoiceGain),
                     SliderVoiceGain.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.VoiceVolumetricRadius,
                     nameof(LocalConfig.VoiceVolumetricRadius),
                     SliderVoiceVolumetricRadius.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.EnableVoiceLowpass,
                     nameof(LocalConfig.EnableVoiceLowpass),
                     ToggleVoiceLowpass.isOn);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.AvatarNearRadius,
                     nameof(LocalConfig.AvatarNearRadius),
                     SliderAvatarDistanceNear.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.AvatarFarRadius,
                     nameof(LocalConfig.AvatarFarRadius),
                     SliderAvatarDistanceFar.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.AvatarGain,
                     nameof(LocalConfig.AvatarGain),
                     SliderAvatarGain.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.AvatarVolumetricRadius,
                     nameof(LocalConfig.AvatarVolumetricRadius),
                     SliderAvatarVolumetricRadius.value);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.ForceAvatarSpatialAudio,
                     nameof(LocalConfig.ForceAvatarSpatialAudio),
                     ToggleAvatarSpatialize.isOn);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.AllowAvatarCustomAudioCurves,
                     nameof(LocalConfig.AllowAvatarCustomAudioCurves),
                     ToggleAvatarCustomCurve.isOn);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref LocalConfig.AllowMasterControlLocalValues,
                     nameof(LocalConfig.AllowMasterControlLocalValues),
                     ToggleAllowMasterControl.isOn);
 
             LocalConfig.Dirty = true;
-            LocalConfig.NotifyIfDirty(1);
+            LocalConfig._NotifyIfDirty(1);
 
             if (Networking.IsMaster) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"Updating Master config values from UI");
+                _DebugLog($"Updating Master config values from UI");
 #endif
                 #endregion
 
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.OcclusionFactor,
                         nameof(MasterConfig.OcclusionFactor),
                         SliderOcclusionFactor.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.PlayerOcclusionFactor,
                         nameof(MasterConfig.PlayerOcclusionFactor),
                         SliderPlayerOcclusionFactor.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.PlayerDirectionality,
                         nameof(MasterConfig.PlayerDirectionality),
                         SliderPlayerDirectionality.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.ListenerDirectionality,
                         nameof(MasterConfig.ListenerDirectionality),
                         SliderListenerDirectionality.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.VoiceDistanceNear,
                         nameof(MasterConfig.VoiceDistanceNear),
                         SliderVoiceDistanceNear.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.VoiceDistanceFar,
                         nameof(MasterConfig.VoiceDistanceFar),
                         SliderVoiceDistanceFar.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.VoiceGain,
                         nameof(MasterConfig.VoiceGain),
                         SliderVoiceGain.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.VoiceVolumetricRadius,
                         nameof(MasterConfig.VoiceVolumetricRadius),
                         SliderVoiceVolumetricRadius.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.EnableVoiceLowpass,
                         nameof(MasterConfig.EnableVoiceLowpass),
                         ToggleVoiceLowpass.isOn);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.AvatarNearRadius,
                         nameof(MasterConfig.AvatarNearRadius),
                         SliderAvatarDistanceNear.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.AvatarFarRadius,
                         nameof(MasterConfig.AvatarFarRadius),
                         SliderAvatarDistanceFar.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.AvatarGain,
                         nameof(MasterConfig.AvatarGain),
                         SliderAvatarGain.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.AvatarVolumetricRadius,
                         nameof(MasterConfig.AvatarVolumetricRadius),
                         SliderAvatarVolumetricRadius.value);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.ForceAvatarSpatialAudio,
                         nameof(MasterConfig.ForceAvatarSpatialAudio),
                         ToggleAvatarSpatialize.isOn);
-                UpdateValueLogged(
+                _UpdateValueLogged(
                         ref MasterConfig.AllowAvatarCustomAudioCurves,
                         nameof(MasterConfig.AllowAvatarCustomAudioCurves),
                         ToggleAvatarCustomCurve.isOn);
 
                 MasterConfig.Dirty = true;
-                MasterConfig.NotifyIfDirty(1);
-                MasterConfig.MarkNetworkDirty();
+                MasterConfig._NotifyIfDirty(1);
+                MasterConfig._MarkNetworkDirty();
             }
         }
 
-        private void UpdateTextAndInteractiveElements() {
+        private void _UpdateTextAndInteractiveElements() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(UpdateTextAndInteractiveElements));
+            _DebugLog(nameof(_UpdateTextAndInteractiveElements));
 #endif
             #endregion
 
@@ -592,10 +590,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             ToggleAllowMasterControl.interactable = !isOwner;
         }
 
-        internal void ResetAll() {
+        internal void _ResetAll() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(ResetAll));
+            _DebugLog(nameof(_ResetAll));
 #endif
             #endregion
 
@@ -604,120 +602,120 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             LocalConfig.AllowMasterControlLocalValues = false;
 
             _displayedConfig = LocalConfig;
-            CopyValuesFromTo(DefaultValues, LocalConfig);
+            _CopyValuesFromTo(DefaultValues, LocalConfig);
             if (Networking.IsMaster) {
-                CopyValuesFromTo(DefaultValues, MasterConfig);
+                _CopyValuesFromTo(DefaultValues, MasterConfig);
             }
 
             _preventChangeEvent = false;
-            UpdateUi();
+            _UpdateUi();
         }
 
-        private void CopyValuesFromTo(PlayerAudioConfigurationModel from, PlayerAudioConfigurationModel to) {
+        private void _CopyValuesFromTo(PlayerAudioConfigurationModel from, PlayerAudioConfigurationModel to) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"Copy from {from.GetScriptPathInScene()} to {to.GetScriptPathInScene()}");
+            _DebugLog($"Copy from {from._GetScriptPathInScene()} to {to._GetScriptPathInScene()}");
 #endif
             #endregion
 
             if (!Utilities.IsValid(from)) {
-                Error($"{nameof(PlayerAudioConfigurationModel)} '{nameof(from)}' invalid");
+                _Error($"{nameof(PlayerAudioConfigurationModel)} '{nameof(from)}' invalid");
                 return;
             }
 
             if (!Utilities.IsValid(to)) {
-                Error($"{nameof(PlayerAudioConfigurationModel)} '{nameof(to)}' invalid");
+                _Error($"{nameof(PlayerAudioConfigurationModel)} '{nameof(to)}' invalid");
                 return;
             }
 
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.OcclusionMask,
                     nameof(to.OcclusionMask),
                     from.OcclusionMask);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.OcclusionFactor,
                     nameof(to.OcclusionFactor),
                     from.OcclusionFactor);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.PlayerOcclusionFactor,
                     nameof(to.PlayerOcclusionFactor),
                     from.PlayerOcclusionFactor);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.ListenerDirectionality,
                     nameof(to.ListenerDirectionality),
                     from.ListenerDirectionality);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.PlayerDirectionality,
                     nameof(to.PlayerDirectionality),
                     from.PlayerDirectionality);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.EnableVoiceLowpass,
                     nameof(to.EnableVoiceLowpass),
                     from.EnableVoiceLowpass);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.VoiceDistanceNear,
                     nameof(to.VoiceDistanceNear),
                     from.VoiceDistanceNear);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.VoiceDistanceFar,
                     nameof(to.VoiceDistanceFar),
                     from.VoiceDistanceFar);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.VoiceGain,
                     nameof(to.VoiceGain),
                     from.VoiceGain);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.VoiceVolumetricRadius,
                     nameof(to.VoiceVolumetricRadius),
                     from.VoiceVolumetricRadius);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.ForceAvatarSpatialAudio,
                     nameof(to.ForceAvatarSpatialAudio),
                     from.ForceAvatarSpatialAudio);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.AllowAvatarCustomAudioCurves,
                     nameof(to.AllowAvatarCustomAudioCurves),
                     from.AllowAvatarCustomAudioCurves);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.AvatarNearRadius,
                     nameof(to.AvatarNearRadius),
                     from.AvatarNearRadius);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.AvatarFarRadius,
                     nameof(to.AvatarFarRadius),
                     from.AvatarFarRadius);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.AvatarGain,
                     nameof(to.AvatarGain),
                     from.AvatarGain);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref to.AvatarVolumetricRadius,
                     nameof(to.AvatarVolumetricRadius),
                     from.AvatarVolumetricRadius);
 
             to.Dirty = true;
-            to.NotifyIfDirty(1);
-            to.MarkNetworkDirty();
+            to._NotifyIfDirty(1);
+            to._MarkNetworkDirty();
         }
 
-        internal void UpdateSliderChecked(Slider slider, float value) {
+        internal void _UpdateSliderChecked(Slider slider, float value) {
             if (value < slider.minValue || value > slider.maxValue) {
-                Error(
+                _Error(
                         $"{value} is out of range [{slider.minValue}, {slider.maxValue}] " +
-                        $"for slider {slider.GetComponentPathInScene()}");
+                        $"for slider {slider._GetComponentPathInScene()}");
                 return;
             }
 
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"Updating slider {slider.GetComponentPathInScene()} to {value}");
+            _DebugLog($"Updating slider {slider._GetComponentPathInScene()} to {value}");
 #endif
             #endregion
 
             slider.value = value;
         }
 
-        internal static void UpdateValueLogged<T>(ref T old, string variable, T replacement) {
+        internal static void _UpdateValueLogged<T>(ref T old, string variable, T replacement) {
             #region TLP_DEBUG
 #if TLP_DEBUG
             TlpLogger.StaticDebugLog($"Updating {variable} from {old} to {replacement}", null);

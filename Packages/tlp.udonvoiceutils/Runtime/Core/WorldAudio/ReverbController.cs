@@ -16,7 +16,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(ReverbController))]
     public class ReverbControllerEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Updates reverb and lowpass filter parameters on an emitter's AudioSource " +
                    "based on distance and clarity. Requires AudioReverbFilter and AudioLowPassFilter " +
                    "on the same GameObject.";
@@ -77,23 +77,23 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         private AnimationCurve _spatialBlendCurveBackup;
         #endregion
 
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
             _audioSource = GetComponent<AudioSource>();
-            if (!IsSet(_audioSource, nameof(_audioSource))) {
+            if (!_IsSet(_audioSource, nameof(_audioSource))) {
                 return false;
             }
 
             _reverbFilter = GetComponent<AudioReverbFilter>();
-            if (!IsSet(_reverbFilter, nameof(_reverbFilter))) {
+            if (!_IsSet(_reverbFilter, nameof(_reverbFilter))) {
                 return false;
             }
 
             _lowPassFilter = GetComponent<AudioLowPassFilter>();
-            if (!IsSet(_lowPassFilter, nameof(_lowPassFilter))) {
+            if (!_IsSet(_lowPassFilter, nameof(_lowPassFilter))) {
                 return false;
             }
 
@@ -108,13 +108,13 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             return true;
         }
 
-        public void UpdateReverb(float distance, float clarity) {
+        public void _UpdateReverb(float distance, float clarity) {
             if (!HasStartedOk) {
                 return;
             }
 
-            float logarithmicFalloff = VoiceUtils.LogarithmicFalloff(_audioSource.minDistance, distance);
-            float cutoffFrequency = UdonMath.Remap(
+            float logarithmicFalloff = VoiceUtils._LogarithmicFalloff(_audioSource.minDistance, distance);
+            float cutoffFrequency = UdonMath._Remap(
                     0,
                     1,
                     MinFrequency,

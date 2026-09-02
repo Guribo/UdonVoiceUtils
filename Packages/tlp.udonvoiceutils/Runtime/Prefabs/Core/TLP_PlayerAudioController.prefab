@@ -77,7 +77,7 @@ MonoBehaviour:
   VoiceGain: 15
   VoiceVolumetricRadius: 0
   ForceAvatarSpatialAudio: 0
-  AllowAvatarCustomAudioCurves: 0
+  AllowAvatarCustomAudioCurves: 1
   AvatarNearRadius: 0
   AvatarFarRadius: 40
   AvatarGain: 10
@@ -86,23 +86,41 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
+      time: 0.01
+      value: 0.1
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 136
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.75
+      inSlope: 0.51724136
+      outSlope: 0.51724136
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.75
+      value: 1
+      inSlope: 0.041666664
+      outSlope: 0.041666664
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 25
-      value: 1
+      value: 5
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -167,7 +185,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnRaised
+  ListenerMethod: _OnRaised
 --- !u!114 &3011362892701418762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,7 +278,7 @@ MonoBehaviour:
   _udonSharpBackingUdonBehaviour: {fileID: 1388939366264103837}
   AutoRetrySendOnFailure: 1
   PauseSynchronization: 0
-  Severity: 5
+  Severity: 4
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
@@ -480,7 +498,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnRaised
+  ListenerMethod: _OnRaised
 --- !u!114 &4230532972690180855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -778,7 +796,7 @@ MonoBehaviour:
   VoiceGain: 15
   VoiceVolumetricRadius: 0
   ForceAvatarSpatialAudio: 0
-  AllowAvatarCustomAudioCurves: 0
+  AllowAvatarCustomAudioCurves: 1
   AvatarNearRadius: 0
   AvatarFarRadius: 40
   AvatarGain: 10
@@ -787,23 +805,41 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
+      time: 0.01
+      value: 0.1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 136
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.75
+      inSlope: 0.51724136
+      outSlope: 0.51724136
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.75
+      value: 1
+      inSlope: 0.041666664
+      outSlope: 0.041666664
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 25
-      value: 1
+      value: 5
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 136
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -868,7 +904,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnRaised
+  ListenerMethod: _OnRaised
 --- !u!114 &5208702683420677677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1322,7 +1358,7 @@ MonoBehaviour:
   VoiceGain: 15
   VoiceVolumetricRadius: 0
   ForceAvatarSpatialAudio: 0
-  AllowAvatarCustomAudioCurves: 0
+  AllowAvatarCustomAudioCurves: 1
   AvatarNearRadius: 0
   AvatarFarRadius: 40
   AvatarGain: 10
@@ -1331,23 +1367,41 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
+      time: 0.01
+      value: 0.1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 136
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.75
+      inSlope: 0.51724136
+      outSlope: 0.51724136
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.75
+      value: 1
+      inSlope: 0.041666664
+      outSlope: 0.041666664
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 25
-      value: 1
+      value: 5
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 136
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4

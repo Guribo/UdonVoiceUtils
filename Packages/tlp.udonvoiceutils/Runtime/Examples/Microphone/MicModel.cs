@@ -4,10 +4,8 @@ using TLP.UdonUtils.Runtime.DesignPatterns.MVC;
 using TLP.UdonUtils.Runtime.Events;
 using TLP.UdonUtils.Runtime.Sync;
 using TLP.UdonUtils.Runtime.Sync.SyncedEvents;
-using TLP.UdonVoiceUtils.Runtime.Core;
 using UdonSharp;
 using UnityEngine;
-using VRC.SDKBase;
 
 namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
 {
@@ -39,167 +37,167 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         /// </summary>
         public int UserId
         {
-            get => GetUserId();
-            set => SetUserId(value);
+            get => _GetUserId();
+            set => _SetUserId(value);
         }
 
         public bool IsOn
         {
-            get => GetIsOnState();
-            set => SetIsOnState(value);
+            get => _GetIsOnState();
+            set => _SetIsOnState(value);
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(MicIsOnEvent, nameof(MicIsOnEvent))) {
+            if (!_IsSet(MicIsOnEvent, nameof(MicIsOnEvent))) {
                 return false;
             }
 
-            if (!IsSet(PlayerHoldingMic, nameof(PlayerHoldingMic))) {
+            if (!_IsSet(PlayerHoldingMic, nameof(PlayerHoldingMic))) {
                 return false;
             }
 
-            if (!PlayerHoldingMic.AddListenerVerified(this, nameof(OnUserChanged))) {
-                Error($"Failed to listen to '{PlayerHoldingMic.GetScriptPathInScene()}.{nameof(OnUserChanged)}' event");
+            if (!PlayerHoldingMic._AddListenerVerified(this, nameof(_OnUserChanged))) {
+                _Error($"Failed to listen to '{PlayerHoldingMic._GetScriptPathInScene()}.{nameof(_OnUserChanged)}' event");
                 return false;
             }
 
-            if (!IsSet(Change, nameof(Change))) {
+            if (!_IsSet(Change, nameof(Change))) {
                 return false;
             }
 
-            if (!MicIsOnEvent.AddListenerVerified(this, nameof(OnMicOnEvent))) {
-                Error($"Failed to listen to '{MicIsOnEvent.GetScriptPathInScene()}.{nameof(OnMicOnEvent)}' event");
+            if (!MicIsOnEvent._AddListenerVerified(this, nameof(_OnMicOnEvent))) {
+                _Error($"Failed to listen to '{MicIsOnEvent._GetScriptPathInScene()}.{nameof(_OnMicOnEvent)}' event");
                 return false;
             }
 
             return true;
         }
 
-        public override void OnEvent(string eventName) {
+        public override void _OnEvent(string eventName) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnEvent)} {eventName}");
+            _DebugLog($"{nameof(_OnEvent)} {eventName}");
 #endif
             #endregion
 
             if (!HasStartedOk) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return;
             }
 
             switch (eventName) {
-                case nameof(OnMicOnEvent):
-                    OnMicOnEvent();
+                case nameof(_OnMicOnEvent):
+                    _OnMicOnEvent();
                     break;
-                case nameof(OnUserChanged):
-                    OnUserChanged();
+                case nameof(_OnUserChanged):
+                    _OnUserChanged();
                     break;
                 default:
-                    base.OnEvent(eventName);
+                    base._OnEvent(eventName);
                     break;
             }
         }
         #endregion
 
         #region Callbacks
-        private void OnUserChanged() {
+        internal void _OnUserChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnUserChanged));
+            _DebugLog(nameof(_OnUserChanged));
 #endif
             #endregion
 
             Dirty = true;
-            NotifyIfDirty(1);
+            _NotifyIfDirty(1);
         }
 
-        private void OnMicOnEvent() {
+        internal void _OnMicOnEvent() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnMicOnEvent));
+            _DebugLog(nameof(_OnMicOnEvent));
 #endif
             #endregion
 
             Dirty = true;
-            NotifyIfDirty(1);
+            _NotifyIfDirty(1);
         }
         #endregion
 
         #region Internal
-        internal void SetIsOnState(bool value) {
+        internal void _SetIsOnState(bool value) {
             if (!HasStartedOk) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return;
             }
 
             if (value == MicIsOnEvent.WorkingValue) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"{MicIsOnEvent.GetScriptPathInScene()} value is already {value}");
+                _DebugLog($"{MicIsOnEvent._GetScriptPathInScene()} value is already {value}");
 #endif
 #endregion
                 return;
             }
 
-            if (!MicIsOnEvent.TakeOwnership()) {
-                Error($"Failed to take ownership of {MicIsOnEvent.GetScriptPathInScene()}");
+            if (!MicIsOnEvent._TakeOwnership()) {
+                _Error($"Failed to take ownership of {MicIsOnEvent._GetScriptPathInScene()}");
                 return;
             }
 
             MicIsOnEvent.WorkingValue = value;
-            MicIsOnEvent.Raise(this);
+            MicIsOnEvent._Raise(this);
             Dirty = true;
-            NotifyIfDirty();
+            _NotifyIfDirty();
         }
 
-        internal bool GetIsOnState() {
+        internal bool _GetIsOnState() {
             if (!HasStartedOk) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return false;
             }
 
             return MicIsOnEvent.WorkingValue;
         }
 
-        internal int GetUserId() {
+        internal int _GetUserId() {
             if (!HasStartedOk) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return -1;
             }
 
             return PlayerHoldingMic.WorkingValue;
         }
 
-        internal void SetUserId(int value) {
+        internal void _SetUserId(int value) {
             if (!HasStartedOk) {
-                Error("Not initialized");
+                _Error("Not initialized");
                 return;
             }
 
             if (value == PlayerHoldingMic.WorkingValue) {
                 #region TLP_DEBUG
 #if TLP_DEBUG
-                DebugLog($"{PlayerHoldingMic.GetScriptPathInScene()} value is already {value}");
+                _DebugLog($"{PlayerHoldingMic._GetScriptPathInScene()} value is already {value}");
 #endif
 #endregion
                 return;
             }
 
-            if (!PlayerHoldingMic.TakeOwnership()) {
-                Error($"Failed to take ownership of {PlayerHoldingMic.GetScriptPathInScene()}");
+            if (!PlayerHoldingMic._TakeOwnership()) {
+                _Error($"Failed to take ownership of {PlayerHoldingMic._GetScriptPathInScene()}");
                 return;
             }
 
             PlayerHoldingMic.WorkingValue = value;
-            PlayerHoldingMic.Raise(this);
+            PlayerHoldingMic._Raise(this);
             Dirty = true;
-            NotifyIfDirty();
+            _NotifyIfDirty();
         }
         #endregion
     }

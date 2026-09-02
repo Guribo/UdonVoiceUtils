@@ -4,12 +4,14 @@ using TLP.UdonUtils.Runtime.Extensions;
 using TLP.UdonUtils.Runtime.Testing;
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon.Common;
+using VRC.Udon.Common.Interfaces;
 
 namespace TLP.UdonVoiceUtils.Runtime.Testing
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     [DefaultExecutionOrder(ExecutionOrder)]
     [TlpDefaultExecutionOrder(typeof(TestPlayersReceiveMasterHeightChange), ExecutionOrder)]
     public class TestPlayersReceiveMasterHeightChange : TestCase
@@ -19,208 +21,123 @@ namespace TLP.UdonVoiceUtils.Runtime.Testing
         [PublicAPI]
         public new const int ExecutionOrder = TestMasterReceivesPlayerHeightChange.ExecutionOrder + 1;
 
-        [UdonSynced]
-        [HideInInspector]
-        public bool TestIsRunning;
-
-        [UdonSynced]
-        [HideInInspector]
-        public float ReceivedHeightEvent;
-
-        [UdonSynced]
-        [HideInInspector]
-        public float ReceivedHeightAvatarApi;
-
-        [UdonSynced]
-        [HideInInspector]
-        public float ExpectedPreviousEyeHeightAvatarApi;
-
-        [UdonSynced]
-        [HideInInspector]
-        public string ErrorMessage;
-
         private float _initialHeight;
         private float _expectedHeight;
+        private bool _isExpectingResponse;
 
-        protected override void InitializeTest() {
+        protected override void _InitializeTest() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(InitializeTest));
+            _DebugLog(nameof(_InitializeTest));
 #endif
             #endregion
 
+            _isExpectingResponse = false;
             if (VRCPlayerApi.GetPlayerCount() != 2) {
-                Error("Need exactly 2 players to test this");
-                TestController.TestInitialized(false);
+                _Error("Need exactly 2 players to test this");
+                TestController._TestInitialized(false);
                 return;
             }
 
-            if (!Networking.LocalPlayer.IsMasterSafe()) {
-                Error("Testing player must be master");
-                TestController.TestInitialized(false);
+            if (!Networking.LocalPlayer._IsMasterSafe()) {
+                _Error("Testing player must be master");
+                TestController._TestInitialized(false);
                 return;
             }
 
-            if (!Networking.IsOwner(gameObject)) {
-                Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            }
-
-            if (!Networking.IsOwner(gameObject)) {
-                Error("Failed to transfer ownership to local player");
-                TestController.TestInitialized(false);
-                return;
-            }
-
-            Networking.LocalPlayer.SetAvatarEyeHeightByMultiplier(1f);
-            _initialHeight = Networking.LocalPlayer.GetAvatarEyeHeightAsMeters();
-            _expectedHeight = _initialHeight * 2f;
-
-            TestController.TestInitialized(true);
+            LocalPlayer.SetAvatarEyeHeightByMultiplier(1f);
+            SendCustomEventDelayedSeconds(nameof(_Delayed_FinishInitialization), 10f);
         }
 
-        protected override void RunTest() {
+        public override void OnAvatarChanged(VRCPlayerApi player) {
+            base.OnAvatarChanged(player);
+            _Info(
+                    $"{player._DisplayNameUniqueSafe()}'s avatar changed: eye height is now {player.GetAvatarEyeHeightAsMeters()}m");
+        }
+
+        public void _Delayed_FinishInitialization() {
+            _initialHeight = LocalPlayer.GetAvatarEyeHeightAsMeters();
+            _expectedHeight = _initialHeight * 2f;
+
+            TestController._TestInitialized(true);
+        }
+
+        protected override void _RunTest() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(RunTest));
+            _DebugLog(nameof(_RunTest));
 #endif
             #endregion
 
-            TestIsRunning = true;
-            ReceivedHeightEvent = 0f;
-            ReceivedHeightAvatarApi = 0f;
-            ExpectedPreviousEyeHeightAvatarApi = _initialHeight;
-            ErrorMessage = "";
-            MarkNetworkDirty();
-            RequestSerialization();
-
-            Networking.LocalPlayer.SetAvatarEyeHeightByMeters(_expectedHeight);
-
+            _isExpectingResponse = true;
+            LocalPlayer.SetAvatarEyeHeightByMeters(_expectedHeight);
             // wait for other player to respond after receiving height changes
         }
 
-        public override void OnDeserialization(DeserializationResult deserializationResult) {
-            base.OnDeserialization(deserializationResult);
-
-            if (!TestIsRunning) {
+        [NetworkCallable(1)]
+        public void _RPC_ReceivedHeightResponse(float previousEyeHeight, float newEyeHeight) {
+            if (!LocalPlayer._IsMasterSafe()) {
                 return;
             }
 
-            if (!Networking.LocalPlayer.IsMasterSafe()) {
-                SendCustomEventDelayedSeconds(nameof(GetAvatarHeightDelayedAndRespond), 10f);
+            if (Status != TestCaseStatus.Running) {
                 return;
             }
 
-            if (ErrorMessage != "") {
-                Error($"Received from client: {ErrorMessage}");
-                TestController.TestCompleted(false);
+            if (!_isExpectingResponse) {
+                return;
             }
-
+            
             if (_expectedHeight <= 0f) {
-                Error("Expected height was not set");
-                TestController.TestCompleted(false);
+                _Error("Expected height was not set");
+                TestController._TestCompleted(false);
                 return;
             }
 
-            if (Math.Abs(_expectedHeight - ReceivedHeightEvent) > 0.001f) {
-                Error(
-                        $"Received height {ReceivedHeightEvent}m from height change event did not match expected height {_expectedHeight}m"
+            if (Math.Abs(_initialHeight - previousEyeHeight) > 0.001f) {
+                _Error(
+                        $"Received height {previousEyeHeight}m from height change event did not match expected initial height {_initialHeight}m"
                 );
-                TestController.TestCompleted(false);
+                TestController._TestCompleted(false);
                 return;
             }
-
-            if (Math.Abs(_expectedHeight - ReceivedHeightAvatarApi) > 0.001f) {
-                Error(
-                        $"Received height {ReceivedHeightAvatarApi}m from VrcPlayerApi did not match expected height {_expectedHeight}m"
+            
+            if (Math.Abs(_expectedHeight - newEyeHeight) > 0.001f) {
+                _Error(
+                        $"Received height {newEyeHeight}m from height change event did not match expected height {_expectedHeight}m"
                 );
-                TestController.TestCompleted(false);
+                TestController._TestCompleted(false);
                 return;
             }
 
-            TestController.TestCompleted(true);
+            TestController._TestCompleted(true);
         }
 
         public override void OnAvatarEyeHeightChanged(VRCPlayerApi player, float prevEyeHeightAsMeters) {
             base.OnAvatarEyeHeightChanged(player, prevEyeHeightAsMeters);
-            if (!TestIsRunning) {
+            if (Networking.LocalPlayer._IsMasterSafe()) {
                 return;
             }
-
-            if (Networking.LocalPlayer.IsMasterSafe()) {
-                return;
-            }
-
-            if (!Networking.IsOwner(gameObject)) {
-                Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            }
-
-            ErrorMessage = "";
-
-            if (ExpectedPreviousEyeHeightAvatarApi <= 0.199f) // minimum height allowed by VRChat is 0.2f
-            {
-                ErrorMessage =
-                        $"Expected previous eye height was not set correctly, expected at least 0.2m but got {ExpectedPreviousEyeHeightAvatarApi}m";
-                return;
-            }
-
-            if (Math.Abs(prevEyeHeightAsMeters - ExpectedPreviousEyeHeightAvatarApi) > 0.001f) {
-                ErrorMessage =
-                        $"Expected previous eye height was not {ExpectedPreviousEyeHeightAvatarApi}m, got {prevEyeHeightAsMeters}m";
-                return;
-            }
-
-            ReceivedHeightEvent = player.GetAvatarEyeHeightAsMeters();
+            
+            // only remote player responds
+            SendCustomNetworkEvent(
+                    NetworkEventTarget.Others,
+                    nameof(_RPC_ReceivedHeightResponse),
+                    prevEyeHeightAsMeters,
+                    player.GetAvatarEyeHeightAsMeters()
+            );
         }
+        
 
-        public void GetAvatarHeightDelayedAndRespond() {
+        protected override void _CleanUpTest() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(GetAvatarHeightDelayedAndRespond));
+            _DebugLog(nameof(_CleanUpTest));
 #endif
             #endregion
-
-            var playerApis = new VRCPlayerApi[VRCPlayerApi.GetPlayerCount()];
-            VRCPlayerApi.GetPlayers(playerApis);
-
-            var master = playerApis.GetMaster();
-            if (Utilities.IsValid(master)) {
-                ReceivedHeightAvatarApi = master.GetAvatarEyeHeightAsMeters();
-                if (ErrorMessage != "") {
-                    Error(ErrorMessage);
-                }
-            } else {
-                ErrorMessage = "Master not found in list of players";
-                Error(ErrorMessage);
-            }
-
-            MarkNetworkDirty();
-        }
-
-        protected override void CleanUpTest() {
-            #region TLP_DEBUG
-#if TLP_DEBUG
-            DebugLog(nameof(CleanUpTest));
-#endif
-            #endregion
-
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            if (!Networking.IsOwner(gameObject)) {
-                Error("Failed to transfer ownership to local player");
-                TestController.TestCleanedUp(false);
-                return;
-            }
-
-            TestIsRunning = false;
-            ReceivedHeightEvent = 0f;
-            ReceivedHeightAvatarApi = 0f;
-            ExpectedPreviousEyeHeightAvatarApi = 0f;
-            ErrorMessage = "";
-            MarkNetworkDirty();
-            RequestSerialization();
-
+            _isExpectingResponse = false;
             Networking.LocalPlayer.SetAvatarEyeHeightByMultiplier(1f);
-
-            TestController.TestCleanedUp(true);
+            TestController._TestCleanedUp(true);
         }
     }
 }

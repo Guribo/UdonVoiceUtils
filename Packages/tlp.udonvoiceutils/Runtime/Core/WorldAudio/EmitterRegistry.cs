@@ -20,7 +20,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(EmitterRegistry))]
     public class EmitterRegistryEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Maintains the set of active audio emitters registered with the importance system. " +
                    "Provides add/remove operations and rebuilds the emitter array when dirty. " +
                    "Used by WorldAudioController to track which emitters need updates.";
@@ -56,17 +56,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            return IsSet(ImportanceTree, nameof(ImportanceTree));
+            return _IsSet(ImportanceTree, nameof(ImportanceTree));
         }
         #endregion
 
         #region Public API
-        public bool Add(OccludedEmitter occludedEmitter) {
+        public bool _Add(OccludedEmitter occludedEmitter) {
             if (!HasStartedOk) {
                 return false;
             }
@@ -84,7 +84,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
             return true;
         }
 
-        public bool Remove(OccludedEmitter occludedEmitter) {
+        public bool _Remove(OccludedEmitter occludedEmitter) {
             if (!HasStartedOk) {
                 return false;
             }
@@ -99,7 +99,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 
             UniqueEmitters.Remove(occludedEmitter);
             if (Utilities.IsValid(ImportanceTree)) {
-                ImportanceTree.Remove(occludedEmitter);
+                ImportanceTree._Remove(occludedEmitter);
             }
 
             NeedsRebuild = true;
@@ -108,9 +108,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Internal
-        internal void Initialize() {
+        internal void _Initialize() {
 #if TLP_DEBUG
-            DebugLog(nameof(Initialize));
+            _DebugLog(nameof(_Initialize));
 #endif
             if (!NeedsRebuild) {
                 return;
@@ -133,7 +133,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
                 ++index;
             }
 
-            Emitters = Emitters.ResizeOrCreate(index);
+            Emitters = Emitters._ResizeOrCreate(index);
             NeedsRebuild = false;
         }
         #endregion

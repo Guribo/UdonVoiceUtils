@@ -37,17 +37,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
         public bool Initialized { private set; get; }
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(PlayerAudioController, nameof(PlayerAudioController))) {
+            if (!_IsSet(PlayerAudioController, nameof(PlayerAudioController))) {
                 return false;
             }
 
             _owner = Networking.GetOwner(gameObject);
-            if (!IsSet(_owner, nameof(_owner))) {
+            if (!_IsSet(_owner, nameof(_owner))) {
                 return false;
             }
 
@@ -61,17 +61,17 @@ namespace TLP.UdonVoiceUtils.Runtime.Debugging
                 return;
             }
 
-            PlayerAudioController.GetRemotePlayerAudioListenerTransform(_owner, out var pos, out var rot);
+            PlayerAudioController._GetRemotePlayerAudioListenerTransform(_owner, out var pos, out var rot);
             transform.SetPositionAndRotation(pos, rot);
-            VoiceValuesUpdate();
+            _VoiceValuesUpdate();
         }
         #endregion
 
         #region Events
-        private void VoiceValuesUpdate() {
+        private void _VoiceValuesUpdate() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(VoiceValuesUpdate));
+            _DebugLog(nameof(_VoiceValuesUpdate));
 #endif
             #endregion
 

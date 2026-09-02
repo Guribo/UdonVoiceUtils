@@ -14,7 +14,7 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
         /// Converts a mouse GUI event to a world-space position on the Y=0 plane
         /// and calls <paramref name="onMouseDown"/> on left-click.
         /// </summary>
-        internal static void HandleInput(Event guiEvent, UdonSharpBehaviour destination,
+        internal static void _HandleInput(Event guiEvent, UdonSharpBehaviour destination,
                 Action<Vector3, UdonSharpBehaviour> onMouseDown) {
             var mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
             float drawPlaneHeight = 0;
@@ -30,18 +30,20 @@ namespace TLP.UdonVoiceUtils.Editor.Inspectors
         /// <summary>
         /// Checks if a click position is near a target's screen position and selects it.
         /// </summary>
-        internal static void TrySelectAtClick(Vector3 mousePosition, UdonSharpBehaviour target) {
+        internal static void _TrySelectAtClick(Vector3 mousePosition, UdonSharpBehaviour target) {
             var targetGuiPosition =
                     HandleUtility.WorldToGUIPoint(target.transform.position);
             var mouseGuiPosition = HandleUtility.WorldToGUIPoint(mousePosition);
             bool clickCloseToTarget = Vector2.Distance(targetGuiPosition, mouseGuiPosition) < 10f;
-            if (clickCloseToTarget) {
-                Selection.SetActiveObjectWithContext(
-                        target.gameObject,
-                        target
-                );
-                EditorGUIUtility.PingObject(target);
+            if (!clickCloseToTarget) {
+                return;
             }
+
+            Selection.SetActiveObjectWithContext(
+                    target.gameObject,
+                    target
+            );
+            EditorGUIUtility.PingObject(target);
         }
     }
 }

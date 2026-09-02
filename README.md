@@ -4,7 +4,8 @@
 
 ## What is UVU?
 
-**UdonVoiceUtils** is a selection of scripts and prefabs that can modify player audio settings in real time.
+**UdonVoiceUtils** is a selection of scripts and prefabs that can modify player audio settings and world audio in real time.
+This includes dynamically applying reverb, and muffling players/world audio sources behind walls/obstacles.
 
 ### Example use cases
 
@@ -70,6 +71,11 @@ Full documentation lives on the [Wiki](https://github.com/Guribo/UdonVoiceUtils/
 * [UdonSharp](https://udonsharp.docs.vrchat.com/)
 * [VRChat player audio API docs](https://docs.vrchat.com/docs/player-audio)
 
+### [7.0.0] - 2026-09-02
+
+#### 🐛 Bug Fixes
+
+- [**breaking**] Prevent legacy network event abuse, enable custom audiocurves for avatar audio by default
 ### [6.0.0] - 2026-07-12
 
 #### 🚀 Features

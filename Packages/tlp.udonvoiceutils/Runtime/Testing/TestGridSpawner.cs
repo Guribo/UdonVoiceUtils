@@ -1,30 +1,44 @@
-﻿using UdonSharp;
+﻿using JetBrains.Annotations;
+using TLP.UdonUtils.Runtime;
+using UdonSharp;
 using UnityEngine;
-using VRC.SDK3.Data;
-using VRC.SDKBase;
-using VRC.Udon;
 
 namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 {
+    
+    [DefaultExecutionOrder(ExecutionOrder)]
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class TestGridSpawner : UdonSharpBehaviour
+    public class TestGridSpawner : TlpBaseBehaviour
     {
-        public WorldAudioController WorldAudioController;
+        #region ExecutionOrder
+        
+        public override int ExecutionOrderReadOnly => ExecutionOrder;
+
+        [PublicAPI]
+        public new const int ExecutionOrder = TlpExecutionOrder.DefaultStart + 1;
+        #endregion
+        
         public GameObject Prefab;
 
         public float Spacing = 10f;
         public int SizeX = 10;
-        public int SizeY = 0;
+        public int SizeY;
         public int SizeZ = 10;
 
         private int _x;
-        
-        private void Start() {
+
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
+                return false;
+            }
+
             _x = 0;
-            SendCustomEventDelayedFrames(nameof(Delayed_SpawnBatch), 10);
+            SendCustomEventDelayedFrames(nameof(_Delayed_SpawnBatch), 10);
+
+            return true;
         }
 
-        public void Delayed_SpawnBatch() {
+        public void _Delayed_SpawnBatch() {
             for (int y = 0; y < SizeY; y++) {
                 for (int z = 0; z < SizeZ; z++) {
                     var spawnPoint = transform.position + new Vector3(
@@ -38,7 +52,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 
             ++_x;
             if (_x < SizeX) {
-                SendCustomEventDelayedFrames(nameof(Delayed_SpawnBatch), 1);
+                SendCustomEventDelayedFrames(nameof(_Delayed_SpawnBatch), 1);
             }
         }
     }

@@ -68,7 +68,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnMicOnEvent
+  ListenerMethod: _OnMicOnEvent
   FastSync: 0
   Calls: 0
 --- !u!114 &1239942092549000281
@@ -282,7 +282,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnUserChanged
+  ListenerMethod: _OnUserChanged
   FastSync: 0
   Calls: 0
 --- !u!114 &9172536517904237588
@@ -552,7 +552,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnModelChanged
+  ListenerMethod: _OnModelChanged
 --- !u!114 &3580439323733153578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -680,7 +680,7 @@ MonoBehaviour:
   RaiseOnStart: 0
   NotifyAsync: 0
   UseAsyncEventQueue: 0
-  ListenerMethod: OnPlayerListUpdated
+  ListenerMethod: _OnPlayerListUpdated
   FastSync: 0
   Calls: 0
 --- !u!114 &2604300725984307787
@@ -986,7 +986,19 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: PrivacyChannelIds
+      Entry: 7
+      Data: 0|VRC.SDK3.Data.DataDictionary, VRCSDK3
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 6562029534750915081}
   AutoRetrySendOnFailure: 1
   PauseSynchronization: 0
@@ -1105,6 +1117,7 @@ MonoBehaviour:
   EventInstigator: {fileID: 0}
   Pool: {fileID: 0}
   PoolableInUse: 0
+  MicModel: {fileID: 0}
 --- !u!114 &6304727246407199583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1134,6 +1147,7 @@ MonoBehaviour:
   DropEventName: 
   ThrowVelocityBoostMinSpeed: 1
   ThrowVelocityBoostScale: 1
+  OutlineRenderers: []
   currentlyHeldBy: {fileID: 0}
   pickupable: 1
   proximity: 2

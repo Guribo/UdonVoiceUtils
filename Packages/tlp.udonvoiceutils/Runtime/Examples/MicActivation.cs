@@ -24,12 +24,12 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(MicModel, nameof(MicModel))) {
+            if (!_IsSet(MicModel, nameof(MicModel))) {
                 return false;
             }
 
@@ -38,10 +38,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
 
         public bool IsOn => MicModel.IsOn;
 
-        protected internal bool Activate() {
+        protected internal bool _Activate() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(Activate));
+            _DebugLog(nameof(_Activate));
 #endif
             #endregion
 
@@ -53,10 +53,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             return true;
         }
 
-        protected internal bool Deactivate() {
+        protected internal bool _Deactivate() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(Deactivate));
+            _DebugLog(nameof(_Deactivate));
 #endif
             #endregion
 

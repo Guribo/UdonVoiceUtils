@@ -12,7 +12,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
         [PublicAPI]
         public new const int ExecutionOrder = PlayerOcclusionStrategy.ExecutionOrder + 1;
 
-        public override float GetAudioClarity(
+        public override float _GetAudioClarity(
                 Vector3 listenerHead,
                 Vector3 listenerLookDirection,
                 float distanceBetweenPlayerHeads,

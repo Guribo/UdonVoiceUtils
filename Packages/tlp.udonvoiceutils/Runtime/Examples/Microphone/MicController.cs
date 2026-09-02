@@ -21,25 +21,25 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples.Microphone
         private MicView _micView;
         #endregion
 
-        protected override bool InitializeInternal() {
+        protected override bool _InitializeInternal() {
             _micModel = (MicModel)Model;
             if (!Utilities.IsValid(_micModel)) {
-                Error($"{nameof(Model)} is not a {nameof(MicModel)}");
+                _Error($"{nameof(Model)} is not a {nameof(MicModel)}");
                 return false;
             }
 
             _micView = (MicView)View;
             if (!Utilities.IsValid(_micView)) {
-                Error($"{nameof(Controller)} is not a {nameof(MicView)}");
+                _Error($"{nameof(Controller)} is not a {nameof(MicView)}");
                 return false;
             }
 
-            return base.InitializeInternal();
+            return base._InitializeInternal();
         }
 
         #region PublicApi
 
-        public void Activate() {
+        public void _Activate() {
 
         }
 

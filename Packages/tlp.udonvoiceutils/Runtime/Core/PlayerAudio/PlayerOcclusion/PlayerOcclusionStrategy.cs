@@ -22,7 +22,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
         /// <param name="playerClarity">Impact of another player blocking the sound, range 0-1 where 1 means no negative impact on clarity</param>
         /// <param name="playerOcclusionMask"></param>
         /// <returns>0-1, when at 1: audio source shall be least affected by filters</returns>
-        public abstract float GetAudioClarity(
+        public abstract float _GetAudioClarity(
                 Vector3 listenerHead,
                 Vector3 listenerLookDirection,
                 float distanceBetweenPlayerHeads,
@@ -33,9 +33,9 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
 
         /// <summary>
         /// Computes the look direction and distance from the listener head to the emitter,
-        /// then delegates to <see cref="GetAudioClarity"/>.
+        /// then delegates to <see cref="_GetAudioClarity"/>.
         /// </summary>
-        public float GetEmitterAudioClarity(
+        public float _GetEmitterAudioClarity(
                 Vector3 listenerHead,
                 Vector3 emitterPosition,
                 float environmentClarity,
@@ -43,7 +43,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio.PlayerOcclusion
                 int playerOcclusionMask
         ) {
             Vector3 direction = emitterPosition - listenerHead;
-            return GetAudioClarity(
+            return _GetAudioClarity(
                     listenerHead,
                     direction.normalized,
                     direction.magnitude,

@@ -18,7 +18,7 @@ namespace TLP.UdonVoiceUtils.Editor.Testing
     [CustomEditor(typeof(TestSoundLooper))]
     public class TestSoundLooperEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Test helper that plays a sound at fixed intervals using network time. " +
                    "Used for testing WorldAudio emitter behavior with timed playback.";
         }
@@ -42,36 +42,36 @@ public class TestSoundLooper : TlpBaseBehaviour
     public float Interval = 3f;
     private AudioSourceStateController _audioSourceStateController;
 
-    protected override bool SetupAndValidate() {
-        if (!base.SetupAndValidate()) {
+    protected override bool _SetupAndValidate() {
+        if (!base._SetupAndValidate()) {
             return false;
         }
 
-        _networkTime = TlpNetworkTime.GetInstance();
+        _networkTime = TlpNetworkTime._GetInstance();
         if (!Utilities.IsValid(_networkTime)) {
             return false;
         }
 
         _audioSourceStateController = GetComponent<AudioSourceStateController>();
-        if (!IsSet(_audioSourceStateController, nameof(_audioSourceStateController))) {
+        if (!_IsSet(_audioSourceStateController, nameof(_audioSourceStateController))) {
             return false;
         }
 
-        SendCustomEventDelayedSeconds(nameof(DelayedPlaySound), CalculateDelayUntilNextPlay());
+        SendCustomEventDelayedSeconds(nameof(_DelayedPlaySound), _CalculateDelayUntilNextPlay());
         return true;
     }
 
-    public void DelayedPlaySound() {
+    public void _DelayedPlaySound() {
         if (!HasStartedOk) {
             return;
         }
 
-        _audioSourceStateController.Play();
-        SendCustomEventDelayedSeconds(nameof(DelayedPlaySound), CalculateDelayUntilNextPlay());
+        _audioSourceStateController._Play();
+        SendCustomEventDelayedSeconds(nameof(_DelayedPlaySound), _CalculateDelayUntilNextPlay());
     }
 
-    private float CalculateDelayUntilNextPlay() {
-        double currentTime = _networkTime.TimeAsDouble();
+    private float _CalculateDelayUntilNextPlay() {
+        double currentTime = _networkTime._TimeAsDouble();
         if (Interval <= 0) {
             return 1f; // fallback to 1 second if interval is invalid
         }

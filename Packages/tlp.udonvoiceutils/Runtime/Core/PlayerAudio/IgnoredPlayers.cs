@@ -26,22 +26,22 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         #endregion
 
         #region Public
-        public bool Add(VRCPlayerApi player) {
+        public bool _Add(VRCPlayerApi player) {
             // validate the player
             if (!Utilities.IsValid(player)) {
-                Error($"{nameof(player)} invalid");
+                _Error($"{nameof(player)} invalid");
                 return false;
             }
 
             if (IgnoredPlayerIds.ContainsKey(player.playerId)) {
-                Error($"{player.ToStringSafe()} is already ignored");
+                _Error($"{player._ToStringSafe()} is already ignored");
                 return false;
             }
 
             var ignoredPlayers = IgnoredPlayerIds.GetKeys();
             for (int i = 0; i < ignoredPlayers.Count; i++) {
                 var playerId = ignoredPlayers[i];
-                if (!playerId.Int.IsValidPlayer(out var unused)) {
+                if (!playerId.Int._IsValidPlayer(out var unused)) {
                     IgnoredPlayerIds.Remove(playerId.Int);
                 }
             }
@@ -50,21 +50,21 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             return true;
         }
 
-        public bool Remove(VRCPlayerApi player) {
+        public bool _Remove(VRCPlayerApi player) {
             if (!Utilities.IsValid(player)) {
-                Error($"{nameof(player)} invalid");
+                _Error($"{nameof(player)} invalid");
                 return false;
             }
 
             if (!IgnoredPlayerIds.ContainsKey(player.playerId)) {
-                Warn($"{player.ToStringSafe()} was not ignored");
+                _Warn($"{player._ToStringSafe()} was not ignored");
                 return false;
             }
 
             var ignoredPlayers = IgnoredPlayerIds.GetKeys();
             for (int i = 0; i < ignoredPlayers.Count; i++) {
                 var playerId = ignoredPlayers[i];
-                if (!playerId.Int.IsValidPlayer(out var unused)) {
+                if (!playerId.Int._IsValidPlayer(out var unused)) {
                     IgnoredPlayerIds.Remove(playerId.Int);
                 }
             }
@@ -72,7 +72,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
             return IgnoredPlayerIds.Remove(player.playerId);
         }
 
-        public bool Contains(int playerId) {
+        public bool _Contains(int playerId) {
             return IgnoredPlayerIds.ContainsKey(playerId);
         }
         #endregion

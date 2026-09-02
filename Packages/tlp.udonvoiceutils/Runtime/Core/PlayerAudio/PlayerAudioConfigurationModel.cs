@@ -186,10 +186,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudiocustomcurve</remarks>
         /// </summary>
         [Tooltip("When set custom audio curves on avatar audio sources are used.")]
-        public bool AllowAvatarCustomAudioCurves;
+        public bool AllowAvatarCustomAudioCurves = true;
 
         [UdonSynced]
-        private bool _syncedAllowAvatarCustomAudioCurves;
+        private bool _syncedAllowAvatarCustomAudioCurves = true;
 
         /// <summary>
         /// <remarks>https://docs.vrchat.com/docs/player-audio#setavataraudionearradius</remarks>
@@ -251,65 +251,65 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         public void OnEnable() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnEnable));
+            _DebugLog(nameof(OnEnable));
 #endif
             #endregion
 
             if (!IsModelInitialized) {
-                DebugLog($"{nameof(OnEnable)}: Skipping {nameof(NotifyIfDirty)} as not yet initialized");
+                _DebugLog($"{nameof(OnEnable)}: Skipping {nameof(_NotifyIfDirty)} as not yet initialized");
                 return;
             }
 
             Dirty = true;
-            NotifyIfDirty(1);
+            _NotifyIfDirty(1);
         }
         #endregion
 
         #region Callbacks
-        protected virtual void OnModelChanged() {
+        protected virtual void _OnModelChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnModelChanged));
+            _DebugLog(nameof(_OnModelChanged));
 #endif
             #endregion
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
+        protected override bool _SetupAndValidate() {
             if (Networking.GetOwner(gameObject) == Networking.LocalPlayer) {
-                CopyLocalCopyToNetworkData();
+                _CopyLocalCopyToNetworkData();
                 RequestSerialization();
             }
 
-            return base.SetupAndValidate();
+            return base._SetupAndValidate();
         }
 
-        public override void OnEvent(string eventName) {
+        public override void _OnEvent(string eventName) {
             if (!HasStartedOk) {
                 return;
             }
 
             switch (eventName) {
-                case nameof(OnModelChanged):
+                case nameof(_OnModelChanged):
 
                     #region TLP_DEBUG
 #if TLP_DEBUG
-                    DebugLog_OnEvent(eventName);
+                    _DebugLog_OnEvent(eventName);
 #endif
                     #endregion
 
-                    OnModelChanged();
+                    _OnModelChanged();
                     break;
                 default:
-                    base.OnEvent(eventName);
+                    base._OnEvent(eventName);
                     break;
             }
         }
 
 
         public override void OnPreSerialization() {
-            CopyLocalCopyToNetworkData();
+            _CopyLocalCopyToNetworkData();
             base.OnPreSerialization();
         }
 
@@ -320,101 +320,101 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
                 return;
             }
 
-            CopyNetworkDataToLocalCopy();
+            _CopyNetworkDataToLocalCopy();
 
             if (!IsModelInitialized) {
-                Warn($"Skipping {nameof(OnDeserialization)} as not yet initialized");
+                _Warn($"Skipping {nameof(OnDeserialization)} as not yet initialized");
                 return;
             }
 
             Dirty = true;
-            NotifyIfDirty(1);
+            _NotifyIfDirty(1);
         }
         #endregion
 
         #region Internal
-        private void CopyNetworkDataToLocalCopy() {
+        private void _CopyNetworkDataToLocalCopy() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(CopyNetworkDataToLocalCopy));
+            _DebugLog(nameof(_CopyNetworkDataToLocalCopy));
 #endif
             #endregion
 
-            UpdateValueLogged(ref OcclusionFactor, nameof(OcclusionFactor), _syncedOcclusionFactor);
-            UpdateValueLogged(ref PlayerOcclusionFactor, nameof(PlayerOcclusionFactor), _syncedPlayerOcclusionFactor);
-            UpdateValueLogged(
+            _UpdateValueLogged(ref OcclusionFactor, nameof(OcclusionFactor), _syncedOcclusionFactor);
+            _UpdateValueLogged(ref PlayerOcclusionFactor, nameof(PlayerOcclusionFactor), _syncedPlayerOcclusionFactor);
+            _UpdateValueLogged(
                     ref ListenerDirectionality,
                     nameof(ListenerDirectionality),
                     _syncedListenerDirectionality);
-            UpdateValueLogged(ref PlayerDirectionality, nameof(PlayerDirectionality), _syncedPlayerDirectionality);
-            UpdateValueLogged(ref EnableVoiceLowpass, nameof(EnableVoiceLowpass), _syncedEnableVoiceLowpass);
-            UpdateValueLogged(ref VoiceDistanceNear, nameof(VoiceDistanceNear), _syncedVoiceDistanceNear);
-            UpdateValueLogged(ref VoiceDistanceFar, nameof(VoiceDistanceFar), _syncedVoiceDistanceFar);
-            UpdateValueLogged(ref VoiceGain, nameof(VoiceGain), _syncedVoiceGain);
-            UpdateValueLogged(ref VoiceVolumetricRadius, nameof(VoiceVolumetricRadius), _syncedVoiceVolumetricRadius);
-            UpdateValueLogged(
+            _UpdateValueLogged(ref PlayerDirectionality, nameof(PlayerDirectionality), _syncedPlayerDirectionality);
+            _UpdateValueLogged(ref EnableVoiceLowpass, nameof(EnableVoiceLowpass), _syncedEnableVoiceLowpass);
+            _UpdateValueLogged(ref VoiceDistanceNear, nameof(VoiceDistanceNear), _syncedVoiceDistanceNear);
+            _UpdateValueLogged(ref VoiceDistanceFar, nameof(VoiceDistanceFar), _syncedVoiceDistanceFar);
+            _UpdateValueLogged(ref VoiceGain, nameof(VoiceGain), _syncedVoiceGain);
+            _UpdateValueLogged(ref VoiceVolumetricRadius, nameof(VoiceVolumetricRadius), _syncedVoiceVolumetricRadius);
+            _UpdateValueLogged(
                     ref ForceAvatarSpatialAudio,
                     nameof(ForceAvatarSpatialAudio),
                     _syncedForceAvatarSpatialAudio);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref AllowAvatarCustomAudioCurves,
                     nameof(AllowAvatarCustomAudioCurves),
                     _syncedAllowAvatarCustomAudioCurves);
-            UpdateValueLogged(ref AvatarNearRadius, nameof(AvatarNearRadius), _syncedAvatarNearRadius);
-            UpdateValueLogged(ref AvatarFarRadius, nameof(AvatarFarRadius), _syncedAvatarFarRadius);
-            UpdateValueLogged(ref AvatarGain, nameof(AvatarGain), _syncedAvatarGain);
-            UpdateValueLogged(
+            _UpdateValueLogged(ref AvatarNearRadius, nameof(AvatarNearRadius), _syncedAvatarNearRadius);
+            _UpdateValueLogged(ref AvatarFarRadius, nameof(AvatarFarRadius), _syncedAvatarFarRadius);
+            _UpdateValueLogged(ref AvatarGain, nameof(AvatarGain), _syncedAvatarGain);
+            _UpdateValueLogged(
                     ref AvatarVolumetricRadius,
                     nameof(AvatarVolumetricRadius),
                     _syncedAvatarVolumetricRadius);
         }
 
-        private void CopyLocalCopyToNetworkData() {
+        private void _CopyLocalCopyToNetworkData() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(CopyLocalCopyToNetworkData));
+            _DebugLog(nameof(_CopyLocalCopyToNetworkData));
 #endif
             #endregion
 
-            UpdateValueLogged(ref _syncedOcclusionFactor, nameof(_syncedOcclusionFactor), OcclusionFactor);
-            UpdateValueLogged(
+            _UpdateValueLogged(ref _syncedOcclusionFactor, nameof(_syncedOcclusionFactor), OcclusionFactor);
+            _UpdateValueLogged(
                     ref _syncedPlayerOcclusionFactor,
                     nameof(_syncedPlayerOcclusionFactor),
                     PlayerOcclusionFactor);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref _syncedListenerDirectionality,
                     nameof(_syncedListenerDirectionality),
                     ListenerDirectionality);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref _syncedPlayerDirectionality,
                     nameof(_syncedPlayerDirectionality),
                     PlayerDirectionality);
-            UpdateValueLogged(ref _syncedEnableVoiceLowpass, nameof(_syncedEnableVoiceLowpass), EnableVoiceLowpass);
-            UpdateValueLogged(ref _syncedVoiceDistanceNear, nameof(_syncedVoiceDistanceNear), VoiceDistanceNear);
-            UpdateValueLogged(ref _syncedVoiceDistanceFar, nameof(_syncedVoiceDistanceFar), VoiceDistanceFar);
-            UpdateValueLogged(ref _syncedVoiceGain, nameof(_syncedVoiceGain), VoiceGain);
-            UpdateValueLogged(
+            _UpdateValueLogged(ref _syncedEnableVoiceLowpass, nameof(_syncedEnableVoiceLowpass), EnableVoiceLowpass);
+            _UpdateValueLogged(ref _syncedVoiceDistanceNear, nameof(_syncedVoiceDistanceNear), VoiceDistanceNear);
+            _UpdateValueLogged(ref _syncedVoiceDistanceFar, nameof(_syncedVoiceDistanceFar), VoiceDistanceFar);
+            _UpdateValueLogged(ref _syncedVoiceGain, nameof(_syncedVoiceGain), VoiceGain);
+            _UpdateValueLogged(
                     ref _syncedVoiceVolumetricRadius,
                     nameof(_syncedVoiceVolumetricRadius),
                     VoiceVolumetricRadius);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref _syncedForceAvatarSpatialAudio,
                     nameof(_syncedForceAvatarSpatialAudio),
                     ForceAvatarSpatialAudio);
-            UpdateValueLogged(
+            _UpdateValueLogged(
                     ref _syncedAllowAvatarCustomAudioCurves,
                     nameof(_syncedAllowAvatarCustomAudioCurves),
                     AllowAvatarCustomAudioCurves);
-            UpdateValueLogged(ref _syncedAvatarNearRadius, nameof(_syncedAvatarNearRadius), AvatarNearRadius);
-            UpdateValueLogged(ref _syncedAvatarFarRadius, nameof(_syncedAvatarFarRadius), AvatarFarRadius);
-            UpdateValueLogged(ref _syncedAvatarGain, nameof(_syncedAvatarGain), AvatarGain);
-            UpdateValueLogged(
+            _UpdateValueLogged(ref _syncedAvatarNearRadius, nameof(_syncedAvatarNearRadius), AvatarNearRadius);
+            _UpdateValueLogged(ref _syncedAvatarFarRadius, nameof(_syncedAvatarFarRadius), AvatarFarRadius);
+            _UpdateValueLogged(ref _syncedAvatarGain, nameof(_syncedAvatarGain), AvatarGain);
+            _UpdateValueLogged(
                     ref _syncedAvatarVolumetricRadius,
                     nameof(_syncedAvatarVolumetricRadius),
                     AvatarVolumetricRadius);
         }
 
-        internal static void UpdateValueLogged<T>(ref T old, string variable, T replacement) {
+        internal static void _UpdateValueLogged<T>(ref T old, string variable, T replacement) {
             #region TLP_DEBUG
 #if TLP_DEBUG
             TlpLogger.StaticDebugLog($"Updating {variable} from {old} to {replacement}", null);

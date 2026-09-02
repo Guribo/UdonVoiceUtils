@@ -16,14 +16,14 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         [PublicAPI]
         public new const int ExecutionOrder = PlayerAudioConfigurationModel.ExecutionOrder + 1;
 
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
             // ensuring that ownership always remains with master
-            if (!this.TransferOwnershipToMaster()) {
-                Error("Failed to transfer ownership to current master");
+            if (!this._TransferOwnershipToMaster()) {
+                _Error("Failed to transfer ownership to current master");
                 return false;
             }
 
@@ -33,24 +33,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.PlayerAudio
         public override void OnOwnershipTransferred(VRCPlayerApi player) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(OnOwnershipTransferred)} to '{player.DisplayNameSafe()}'");
+            _DebugLog($"{nameof(OnOwnershipTransferred)} to '{player._DisplayNameSafe()}'");
 #endif
             #endregion
 
             base.OnOwnershipTransferred(player);
 
-            if (player.IsMasterSafe()) {
+            if (player._IsMasterSafe()) {
                 return;
             }
 
-            Warn("Not owned by master, attempting to return ownership to current master");
-            if (!this.TransferOwnershipToMaster()) {
-                Error("Failed to transfer ownership to current master");
+            _Warn("Not owned by master, attempting to return ownership to current master");
+            if (!this._TransferOwnershipToMaster()) {
+                _Error("Failed to transfer ownership to current master");
             }
         }
 
         public override bool OnOwnershipRequest(VRCPlayerApi requestingPlayer, VRCPlayerApi requestedOwner) {
-            return requestedOwner.IsMasterSafe();
+            return requestedOwner._IsMasterSafe();
         }
     }
 }

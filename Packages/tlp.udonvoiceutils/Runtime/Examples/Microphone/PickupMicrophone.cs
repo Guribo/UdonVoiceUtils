@@ -21,7 +21,7 @@ namespace TLP.UdonVoiceUtils.Editor.Examples
     [CustomEditor(typeof(PickupMicrophone))]
     public class PickupMicrophoneEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Synced pickup that applies a PlayerAudioOverride to " +
                    "whoever holds the microphone.";
         }
@@ -59,7 +59,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public override void OnPickup() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnPickup));
+            _DebugLog(nameof(OnPickup));
 #endif
             #endregion
 
@@ -67,8 +67,8 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!gameObject.TakeOwnership()) {
-                Error("Failed to take ownership");
+            if (!gameObject._TakeOwnership()) {
+                _Error("Failed to take ownership");
                 return;
             }
 
@@ -78,7 +78,7 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         public override void OnDrop() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnDrop));
+            _DebugLog(nameof(OnDrop));
 #endif
             #endregion
 
@@ -93,57 +93,57 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         #endregion
 
         #region Lifecycle
-        public void OnEnable() {
+        internal void OnEnable() {
             if (HasStartedOk) {
-                OnModelChanged();
+                _OnModelChanged();
             }
         }
 
         public void OnDisable() {
             if (HasStartedOk) {
-                RemoveUserFromAudioOverride(_currentUser);
+                _RemoveUserFromAudioOverride(_currentUser);
             }
         }
         #endregion
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) {
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) {
                 return false;
             }
 
-            if (!IsSet(MicModel, nameof(MicModel))) {
+            if (!_IsSet(MicModel, nameof(MicModel))) {
                 return false;
             }
 
-            if (!IsSet(PlayerAudioOverride, nameof(PlayerAudioOverride))) {
+            if (!_IsSet(PlayerAudioOverride, nameof(PlayerAudioOverride))) {
                 return false;
             }
 
-            if (!IsSet(MicActivation, nameof(MicActivation))) {
+            if (!_IsSet(MicActivation, nameof(MicActivation))) {
                 return false;
             }
 
             if (!MicModel.HasStartedOk) {
-                Error($"Failed to start {nameof(MicModel)}");
+                _Error($"Failed to start {nameof(MicModel)}");
                 return false;
             }
 
-            if (!MicModel.ChangeEvent.AddListenerVerified(this, nameof(OnModelChanged))) {
-                Error($"Failed to listen to '{MicModel.GetScriptPathInScene()}.{nameof(MicModel.ChangeEvent)}' event");
+            if (!MicModel.ChangeEvent._AddListenerVerified(this, nameof(_OnModelChanged))) {
+                _Error($"Failed to listen to '{MicModel._GetScriptPathInScene()}.{nameof(MicModel.ChangeEvent)}' event");
                 return false;
             }
 
             MicActivation.MicModel = MicModel;
 
-            OnModelChanged();
+            _OnModelChanged();
             return true;
         }
 
-        public override void OnEvent(string eventName) {
+        public override void _OnEvent(string eventName) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnEvent));
+            _DebugLog(nameof(_OnEvent));
 #endif
             #endregion
 
@@ -152,11 +152,11 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
             }
 
             switch (eventName) {
-                case nameof(OnModelChanged):
-                    OnModelChanged();
+                case nameof(_OnModelChanged):
+                    _OnModelChanged();
                     break;
                 default:
-                    base.OnEvent(eventName);
+                    base._OnEvent(eventName);
                     break;
             }
         }
@@ -166,10 +166,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
         /// <summary>
         /// let the given user be affected by the mic
         /// </summary>
-        private void AddUserToAudioOverride(int newUser) {
+        private void _AddUserToAudioOverride(int newUser) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(AddUserToAudioOverride));
+            _DebugLog(nameof(_AddUserToAudioOverride));
 #endif
             #endregion
 
@@ -182,24 +182,24 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (PlayerAudioOverride.IsAffected(newMicUser)) {
+            if (PlayerAudioOverride._IsAffected(newMicUser)) {
                 return; // already added, nothing to do
             }
 
-            if (!PlayerAudioOverride.AddPlayer(newMicUser)) {
-                Error(
-                        $"Failed to add player {newMicUser.DisplayNameUnique()} " +
-                        $"to {PlayerAudioOverride.GetScriptPathInScene()}");
+            if (!PlayerAudioOverride._AddPlayer(newMicUser)) {
+                _Error(
+                        $"Failed to add player {newMicUser._DisplayNameUnique()} " +
+                        $"to {PlayerAudioOverride._GetScriptPathInScene()}");
             }
         }
 
         /// <summary>
         /// if the mic is still held by the given user let that person no longer be affected by the mic
         /// </summary>
-        private void RemoveUserFromAudioOverride(int user) {
+        private void _RemoveUserFromAudioOverride(int user) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(RemoveUserFromAudioOverride));
+            _DebugLog(nameof(_RemoveUserFromAudioOverride));
 #endif
             #endregion
 
@@ -212,27 +212,27 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            if (!PlayerAudioOverride.IsAffected(currentMicUser)) {
+            if (!PlayerAudioOverride._IsAffected(currentMicUser)) {
                 return; // not affected, nothing to do
             }
 
-            if (!PlayerAudioOverride.RemovePlayer(currentMicUser)) {
-                Warn(
-                        $"Failed to remove player {currentMicUser.DisplayNameUnique()} " +
-                        $"{PlayerAudioOverride.GetScriptPathInScene()} " +
+            if (!PlayerAudioOverride._RemovePlayer(currentMicUser)) {
+                _Warn(
+                        $"Failed to remove player {currentMicUser._DisplayNameUnique()} " +
+                        $"{PlayerAudioOverride._GetScriptPathInScene()} " +
                         $"(was never added in the first place?)");
             }
         }
 
-        private void OnModelChanged() {
+        private void _OnModelChanged() {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog(nameof(OnModelChanged));
+            _DebugLog(nameof(_OnModelChanged));
 #endif
             #endregion
 
-            if (MicIsOffOrUserChanged()) {
-                RemoveUserFromAudioOverride(_currentUser);
+            if (_MicIsOffOrUserChanged()) {
+                _RemoveUserFromAudioOverride(_currentUser);
                 _currentUser = MicModel.UserId;
             }
 
@@ -240,10 +240,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Examples
                 return;
             }
 
-            AddUserToAudioOverride(MicModel.UserId);
+            _AddUserToAudioOverride(MicModel.UserId);
         }
 
-        private bool MicIsOffOrUserChanged() {
+        private bool _MicIsOffOrUserChanged() {
             return !MicModel.IsOn || _currentUser != MicModel.UserId;
         }
         #endregion

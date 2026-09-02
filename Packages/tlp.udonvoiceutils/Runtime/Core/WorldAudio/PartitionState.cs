@@ -15,7 +15,7 @@ namespace TLP.UdonVoiceUtils.Editor.Core.WorldAudio
     [CustomEditor(typeof(PartitionState))]
     public class PartitionStateEditor : TlpBehaviourEditor
     {
-        protected override string GetDescription() {
+        protected override string _GetDescription() {
             return "Holds partition configuration (count, growth factor) and initializes " +
                    "the PartitionCursor. Partitions divide emitters into priority buckets " +
                    "so distant/low-priority sources are updated less frequently.";
@@ -60,10 +60,10 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
 
 
         #region Overrides
-        protected override bool SetupAndValidate() {
-            if (!base.SetupAndValidate()) return false;
+        protected override bool _SetupAndValidate() {
+            if (!base._SetupAndValidate()) return false;
 
-            if (!IsSet(PartitionCursor, nameof(PartitionCursor))) {
+            if (!_IsSet(PartitionCursor, nameof(PartitionCursor))) {
                 return false;
             }
 
@@ -72,19 +72,19 @@ namespace TLP.UdonVoiceUtils.Runtime.Core.WorldAudio
         #endregion
 
         #region Public API
-        public void InitializePartitionManagement(int totalElements) {
+        public void _InitializePartitionManagement(int totalElements) {
             #region TLP_DEBUG
 #if TLP_DEBUG
-            DebugLog($"{nameof(InitializePartitionManagement)}: {nameof(totalElements)}={totalElements}");
+            _DebugLog($"{nameof(_InitializePartitionManagement)}: {nameof(totalElements)}={totalElements}");
 #endif
             #endregion
 
             if (!HasStartedOk) return;
 
             ActivePartitions = Mathf.Min(Partitions, totalElements);
-            PartitionCursor.InitializePartitionSizes(totalElements, ActivePartitions, PartitionGrowthFactor);
-            PartitionCursor.InitializePartitionIndices();
-            PartitionCursor.InitializePartitionCursors();
+            PartitionCursor._InitializePartitionSizes(totalElements, ActivePartitions, PartitionGrowthFactor);
+            PartitionCursor._InitializePartitionIndices();
+            PartitionCursor._InitializePartitionCursors();
         }
         #endregion
     }
